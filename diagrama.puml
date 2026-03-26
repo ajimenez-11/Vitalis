@@ -51,6 +51,7 @@ entity "Recepta" as Recepta {
 entity "LiniaRecepta" as LiniaRecepta {
   id
   quantitat_per_porcio
+  temperatura_coccio
 }
 entity "ReceptaConsum" as ReceptaConsum {
   id
