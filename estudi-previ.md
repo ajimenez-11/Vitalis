@@ -88,9 +88,9 @@ Amb Vitalis, el responsable de cuina pot registrar un albaran en el moment en qu
 | Entitat | Atributs principals |
 |---------|---------------------|
 | Usuari | id, nom, email, password, rol (admin \| cuina) |
-| Proveïdor | id, nom, nif, telèfon, email |
+| Proveïdor | id, nom, nif, telèfon, adreça, email |
 | Producte | id, nom, unitat_mesura, estoc_actual, estoc_minim |
-| Albaran | id, proveïdor_id, usuari_id, data, estat (esborrany \| confirmat) |
+| Albaran | id, proveïdor_id, usuari_id, data, estat (esborrany \| confirmat), observacions |
 | LiniaAlbaran | id, albaran_id, producte_id, quantitat, preu_unitari |
 | Lot | id, linia_albaran_id, numero_lot, data_caducitat |
 | MovimentStock | id, producte_id, lot_id, usuari_id, recepta_consum_id, tipus (entrada \| sortida \| ajust), quantitat, data, observacions |

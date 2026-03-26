@@ -10,12 +10,14 @@ entity "Albaran" as Albaran {
   id
   data
   estat
+  observacions
 }
 entity "Proveidor" as Proveidor {
   id
   nom
   nif
   telefon
+  adreca
   email
 }
 entity "LiniaAlbaran" as LiniaAlbaran {
