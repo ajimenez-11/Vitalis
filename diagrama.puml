@@ -1,39 +1,82 @@
-@startuml
+"@startuml vitalis"
 entity "Usuari" as Usuari {
+  id
+  nom
+  email
+  password
+  rol
 }
-
 entity "Albaran" as Albaran {
+  id
+  data
+  estat
 }
-
 entity "Proveidor" as Proveidor {
+  id
+  nom
+  nif
+  telefon
+  email
 }
-
 entity "LiniaAlbaran" as LiniaAlbaran {
+  id
+  quantitat
+  preu_unitari
 }
-
 entity "Producte" as Producte {
+  id
+  nom
+  unitat_mesura
+  estoc_actual
+  estoc_minim
 }
-
 entity "Lot" as Lot {
+  id
+  numero_lot
+  data_caducitat
 }
-
 entity "MovimentStock" as MovimentStock {
+  id
   tipus
   quantitat
   data
+  observacions
+}
+entity "Recepta" as Recepta {
+  id
+  nom
+  descripcio
+  porcions_base
+}
+entity "LiniaRecepta" as LiniaRecepta {
+  id
+  quantitat_per_porcio
+}
+entity "ReceptaConsum" as ReceptaConsum {
+  id
+  porcions
+  data
+  observacions
 }
 
-' Relaciones originales
-Usuari ||--o{ Albaran : ""
+' Relacions originals
+Usuari ||--o{ Albaran : "crea"
 Albaran }o--|| Proveidor : ""
 Usuari ||--o{ Proveidor : "registra"
 Albaran ||--o{ LiniaAlbaran : ""
 LiniaAlbaran }o--|| Producte : ""
 LiniaAlbaran ||--o{ Lot : ""
 
-' NUEVAS relaciones (stock)
+' Relacions d'estoc
 Producte ||--o{ MovimentStock : ""
 Lot ||--o{ MovimentStock : ""
 Usuari ||--o{ MovimentStock : "registra"
 
+' Relacions de receptes
+Usuari ||--o{ Recepta : "crea"
+Recepta ||--o{ LiniaRecepta : ""
+LiniaRecepta }o--|| Producte : ""
+Usuari ||--o{ ReceptaConsum : "registra"
+Recepta ||--o{ ReceptaConsum : ""
+ReceptaConsum ||--o{ MovimentStock : "genera"
 @enduml
