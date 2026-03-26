@@ -95,7 +95,7 @@ Amb Vitalis, el responsable de cuina pot registrar un albaran en el moment en qu
 | Lot | id, linia_albaran_id, numero_lot, data_caducitat |
 | MovimentStock | id, producte_id, lot_id, usuari_id, recepta_consum_id, tipus (entrada \| sortida \| ajust), quantitat, data, observacions |
 | Recepta | id, nom, descripcio, porcions_base, usuari_id, created_at |
-| LiniaRecepta | id, recepta_id, producte_id, quantitat_per_porcio |
+| LiniaRecepta | id, recepta_id, producte_id, quantitat_per_porcio, temperatura_coccio |
 | ReceptaConsum | id, recepta_id, usuari_id, porcions, data, observacions |
 
 ### Relacions clau
