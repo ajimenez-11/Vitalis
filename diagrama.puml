@@ -1,0 +1,39 @@
+@startuml
+entity "Usuari" as Usuari {
+}
+
+entity "Albaran" as Albaran {
+}
+
+entity "Proveidor" as Proveidor {
+}
+
+entity "LiniaAlbaran" as LiniaAlbaran {
+}
+
+entity "Producte" as Producte {
+}
+
+entity "Lot" as Lot {
+}
+
+entity "MovimentStock" as MovimentStock {
+  tipus
+  quantitat
+  data
+}
+
+' Relaciones originales
+Usuari ||--o{ Albaran : ""
+Albaran }o--|| Proveidor : ""
+Usuari ||--o{ Proveidor : "registra"
+Albaran ||--o{ LiniaAlbaran : ""
+LiniaAlbaran }o--|| Producte : ""
+LiniaAlbaran ||--o{ Lot : ""
+
+' NUEVAS relaciones (stock)
+Producte ||--o{ MovimentStock : ""
+Lot ||--o{ MovimentStock : ""
+Usuari ||--o{ MovimentStock : "registra"
+
+@enduml
