@@ -1,7 +1,8 @@
 # VITALIS
 ## Sistema de Gestió d'Albarans i Estoc per a Cuines Professionals
 **Estudi Previ — Projecte de Fi de Cicle (DAW)**  
-Curs 2025–2026
+**Curs:** 2025–2026  
+**Grup:** Antonio Jiménez i David Moya
 
 ---
 
