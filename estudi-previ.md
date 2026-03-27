@@ -175,7 +175,7 @@ El disseny seguirà un estil net i funcional, prioritzant la llegibilitat en con
 | Base de dades | MySQL | Relacional, àmpliament suportat, adequat per al model de dades. |
 | Autenticació | Laravel Sanctum (JWT) | Tokens d'API lleugers, integrats amb el frontend React. |
 | Control de versions | Git + GitHub | Treball col·laboratiu entre els dos membres de l'equip. |
-| Desplegament | Render / Railway (backend) + Vercel (frontend) | Gratuïts per a projectes acadèmics, desplegament senzill. |
+
 
 ### Arquitectura del sistema
 
