@@ -125,7 +125,7 @@ Usuari (1) ──── (N) Albaran (N) ──── (1) Proveïdor
 
 ### Model de dades
 
-![alt text](diagrames/vitalis.png)
+![alt text](diagrames/model-dades.png)
 
 ---
 

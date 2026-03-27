@@ -1,65 +1,99 @@
-"@startuml vitalis"
+@startuml vitalis
 entity "Usuari" as Usuari {
-  id
-  nom
-  email
-  password
-  rol
+  * id : INT <<PK>>
+  --
+  * nom : VARCHAR(100)
+  * email : VARCHAR(150)
+  * password : VARCHAR(255)
+  * rol : ENUM('admin','cuina')
 }
+
 entity "Albaran" as Albaran {
-  id
-  data
-  estat
-  observacions
+  * id : INT <<PK>>
+  --
+  * proveidor_id : INT <<FK>>
+  * usuari_id : INT <<FK>>
+  * data : DATE
+  * estat : ENUM('esborrany','confirmat')
+  observacions : TEXT
 }
+
 entity "Proveidor" as Proveidor {
-  id
-  nom
-  nif
-  telefon
-  adreca
-  email
+  * id : INT <<PK>>
+  --
+  * nom : VARCHAR(100)
+  * nif : VARCHAR(20)
+  telefon : VARCHAR(20)
+  adreca : VARCHAR(255)
+  email : VARCHAR(150)
 }
+
 entity "LiniaAlbaran" as LiniaAlbaran {
-  id
-  quantitat
-  preu_unitari
+  * id : INT <<PK>>
+  --
+  * albaran_id : INT <<FK>>
+  * producte_id : INT <<FK>>
+  * quantitat : DECIMAL(10,3)
+  preu_unitari : DECIMAL(10,2)
 }
+
 entity "Producte" as Producte {
-  id
-  nom
-  unitat_mesura
-  estoc_actual
-  estoc_minim
+  * id : INT <<PK>>
+  --
+  * nom : VARCHAR(100)
+  * unitat_mesura : VARCHAR(20)
+  * estoc_actual : DECIMAL(10,3)
+  * estoc_minim : DECIMAL(10,3)
 }
+
 entity "Lot" as Lot {
-  id
-  numero_lot
-  data_caducitat
+  * id : INT <<PK>>
+  --
+  * linia_albaran_id : INT <<FK>>
+  * numero_lot : VARCHAR(100)
+  data_caducitat : DATE
 }
+
 entity "MovimentStock" as MovimentStock {
-  id
-  tipus
-  quantitat
-  data
-  observacions
+  * id : INT <<PK>>
+  --
+  * producte_id : INT <<FK>>
+  * usuari_id : INT <<FK>>
+  lot_id : INT <<FK>>
+  recepta_consum_id : INT <<FK>>
+  * tipus : ENUM('entrada','sortida','ajust')
+  * quantitat : DECIMAL(10,3)
+  * data : DATETIME
+  observacions : TEXT
 }
+
 entity "Recepta" as Recepta {
-  id
-  nom
-  descripcio
-  porcions_base
+  * id : INT <<PK>>
+  --
+  * usuari_id : INT <<FK>>
+  * nom : VARCHAR(100)
+  descripcio : TEXT
+  * porcions_base : INT
+  * created_at : DATETIME
 }
+
 entity "LiniaRecepta" as LiniaRecepta {
-  id
-  quantitat_per_porcio
-  temperatura_coccio
+  * id : INT <<PK>>
+  --
+  * recepta_id : INT <<FK>>
+  * producte_id : INT <<FK>>
+  * quantitat_per_porcio : DECIMAL(10,3)
+  temperatura_coccio : DECIMAL(5,1)
 }
+
 entity "ReceptaConsum" as ReceptaConsum {
-  id
-  porcions
-  data
-  observacions
+  * id : INT <<PK>>
+  --
+  * recepta_id : INT <<FK>>
+  * usuari_id : INT <<FK>>
+  * porcions : INT
+  * data : DATETIME
+  observacions : TEXT
 }
 
 ' Relacions originals
@@ -82,4 +116,5 @@ LiniaRecepta }o--|| Producte : ""
 Usuari ||--o{ ReceptaConsum : "registra"
 Recepta ||--o{ ReceptaConsum : ""
 ReceptaConsum ||--o{ MovimentStock : "genera"
+
 @enduml
