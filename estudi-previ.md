@@ -92,7 +92,7 @@ Amb Vitalis, el responsable de cuina pot registrar un albaran en el moment en qu
 
 ## Diagrama de casos d'ús 
 
-![alt text](diagrames/casos-us.png)
+![alt text](diagrames/casos-d-us.png)
 
 ---
 
