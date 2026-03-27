@@ -69,6 +69,7 @@ Amb Vitalis, el responsable de cuina pot registrar un albaran en el moment en qu
 |-------|--------------------|
 | Visitant | Accedeix a la pàgina de login. No té accés a cap funcionalitat fins que s'autentica. |
 | Responsable de cuina | Registra albarans, consulta l'estoc, consulta traçabilitat de lots, gestiona productes i proveïdors, gestiona receptes i registra consums per recepta. |
+| Cuiner | Consulta l'estoc, verifica disponibilitat d’ingredients, registra pèrdues/incidències i registra consum de receptes.|
 | Administrador | Té accés a totes les funcionalitats del sistema i, a més, gestiona els usuaris. |
 
 ### Casos d'ús principals
