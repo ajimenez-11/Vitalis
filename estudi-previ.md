@@ -164,6 +164,10 @@ Usuari (1) ──── (N) Albaran (N) ──── (1) Proveïdor
 
 El disseny seguirà un estil net i funcional, prioritzant la llegibilitat en condicions de cuina (tipus de lletra gran, botons clars, poc soroll visual). La navegació principal serà una barra lateral persistent.
 
+**WIREFRAME:** 
+
+![alt text](diagrames/wireframe-vitalis.jpeg)
+
 ---
 
 ## 6. Tecnologies utilitzades
