@@ -32,7 +32,7 @@ Amb Vitalis, el responsable de cuina pot registrar un albaran en el moment en qu
 
 | Codi | Descripció |
 |------|------------|
-| RF1  | Registrar i autenticar usuaris amb rols diferenciats (administrador, responsable de cuina). |
+| RF1  | Registrar i autenticar usuaris amb rols diferenciats (administrador, responsable de cuina, cuiner). |
 | RF2  | Gestionar el catàleg de productes (nom, unitat de mesura, estoc mínim, al·lèrgens). |
 | RF3  | Gestionar el catàleg de proveïdors. |
 | RF4  | Crear i registrar albarans d'entrada de mercaderia associats a un proveïdor. |
@@ -69,16 +69,29 @@ Amb Vitalis, el responsable de cuina pot registrar un albaran en el moment en qu
 |-------|--------------------|
 | Visitant | Accedeix a la pàgina de login. No té accés a cap funcionalitat fins que s'autentica. |
 | Responsable de cuina | Registra albarans, consulta l'estoc, consulta traçabilitat de lots, gestiona productes i proveïdors, gestiona receptes i registra consums per recepta. |
-| Administrador | A més de les funcionalitats anteriors, gestiona els usuaris del sistema i configura paràmetres globals. |
+| Administrador | Té accés a totes les funcionalitats del sistema i, a més, gestiona els usuaris. |
 
 ### Casos d'ús principals
 
 - **Responsable de cuina:** iniciar sessió → registrar albaran → afegir línies amb lots → confirmar albaran → estoc actualitzat automàticament.
-- **Responsable de cuina:** consultar estoc → identificar productes sota mínims → actuar.
+- **Responsable de cuina:** consultar estoc → identificar productes sota mínims → actuar (compra o ajust).
+- **Responsable de cuina:** ajustar estoc manualment → corregir diferències detectades
+- **Responsable de cuina:** registrar pèrdua / incidència → el sistema ajusta automàticament l’estoc.
 - **Responsable de cuina:** cercar un lot → veure l'albaran d'origen → veure proveïdor i data d'entrada.
 - **Responsable de cuina:** seleccionar una recepta → indicar porcions produïdes → confirmar consum → el sistema genera moviments de sortida per cada ingredient i actualitza l'estoc.
 - **Responsable de cuina:** consultar l'historial de produccions d'una recepta → veure consum acumulat d'ingredients.
+- **Cuiner:** iniciar sessió → consultar estoc → verificar disponibilitat d’ingredients.
+- **Cuiner:** consultar estoc → detectar mancances → informar al responsable.
+- **Cuiner:** registrar pèrdua / incidència → el sistema ajusta automàticament l’estoc.
+- **Cuiner:** seleccionar una recepta → indicar porcions produïdes → confirmar consum → el sistema actualitza l’estoc.
+- **Cuiner:** consultar historial de receptes → veure produccions anteriors.
+- **Administrador:** iniciar sessió → accedir al sistema.
 - **Administrador:** crear o desactivar comptes d'usuari.
+
+
+## Diagrama de casos d'ús 
+
+![alt text](diagrames/casos-us.png)
 
 ---
 
@@ -88,7 +101,7 @@ Amb Vitalis, el responsable de cuina pot registrar un albaran en el moment en qu
 
 | Entitat | Atributs principals |
 |---------|---------------------|
-| Usuari | id, nom, email, password, rol (admin \| cuina) |
+| Usuari | id, nom, email, password, rol (admin \| responsable_cuina \| cuiner) |
 | Proveïdor | id, nom, nif, telèfon, adreça, email |
 | Producte | id, nom, unitat_mesura, estoc_actual, estoc_minim |
 | Albaran | id, proveïdor_id, usuari_id, data, estat (esborrany \| confirmat), observacions |
@@ -140,6 +153,8 @@ Usuari (1) ──── (N) Albaran (N) ──── (1) Proveïdor
 | Llistat d'albarans | Taula amb tots els albarans (filtrables per data i proveïdor). Botó per crear-ne un de nou. |
 | Formulari d'albaran | Capçalera (proveïdor, data) + línies de producte amb quantitat i lots. Botó de confirmació. |
 | Consulta d'estoc | Taula de productes amb estoc actual. Alertes visuals per sota del mínim. |
+| Ajust manual d'estoc | Formulari per modificar quantitats manualment amb motiu del canvi. |
+| Registre d'incidències | Formulari per registrar pèrdues o errors amb impacte automàtic en l'estoc. |
 | Traçabilitat de lots | Cercador per número de lot. Mostra albaran d'origen, proveïdor i data d'entrada. |
 | Llistat de receptes | Taula amb totes les receptes. Botó per crear-ne una de nova i per registrar un consum. |
 | Formulari de recepta | Nom, descripció, porcions base + línies d'ingredients amb quantitat per porció. |
