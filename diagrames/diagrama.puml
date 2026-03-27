@@ -5,7 +5,7 @@ entity "Usuari" as Usuari {
   * nom : VARCHAR(100)
   * email : VARCHAR(150)
   * password : VARCHAR(255)
-  * rol : ENUM('admin','cuina')
+  * rol : ENUM('admin', 'responsable_cuina', 'cuiner')
 }
 
 entity "Albaran" as Albaran {

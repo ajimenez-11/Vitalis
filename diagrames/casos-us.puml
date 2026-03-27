@@ -1,0 +1,100 @@
+@startuml vitalis_casos_us
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #888888
+  ArrowColor #444444
+}
+
+skinparam arrow {
+  Color #444444
+  FontColor #444444
+  Thickness 1.5
+}
+
+skinparam actor {
+  BorderColor #444444
+  FontColor #333333
+}
+
+' ===== ACTORES IZQUIERDA =====
+actor "Cuiner" as Cuiner
+actor "Responsable de cuina" as Cuina
+
+' ===== SISTEMA =====
+rectangle "Vitalis" {
+
+  ' Autenticación
+  usecase "Iniciar sessió" as UC1
+
+  ' Albaranes
+  usecase "Registrar albaran"      as UC2
+  usecase "Afegir línies amb lots" as UC3
+  usecase "Confirmar albaran"      as UC4
+
+  ' Stock
+  usecase "Consultar estoc"             as UC5
+  usecase "Ajustar estoc manual"        as UC6
+  usecase "Registrar pèrdua / incident" as UC7
+
+  ' Traçabilitat
+  usecase "Traçabilitat de lots" as UC8
+
+  ' Receptes
+  usecase "Registrar consum recepta"    as UC9
+  usecase "Consultar historial recepta" as UC10
+
+  ' Administració
+  usecase "Gestionar usuaris"    as UC11
+  usecase "Gestionar productes"  as UC12
+  usecase "Gestionar proveïdors" as UC13
+
+  ' Relacions include
+  UC2 .> UC3 : <<include>>
+  UC3 .> UC4 : <<include>>
+  UC7 .> UC6 : <<include>>
+}
+
+' ===== ACTOR DERECHA =====
+actor "Administrador" as Admin
+
+' ===== RELACIONES CUINER =====
+Cuiner --> UC1
+Cuiner --> UC5
+Cuiner --> UC6
+Cuiner --> UC7
+Cuiner --> UC9
+Cuiner --> UC10
+
+' ===== RELACIONES RESPONSABLE =====
+Cuina --> UC1
+Cuina --> UC2
+Cuina --> UC5
+Cuina --> UC6
+Cuina --> UC7
+Cuina --> UC8
+Cuina --> UC9
+Cuina --> UC10
+Cuina --> UC12
+Cuina --> UC13
+
+' ===== RELACIONES ADMIN (DERECHA) =====
+Admin -right-> UC1
+Admin -right-> UC2
+Admin -right-> UC3
+Admin -right-> UC4
+Admin -right-> UC5
+Admin -right-> UC6
+Admin -right-> UC7
+Admin -right-> UC8
+Admin -right-> UC9
+Admin -right-> UC10
+Admin -right-> UC11
+Admin -right-> UC12
+Admin -right-> UC13
+
+@enduml
