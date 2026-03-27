@@ -123,6 +123,10 @@ Usuari (1) ──── (N) Albaran (N) ──── (1) Proveïdor
                                                 (entrada | sortida | ajust)
 ```
 
+### Model de dades
+
+![alt text](diagrames/vitalis.png)
+
 ---
 
 ## 5. Disseny inicial de la interfície
