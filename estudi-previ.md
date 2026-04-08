@@ -180,3 +180,68 @@ El disseny seguirà un estil net i funcional, prioritzant la llegibilitat en con
 | Autenticació | Laravel Sanctum (JWT) | Tokens d'API lleugers, integrats amb el frontend React. |
 | Control de versions | Git + GitHub | Treball col·laboratiu entre els dos membres de l'equip. |
 
+
+### Arquitectura del sistema
+
+```
+┌─────────────────────┐        HTTP / REST        ┌──────────────────────┐
+│                     │ ────────────────────────► │                      │
+│   React (Vercel)    │                           │  Laravel API (Render)│
+│   SPA Frontend      │ ◄──────────────────────── │  Lògica de negoci    │
+│                     │        JSON responses      │  Autenticació / Rols │
+└─────────────────────┘                           └──────────┬───────────┘
+                                                             │
+                                                             ▼
+                                                   ┌─────────────────────┐
+                                                   │      MySQL          │
+                                                   │  Productes, Lots,   │
+                                                   │  Albarans, Usuaris  │
+                                                   │  Receptes, Consums  │
+                                                   └─────────────────────┘
+```
+
+---
+
+## 7. Abast del projecte
+
+### MVP — Nucli (220 hores)
+
+| Funcionalitat | Estat |
+|---------------|-------|
+| Autenticació i rols (admin / cuina) | ✅ MVP |
+| CRUD de productes i proveïdors | ✅ MVP |
+| Registre i confirmació d'albarans | ✅ MVP |
+| Gestió de lots per línia d'albaran | ✅ MVP |
+| Actualització automàtica d'estoc | ✅ MVP |
+| Alertes per estoc sota mínims | ✅ MVP |
+| Consulta de traçabilitat per lot | ✅ MVP |
+| Gestió d'usuaris (admin) | ✅ MVP |
+| CRUD de receptes amb ingredients | ✅ MVP |
+| Registre de consum per recepta amb descàrrega automàtica d'estoc | ✅ MVP |
+| Historial de produccions per recepta | ✅ MVP |
+| Alerta d'estoc insuficient en registrar consum de recepta | ✅ MVP |
+| Mòdul FIFO de consums | 🔜 Extensió futura |
+| Menús setmanals i al·lèrgens | 🔜 Extensió futura |
+| Exportació d'informes en PDF | 🔜 Extensió futura |
+
+L'arquitectura i el model de dades del MVP estaran dissenyats per permetre l'addició d'aquests mòduls en fases posteriors sense reestructuracions majors.
+
+---
+
+## 8. Planificació inicial
+
+| Fase | Descripció | Hores estimades |
+|------|------------|-----------------|
+| 1 | Estudi previ i disseny del model de dades | 20 h |
+| 2 | Configuració de l'entorn i base del projecte | 10 h |
+| 3 | Backend: autenticació, CRUD productes/proveïdors | 30 h |
+| 4 | Backend: albarans, lots i lògica d'estoc | 40 h |
+| 5 | Backend: receptes, línies de recepta i consum amb descàrrega d'estoc | 20 h |
+| 6 | Frontend: login, dashboard, estoc | 30 h |
+| 7 | Frontend: albarans, lots, traçabilitat | 30 h |
+| 8 | Frontend: receptes i registre de consum | 20 h |
+| 9 | Integració, proves i correcció d'errors | 20 h |
+| 10 | Documentació i desplegament | 15 h |
+| **TOTAL** | | **235 h** |
+
+---
