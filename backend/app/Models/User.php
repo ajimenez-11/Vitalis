@@ -29,4 +29,24 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function albarans()
+    {
+        return $this->hasMany(Albaran::class, 'usuari_id');
+    }
+
+    public function receptes()
+    {
+        return $this->hasMany(Recepta::class, 'usuari_id');
+    }
+
+    public function consums()
+    {
+        return $this->hasMany(ReceptaConsum::class, 'usuari_id');
+    }
+
+    public function moviments()
+    {
+        return $this->hasMany(MovimentStock::class, 'usuari_id');
+    }
 }
