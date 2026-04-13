@@ -1,0 +1,192 @@
+
+<style>
+* { box-sizing: border-box; }
+.sr-only { position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0); }
+body { margin: 0; padding: 0; }
+.wrap { padding: 1rem 0; font-family: var(--font-sans); }
+.group { margin-bottom: 1.5rem; }
+.group-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.group-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+.group-badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+.row { display: grid; grid-template-columns: 68px 1fr auto; align-items: center; gap: 8px; padding: 7px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); margin-bottom: 4px; background: var(--color-background-primary); cursor: pointer; transition: background 0.12s; }
+.row:hover { background: var(--color-background-secondary); }
+.method { font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 4px; text-align: center; font-family: var(--font-mono); }
+.GET    { background: #E1F5EE; color: #085041; }
+.POST   { background: #E6F1FB; color: #0C447C; }
+.PUT    { background: #FAEEDA; color: #633806; }
+.DELETE { background: #FCEBEB; color: #791F1F; }
+.path { font-size: 12px; font-family: var(--font-mono); color: var(--color-text-secondary); }
+.desc { font-size: 12px; color: var(--color-text-tertiary); text-align: right; }
+.roles { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+.role { font-size: 10px; padding: 1px 6px; border-radius: 8px; }
+.role-all  { background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); }
+.role-resp { background: #E1F5EE; color: #085041; }
+.role-admin{ background: #EEEDFE; color: #3C3489; }
+.filters { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.filter-btn { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; }
+.filter-btn.active { background: var(--color-background-info); color: var(--color-text-info); border-color: var(--color-border-info); }
+.count { font-size: 12px; color: var(--color-text-tertiary); margin-bottom: 12px; }
+@media (prefers-color-scheme: dark) {
+  .GET    { background: #085041; color: #9FE1CB; }
+  .POST   { background: #0C447C; color: #B5D4F4; }
+  .PUT    { background: #633806; color: #FAC775; }
+  .DELETE { background: #791F1F; color: #F7C1C1; }
+  .role-resp { background: #085041; color: #9FE1CB; }
+  .role-admin{ background: #3C3489; color: #CECBF6; }
+}
+</style>
+
+<h2 class="sr-only">Referencia de endpoints de la API REST de Vitalis</h2>
+
+<div class="wrap">
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-filter="all">Todos</button>
+    <button class="filter-btn" data-filter="auth">Auth</button>
+    <button class="filter-btn" data-filter="catalogo">Catálogo</button>
+    <button class="filter-btn" data-filter="albarans">Albarans</button>
+    <button class="filter-btn" data-filter="estoc">Estoc</button>
+    <button class="filter-btn" data-filter="receptes">Receptes</button>
+    <button class="filter-btn" data-filter="admin">Admin</button>
+  </div>
+  <div class="count" id="count"></div>
+  <div id="endpoint-list"></div>
+</div>
+
+<script>
+const groups = [
+  {
+    id: 'auth',
+    title: 'Autenticació',
+    color: 'gray',
+    endpoints: [
+      { method:'POST', path:'/api/auth/login',   desc:'Iniciar sessió → retorna token JWT', roles:['tots'] },
+      { method:'POST', path:'/api/auth/logout',  desc:'Invalidar token actual',             roles:['tots'] },
+      { method:'GET',  path:'/api/auth/me',       desc:'Dades de l\'usuari autenticat',      roles:['tots'] },
+    ]
+  },
+  {
+    id: 'catalogo',
+    title: 'Catàleg',
+    color: 'purple',
+    endpoints: [
+      { method:'GET',    path:'/api/productes',         desc:'Llistat de productes',          roles:['tots'] },
+      { method:'POST',   path:'/api/productes',         desc:'Crear producte',                roles:['responsable'] },
+      { method:'GET',    path:'/api/productes/{id}',    desc:'Detall producte',               roles:['tots'] },
+      { method:'PUT',    path:'/api/productes/{id}',    desc:'Editar producte',               roles:['responsable'] },
+      { method:'DELETE', path:'/api/productes/{id}',    desc:'Eliminar producte',             roles:['responsable'] },
+      { method:'GET',    path:'/api/proveïdors',        desc:'Llistat de proveïdors',         roles:['tots'] },
+      { method:'POST',   path:'/api/proveïdors',        desc:'Crear proveïdor',               roles:['responsable'] },
+      { method:'GET',    path:'/api/proveïdors/{id}',   desc:'Detall proveïdor',              roles:['tots'] },
+      { method:'PUT',    path:'/api/proveïdors/{id}',   desc:'Editar proveïdor',              roles:['responsable'] },
+      { method:'DELETE', path:'/api/proveïdors/{id}',   desc:'Eliminar proveïdor',            roles:['responsable'] },
+    ]
+  },
+  {
+    id: 'albarans',
+    title: 'Albarans',
+    color: 'teal',
+    endpoints: [
+      { method:'GET',  path:'/api/albarans',                       desc:'Llistat (filtre per data, proveïdor)', roles:['tots'] },
+      { method:'POST', path:'/api/albarans',                       desc:'Crear albaran en esborrany',           roles:['responsable'] },
+      { method:'GET',  path:'/api/albarans/{id}',                  desc:'Detall + línies + lots',               roles:['tots'] },
+      { method:'PUT',  path:'/api/albarans/{id}',                  desc:'Editar capçalera (si esborrany)',       roles:['responsable'] },
+      { method:'POST', path:'/api/albarans/{id}/confirmar',        desc:'Confirmar → actualitza estoc',         roles:['responsable'] },
+      { method:'POST', path:'/api/albarans/{id}/linies',           desc:'Afegir línia + lots',                  roles:['responsable'] },
+      { method:'PUT',  path:'/api/albarans/{id}/linies/{lid}',     desc:'Editar línia',                         roles:['responsable'] },
+      { method:'DELETE',path:'/api/albarans/{id}/linies/{lid}',    desc:'Eliminar línia',                       roles:['responsable'] },
+    ]
+  },
+  {
+    id: 'estoc',
+    title: 'Estoc & lots',
+    color: 'amber',
+    endpoints: [
+      { method:'GET',  path:'/api/estoc',                    desc:'Estoc actual de tots els productes',    roles:['tots'] },
+      { method:'GET',  path:'/api/estoc/alertes',            desc:'Productes sota estoc mínim',            roles:['tots'] },
+      { method:'GET',  path:'/api/moviments',                desc:'Historial de moviments (per producte)', roles:['tots'] },
+      { method:'POST', path:'/api/moviments/sortida',        desc:'Registrar sortida manual',              roles:['tots'] },
+      { method:'POST', path:'/api/moviments/ajust',          desc:'Ajust d\'estoc (pèrdua, error)',        roles:['tots'] },
+      { method:'GET',  path:'/api/lots',                     desc:'Llistat de lots actius',                roles:['tots'] },
+      { method:'GET',  path:'/api/lots/{numero}',            desc:'Traçabilitat: lot → albaran → proveïdor', roles:['tots'] },
+    ]
+  },
+  {
+    id: 'receptes',
+    title: 'Receptes',
+    color: 'coral',
+    endpoints: [
+      { method:'GET',    path:'/api/receptes',                      desc:'Llistat de receptes',                  roles:['tots'] },
+      { method:'POST',   path:'/api/receptes',                      desc:'Crear recepta + línies d\'ingredients', roles:['responsable'] },
+      { method:'GET',    path:'/api/receptes/{id}',                 desc:'Detall + ingredients + historial',     roles:['tots'] },
+      { method:'PUT',    path:'/api/receptes/{id}',                 desc:'Editar recepta',                       roles:['responsable'] },
+      { method:'DELETE', path:'/api/receptes/{id}',                 desc:'Eliminar recepta',                     roles:['responsable'] },
+      { method:'POST',   path:'/api/receptes/{id}/consum',          desc:'Registrar consum → descàrrega estoc',  roles:['tots'] },
+      { method:'GET',    path:'/api/receptes/{id}/consums',         desc:'Historial de produccions',             roles:['tots'] },
+      { method:'GET',    path:'/api/receptes/{id}/disponibilitat',  desc:'Verifica estoc suficient per N porcions', roles:['tots'] },
+    ]
+  },
+  {
+    id: 'admin',
+    title: 'Administració',
+    color: 'purple',
+    endpoints: [
+      { method:'GET',    path:'/api/usuaris',         desc:'Llistat d\'usuaris',    roles:['admin'] },
+      { method:'POST',   path:'/api/usuaris',         desc:'Crear usuari',          roles:['admin'] },
+      { method:'GET',    path:'/api/usuaris/{id}',    desc:'Detall usuari',         roles:['admin'] },
+      { method:'PUT',    path:'/api/usuaris/{id}',    desc:'Editar usuari',         roles:['admin'] },
+      { method:'POST',   path:'/api/usuaris/{id}/desactivar', desc:'Desactivar compte', roles:['admin'] },
+    ]
+  }
+];
+
+const colorMap = {
+  gray: 'background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)',
+  purple: 'background:#EEEDFE;color:#3C3489',
+  teal: 'background:#E1F5EE;color:#085041',
+  amber: 'background:#FAEEDA;color:#633806',
+  coral: 'background:#FAECE7;color:#712B13',
+};
+
+function roleLabel(r) {
+  if (r === 'admin') return '<span class="role role-admin">admin</span>';
+  if (r === 'responsable') return '<span class="role role-resp">responsable</span>';
+  return '<span class="role role-all">tots</span>';
+}
+
+function render(filter) {
+  const list = document.getElementById('endpoint-list');
+  let total = 0;
+  let html = '';
+  for (const g of groups) {
+    if (filter !== 'all' && g.id !== filter) continue;
+    const rows = g.endpoints.map(e => {
+      total++;
+      return `<div class="row" onclick="sendPrompt('Explica el endpoint ${e.method} ${e.path} de Vitalis: qué hace, qué parámetros recibe y qué devuelve')">
+        <span class="method ${e.method}">${e.method}</span>
+        <span class="path">${e.path}</span>
+        <div class="roles">${e.roles.map(roleLabel).join('')}</div>
+      </div>`;
+    }).join('');
+    const style = colorMap[g.color] || colorMap.gray;
+    html += `<div class="group" data-group="${g.id}">
+      <div class="group-header">
+        <span class="group-badge" style="${style}">${g.title}</span>
+        <span class="group-title" style="font-size:12px;color:var(--color-text-tertiary)">${g.endpoints.length} endpoints</span>
+      </div>
+      ${rows}
+    </div>`;
+  }
+  list.innerHTML = html;
+  document.getElementById('count').textContent = `${total} endpoints en total`;
+}
+
+document.getElementById('filters').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render(btn.dataset.filter);
+});
+
+render('all');
+</script>
