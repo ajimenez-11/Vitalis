@@ -23,7 +23,7 @@ return new class extends Migration
 
             $table->string('numero_lot');
 
-            $table->date('data_caducitat')->nullable();
+            $table->date('data_caducitat');
 
             $table->timestamps();
         });
