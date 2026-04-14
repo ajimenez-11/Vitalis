@@ -92,7 +92,7 @@ Amb Vitalis, el responsable de cuina pot registrar un albaran en el moment en qu
 
 ## Diagrama de casos d'ús 
 
-![alt text](diagrames/casos-d-us.png)
+![alt text](info_diagrames/casos-d-us.png)
 
 ---
 
@@ -139,7 +139,7 @@ Usuari (1) ──── (N) Albaran (N) ──── (1) Proveïdor
 
 ### Model de dades
 
-![alt text](diagrames/model-dades.png)
+![alt text](info_diagrames/model-dades.png)
 
 ---
 
@@ -166,7 +166,7 @@ El disseny seguirà un estil net i funcional, prioritzant la llegibilitat en con
 
 **WIREFRAME:** 
 
-![alt text](diagrames/wireframe-vitalis.jpeg)
+![alt text](info_diagrames/wireframe-vitalis.jpeg)
 
 ---
 
