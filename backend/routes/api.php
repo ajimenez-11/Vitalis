@@ -86,7 +86,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      LÍNIES D’ALBARÀ (REST)
+      LÍNIES D’ALBARÀ (REST) OK
     */
     Route::middleware('role:admin,responsable_cuina')->group(function () {
 
@@ -95,7 +95,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/linies-albaran/{id}', [LiniaAlbaranController::class, 'getLinia']);
         Route::put('/linies-albaran/{id}', [LiniaAlbaranController::class, 'edit']);
         Route::delete('/linies-albaran/{id}', [LiniaAlbaranController::class, 'delete']);
-        
+
     });
 
 
@@ -103,9 +103,11 @@ Route::middleware('auth:sanctum')->group(function () {
       LOTS
     */
     Route::middleware('role:admin,responsable_cuina,cuiner')->group(function () {
-        Route::get('/lots', [LotController::class, 'index']);
-        Route::get('/lots/{id}', [LotController::class, 'show']);
+        Route::get('/lots', [LotController::class, 'list']);
+        Route::get('/lots/{id}', [LotController::class, 'getLot']);
         Route::get('/lots/numero/{numero}', [LotController::class, 'findByNumero']);
+        Route::get('/lots/producte/{id}', [LotController::class, 'getLotsByProducte']);
+        Route::get('/lots/proxims-caducitat', [LotController::class, 'getLotsProximsCaducitat']);
     });
 
 
