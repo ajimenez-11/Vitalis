@@ -39,22 +39,22 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      USUARIS (ADMIN)
+      USUARIS (ADMIN) OK
     */
     Route::middleware('role:admin')->group(function () {
 
-        Route::get('/usuaris', [UserController::class, 'index']);
-        Route::get('/usuaris/{id}', [UserController::class, 'show']);
-        Route::post('/usuaris', [UserController::class, 'store']);
-        Route::put('/usuaris/{id}', [UserController::class, 'update']);
-        Route::delete('/usuaris/{id}', [UserController::class, 'destroy']);
+        Route::get('/usuaris', [UserController::class, 'list']);
+        Route::get('/usuaris/{id}', [UserController::class, 'getUsuari']);
+        Route::post('/usuaris', [UserController::class, 'new']);
+        Route::put('/usuaris/{id}', [UserController::class, 'edit']);
+        Route::delete('/usuaris/{id}', [UserController::class, 'delete']);
 
         Route::post('/usuaris/{id}/toggle', [UserController::class, 'toggleActive']);
     });
 
 
     /*
-      PRODUCTES
+      PRODUCTES OK
     */
     Route::middleware('role:admin,responsable_cuina')->group(function () {
         Route::get('/productes', [ProducteController::class, 'list']);
