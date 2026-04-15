@@ -57,11 +57,11 @@ Route::middleware('auth:sanctum')->group(function () {
       PRODUCTES
     */
     Route::middleware('role:admin,responsable_cuina')->group(function () {
-        Route::get('/productes', [ProducteController::class, 'index']);
-        Route::get('/productes/{id}', [ProducteController::class, 'show']);
-        Route::post('/productes', [ProducteController::class, 'store']);
-        Route::put('/productes/{id}', [ProducteController::class, 'update']);
-        Route::delete('/productes/{id}', [ProducteController::class, 'destroy']);
+        Route::get('/productes', [ProducteController::class, 'list']);
+        Route::get('/productes/{id}', [ProducteController::class, 'getProducte']);
+        Route::post('/productes', [ProducteController::class, 'new']);
+        Route::put('/productes/{id}', [ProducteController::class, 'edit']);
+        Route::delete('/productes/{id}', [ProducteController::class, 'delete']);
     });
 
 

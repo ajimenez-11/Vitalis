@@ -8,22 +8,26 @@ use App\Models\Producte;
 
 class ProducteController extends Controller
 {
-    function getProductes() { 
+    
+    // LLISTAR PRODUCTES
+    // GET /productes
+    function list(){ 
         return response()->json([
             'success' => true,
             'data' => Producte::all()
         ], 200);
     }
     
-
+    // MOSTRAR UN PRODUCTE
+    // GET /productes/{id}
     function getProducte($id) { 
         $producte = Producte::findOrFail($id);
 
         if (!$producte){
             return response()->json([
                 'success' => false,
-                'message' => 'Producte no encontrado'
-            ], 200);
+                'message' => 'Producte no trobat'
+            ], 404);
         }
 
         return response()->json([
@@ -32,23 +36,27 @@ class ProducteController extends Controller
         ], 200);
     }
 
-    function createProducte (Request $request) {
+    // CREAR PRODUCTE
+    // POST /productes
+    function new(Request $request) {
         $producte = Producte::create($request->all());
 
         return response()->json([
             'success' => true,
             'data' => $producte,
-            'message' => 'Producto creado'
+            'message' => 'Producte creat'
         ], 201);
     }
 
-    function updateProducte (Request $request, $id) {
+    // EDITAR PRODUCTE
+    // PUT /productes/{id}
+    function edit(Request $request, $id) {
         $producte = Producte::find($id);
 
         if (!$producte) {
             return response()->json([
                 'success' => false,
-                'message' => 'Producto no encontrado'
+                'message' => 'Producte no trobat'
             ], 404);
         }
 
@@ -57,17 +65,19 @@ class ProducteController extends Controller
         return response()->json([
             'success' => true,
             'data' => $producte,
-            'message' => 'Producto actualizado'
+            'message' => 'Producte actualitzat correctament'
         ], 200);
     }
 
-    function deleteProducte($id) { 
+    // ELIMINAR PRODUCTE
+    // DELETE /productes/{id}
+    function delete($id) { 
         $producte = Producte::find($id);
 
         if (!$producte) {
             return response()->json([
                 'success' => false,
-                'message' => 'Producto no encontrado'
+                'message' => 'Producte no trobat'
             ], 404);
         }
 
@@ -75,7 +85,7 @@ class ProducteController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Producto eliminado'
+            'message' => 'Producte eliminat correctament'
         ], 200);
     }
 }
