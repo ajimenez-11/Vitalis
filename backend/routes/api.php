@@ -126,7 +126,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      TRAÇABILITAT
+      TRAÇABILITAT OK
     */
     Route::middleware('role:admin,responsable_cuina,cuiner')->group(function () {
         Route::get('/tracabilitat/lot/{numero}', [TracabilitatController::class, 'lot']);
