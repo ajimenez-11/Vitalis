@@ -22,13 +22,6 @@ use App\Http\Controllers\Api\DashboardController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
-
-/*
-
-  PROTECTED ROUTES
-
-*/
-
 Route::middleware('auth:sanctum')->group(function () {
 
     /*
@@ -69,11 +62,11 @@ Route::middleware('auth:sanctum')->group(function () {
       PROVEÏDORS
     */
     Route::middleware('role:admin,responsable_cuina')->group(function () {
-        Route::get('/proveidors', [ProveidorController::class, 'index']);
-        Route::get('/proveidors/{id}', [ProveidorController::class, 'show']);
-        Route::post('/proveidors', [ProveidorController::class, 'store']);
-        Route::put('/proveidors/{id}', [ProveidorController::class, 'update']);
-        Route::delete('/proveidors/{id}', [ProveidorController::class, 'destroy']);
+        Route::get('/proveidors', [ProveidorController::class, 'list']);
+        Route::get('/proveidors/{id}', [ProveidorController::class, 'getProveidor']);
+        Route::post('/proveidors', [ProveidorController::class, 'new']);
+        Route::put('/proveidors/{id}', [ProveidorController::class, 'edit']);
+        Route::delete('/proveidors/{id}', [ProveidorController::class, 'delete']);
     });
 
 
