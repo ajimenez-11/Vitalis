@@ -135,15 +135,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      RECEPTES
+      RECEPTES OK
     */
     Route::middleware('role:admin,responsable_cuina')->group(function () {
 
-        Route::get('/receptes', [ReceptaController::class, 'index']);
-        Route::get('/receptes/{id}', [ReceptaController::class, 'show']);
-        Route::post('/receptes', [ReceptaController::class, 'store']);
-        Route::put('/receptes/{id}', [ReceptaController::class, 'update']);
-        Route::delete('/receptes/{id}', [ReceptaController::class, 'destroy']);
+        Route::get('/receptes', [ReceptaController::class, 'list']);
+        Route::get('/receptes/{id}', [ReceptaController::class, 'getRecepta']);
+        Route::post('/receptes', [ReceptaController::class, 'new']);
+        Route::put('/receptes/{id}', [ReceptaController::class, 'edit']);
+        Route::delete('/receptes/{id}', [ReceptaController::class, 'delete']);
     });
 
 

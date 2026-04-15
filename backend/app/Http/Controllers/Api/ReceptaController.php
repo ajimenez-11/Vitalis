@@ -8,91 +8,85 @@ use App\Recepta;
 
 class ReceptaController extends Controller
 {
-    public function getReceptes() {
+    // LLISTAR RECEPTES
+    // GET /receptes
+    public function list()
+    {
         return response()->json([
             'success' => true,
             'data' => Recepta::all()
-        ], 200);
+        ]);
     }
 
+    // MOSTRAR UNA RECEPTA
+    // GET /receptes/{id}
     public function getRecepta($id)
     {
-        $recepta = Recepta::find($id);
+        $recepta = Recepta::with('linies.producte')->find($id);
 
         if (!$recepta) {
             return response()->json([
                 'success' => false,
-                'message' => 'Receta no encontrada'
+                'message' => 'Recepta no trobada'
             ], 404);
         }
 
         return response()->json([
             'success' => true,
             'data' => $recepta
-        ], 200);
+        ]);
     }
 
-    public function createRecepta(Request $request)
+    // CREAR RECEPTA
+    // POST /receptes
+    public function new(Request $request)
     {
-        $recepta = new Recepta();
-        $recepta->nom = $request->nom;
-        $recepta->descripcio = $request->descripcio;
-        $recepta->porcions_base = $request->porcions_base;
+        $validated = $request->validate([
+            'nom' => 'required',
+            'descripcio' => 'nullable'
+        ]);
 
-        if ($request->file('imatge')) {
-            $file = $request->file('imatge');
-            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path(env('RUTA_RECEPTES')), $filename);
-
-            $recepta->imatge = $filename;
-        }
-
-        $recepta->save();
+        $recepta = Recepta::create($validated);
 
         return response()->json([
             'success' => true,
             'data' => $recepta,
-            'message' => 'Receta creada'
+            'message' => 'Recepta creada correctament'
         ], 201);
     }
 
-    public function updateRecepta(Request $request, $id)
+    // EDITAR RECEPTA
+    // PUT /receptes/{id}
+    public function edit(Request $request, $id)
     {
         $recepta = Recepta::find($id);
 
         if (!$recepta) {
             return response()->json([
                 'success' => false,
-                'message' => 'Receta no encontrada'
+                'message' => 'Recepta no trobada'
             ], 404);
         }
 
         $recepta->update($request->all());
 
-        if ($request->file('imatge')) {
-            $file = $request->file('imatge');
-            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path(env('RUTA_RECEPTES')), $filename);
-
-            $recepta->imatge = $filename;
-            $recepta->save();
-        }
-
         return response()->json([
             'success' => true,
             'data' => $recepta,
-            'message' => 'Receta actualizada'
-        ], 200);
+            'message' => 'Recepta actualitzada correctament'
+        ]);
     }
 
-    public function deleteRecepta($id)
+    // ELIMINAR RECEPTA
+    // DELETE /receptes/{id}
+    public function delete($id)
     {
         $recepta = Recepta::find($id);
 
         if (!$recepta) {
             return response()->json([
                 'success' => false,
-                'message' => 'Receta no encontrada'
+                'message' => 'Recepta no trobada'
             ], 404);
         }
 
@@ -100,7 +94,7 @@ class ReceptaController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Receta eliminada'
-        ], 200);
+            'message' => 'Recepta eliminada correctament'
+        ]);
     }
 }
