@@ -100,7 +100,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      LOTS
+      LOTS OK
     */
     Route::middleware('role:admin,responsable_cuina,cuiner')->group(function () {
         Route::get('/lots', [LotController::class, 'list']);
@@ -112,15 +112,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      STOCK
+      STOCK OK
     */
     Route::middleware('role:admin,responsable_cuina,cuiner')->group(function () {
-
-        Route::get('/stock', [StockController::class, 'index']);
-        Route::get('/stock/producte/{id}', [StockController::class, 'producte']);
-        Route::get('/stock/moviments', [StockController::class, 'moviments']);
-        Route::get('/stock/producte/{id}/moviments', [StockController::class, 'movimentsProducte']);
-
+        Route::get('/stock', [StockController::class, 'list']);
+        Route::get('/stock/producte/{id}', [StockController::class, 'getProducteStock']);
+        Route::get('/stock/moviments', [StockController::class, 'listMoviments']);
+        Route::get('/stock/producte/{id}/moviments', [StockController::class, 'listMovimentsProducte']);
+       
         Route::post('/stock/ajust', [StockController::class, 'ajust']);
         Route::post('/stock/sortida', [StockController::class, 'sortida']);
     });
