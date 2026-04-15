@@ -59,7 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      PROVEÏDORS
+      PROVEIDORS OK
     */
     Route::middleware('role:admin,responsable_cuina')->group(function () {
         Route::get('/proveidors', [ProveidorController::class, 'list']);
@@ -90,10 +90,12 @@ Route::middleware('auth:sanctum')->group(function () {
     */
     Route::middleware('role:admin,responsable_cuina')->group(function () {
 
-        Route::post('/albarans/{albaran_id}/linies', [LiniaAlbaranController::class, 'store']);
-        Route::get('/linies-albaran/{id}', [LiniaAlbaranController::class, 'show']);
-        Route::put('/linies-albaran/{id}', [LiniaAlbaranController::class, 'update']);
-        Route::delete('/linies-albaran/{id}', [LiniaAlbaranController::class, 'destroy']);
+        Route::get('/albarans/{albaran_id}/linies', [LiniaAlbaranController::class, 'listByAlbaran']);
+        Route::post('/albarans/{albaran_id}/linies', [LiniaAlbaranController::class, 'new']);
+        Route::get('/linies-albaran/{id}', [LiniaAlbaranController::class, 'getLinia']);
+        Route::put('/linies-albaran/{id}', [LiniaAlbaranController::class, 'edit']);
+        Route::delete('/linies-albaran/{id}', [LiniaAlbaranController::class, 'delete']);
+        
     });
 
 
