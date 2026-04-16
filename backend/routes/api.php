@@ -148,14 +148,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      LÍNIES DE RECEPTA (REST)
+      LÍNIES DE RECEPTA (REST) OK
     */
     Route::middleware('role:admin,responsable_cuina')->group(function () {
 
-        Route::post('/receptes/{recepta_id}/linies', [LiniaReceptaController::class, 'store']);
-        Route::get('/linies-recepta/{id}', [LiniaReceptaController::class, 'show']);
-        Route::put('/linies-recepta/{id}', [LiniaReceptaController::class, 'update']);
-        Route::delete('/linies-recepta/{id}', [LiniaReceptaController::class, 'destroy']);
+        Route::post('/receptes/{recepta_id}/linies', [LiniaReceptaController::class, 'new']);
+        Route::get('/linies-recepta/{id}', [LiniaReceptaController::class, 'getLinia']);
+        Route::put('/linies-recepta/{id}', [LiniaReceptaController::class, 'edit']);
+        Route::delete('/linies-recepta/{id}', [LiniaReceptaController::class, 'delete']);
     });
 
 
