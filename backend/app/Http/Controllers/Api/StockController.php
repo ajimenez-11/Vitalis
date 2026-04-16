@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\Producte;
 use App\Models\MovimentStock;
 
@@ -71,23 +72,32 @@ class StockController extends Controller
     {
         $validated = $request->validate([
             'producte_id' => 'required|exists:productes,id',
-            'quantitat'   => 'required|numeric',
+            'quantitat'   => 'required|numeric|not_in:0',
             'motiu'       => 'nullable|string'
         ]);
 
-        $mov = MovimentStock::create([
-            'producte_id' => $validated['producte_id'],
-            'lot_id'      => null,
-            'usuari_id'   => auth()->id(),
-            'tipus'       => 'ajust',
-            'quantitat'   => $validated['quantitat'],
-            'observacions'=> $validated['motiu'] ?? 'Ajust manual'
-        ]);
+        $producte = Producte::find($validated['producte_id']);
+
+        DB::transaction(function () use ($validated, $producte) {
+            MovimentStock::create([
+                'producte_id'  => $validated['producte_id'],
+                'lot_id'       => null,
+                'usuari_id'    => auth()->id(),
+                'tipus'        => 'ajust',
+                'quantitat'    => $validated['quantitat'],
+                'data'         => now(),  // FIX: afegit data
+                'observacions' => $validated['motiu'] ?? 'Ajust manual'
+            ]);
+ 
+            // augmenta o redueix stock en funcio de si quantitat es negatiu o positiu
+            // facilita ajust stock
+            $producte->increment('estoc_actual', $validated['quantitat']);
+        });
 
         return response()->json([
             'success' => true,
             'message' => 'Ajust realitzat correctament',
-            'data' => $mov
+            'data'    => $producte->fresh()
         ]);
     }
 
@@ -100,20 +110,35 @@ class StockController extends Controller
             'quantitat'   => 'required|numeric|min:0.001',
             'motiu'       => 'nullable|string'
         ]);
+        
+        $producte = Producte::find($validated['producte_id']);
 
-        $mov = MovimentStock::create([
-            'producte_id' => $validated['producte_id'],
-            'lot_id'      => null,
-            'usuari_id'   => auth()->id(),
-            'tipus'       => 'sortida',
-            'quantitat'   => $validated['quantitat'],
-            'observacions'=> $validated['motiu'] ?? 'Sortida manual'
-        ]);
+        // verificar si hi ha stock suficient
+        if ($producte->estoc_actual < $validated['quantitat']) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Estoc insuficient. Estoc actual: ' . $producte->estoc_actual . ' ' . $producte->unitat_mesura
+            ], 422);
+        }
+
+        DB::transaction(function () use ($validated, $producte) {
+            MovimentStock::create([
+                'producte_id'  => $validated['producte_id'],
+                'lot_id'       => null,
+                'usuari_id'    => auth()->id(),
+                'tipus'        => 'sortida',
+                'quantitat'    => $validated['quantitat'],
+                'data'         => now(), 
+                'observacions' => $validated['motiu'] ?? 'Sortida manual'
+            ]);
+ 
+            $producte->decrement('estoc_actual', $validated['quantitat']);
+        });
 
         return response()->json([
             'success' => true,
             'message' => 'Sortida registrada correctament',
-            'data' => $mov
+            'data' => $producte->fresh()
         ]);
     }
 }

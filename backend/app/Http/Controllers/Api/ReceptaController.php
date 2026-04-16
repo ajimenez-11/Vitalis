@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Recepta;
+use App\Models\Recepta;
 
 class ReceptaController extends Controller
 {
@@ -43,8 +43,12 @@ class ReceptaController extends Controller
     {
         $validated = $request->validate([
             'nom' => 'required',
-            'descripcio' => 'nullable'
+            'descripcio' => 'nullable',
+            'porcions_base' => 'nullable|integer|min:1',
+            'imatge' => 'nullable|string',
         ]);
+
+        $validated['usuari_id'] = auth()->id();
 
         $recepta = Recepta::create($validated);
 
@@ -68,8 +72,16 @@ class ReceptaController extends Controller
             ], 404);
         }
 
-        $recepta->update($request->all());
+        $validated = $request->validate([
+            'nom' => 'sometimes|required',
+            'descripcio' => 'nullable|string',
+            'porcions_base' => 'nullable|integer|min:1',
+            'imatge' => 'nullable|string',
+        ]);
 
+       
+        $recepta->update($validated);
+       
         return response()->json([
             'success' => true,
             'data' => $recepta,

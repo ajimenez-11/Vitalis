@@ -57,15 +57,16 @@ class LotController extends Controller
 
     // LOTS D’UN PRODUCTE
     // GET /lots/producte/{id}
-    public function getLotsByProducte($producte_id) {
-        $lots = Lot::where('producte_id', $producte_id)
+     public function getLotsByProducte($producte_id) {
+        $lots = Lot::whereHas('liniaAlbaran', function ($q) use ($producte_id) {
+                $q->where('producte_id', $producte_id);
+            })
+            ->with('liniaAlbaran.producte')
             ->orderBy('data_caducitat', 'asc')
             ->get();
-            return response()->json([
-                'success' => true,
-                'data' => $lots
-            ]);
-        }
+
+        return response()->json(['success' => true, 'data' => $lots]);
+    }
  
      // LOTS QUE CADUCARAN AVIAT
     // GET /lots/proxims-caducitat

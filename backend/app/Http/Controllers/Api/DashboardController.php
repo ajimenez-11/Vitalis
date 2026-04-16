@@ -16,13 +16,10 @@ class DashboardController extends Controller
     public function list()
     {
         // PRODUCTES AMB STOCK BAIX
-        $stock_baix = Producte::with('lots')
-            ->get()
-            ->filter(fn($p) => $p->stock_total < $p->stock_minim)
-            ->values();
+        $stock_baix = Producte::whereColumn('estoc_actual', '<', 'estoc_minim')->get();
 
         // LOTS QUE CADUCARAN AVIAT (7 dies)
-        $lots_proxims = Lot::whereBetween('data_caducitat', [now(), now()->addDays(7)])
+        $$lots_proxims = Lot::whereBetween('data_caducitat', [now(), now()->addDays(7)])
             ->orderBy('data_caducitat', 'asc')
             ->with('liniaAlbaran.producte')
             ->get();
@@ -34,7 +31,7 @@ class DashboardController extends Controller
             ->get();
 
         // RECEPTES MÉS CONSUMIDES
-        $receptes_mes_consumides = ReceptaConsum::selectRaw('recepta_id, SUM(quantitat) as total')
+        $receptes_mes_consumides = ReceptaConsum::selectRaw('recepta_id, SUM(porcions) as total')
             ->groupBy('recepta_id')
             ->orderByDesc('total')
             ->with('recepta')

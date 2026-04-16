@@ -42,10 +42,10 @@ class UserController extends Controller
     public function new(Request $request)
     {
         $validated = $request->validate([
-            'name'     => 'required',
+            'nom'     => 'required',
             'email'    => 'required|email|unique:users',
             'password' => 'required|min:6',
-            'role'     => 'required'
+            'rol'     => 'required|in:admin,responsable_cuina,cuiner'
         ]);
 
         $validated['password'] = bcrypt($validated['password']);
@@ -64,19 +64,30 @@ class UserController extends Controller
     public function edit(Request $request, $id)
     {
         $usuari = User::find($id);
-
         if (!$usuari) {
             return response()->json([
-                'success' => false,
+                'success' => false, 
                 'message' => 'Usuari no trobat'
             ], 404);
         }
 
-        $usuari->update($request->all());
+        $validated = $request->validate([
+            'nom'      => 'sometimes|required',
+            'email'    => 'sometimes|required|email|unique:users,email,' . $id,
+            'password' => 'sometimes|min:6',
+            'rol'      => 'sometimes|required|in:admin,responsable_cuina,cuiner',
+            'actiu'    => 'sometimes|boolean',
+        ]);
+
+        if (isset($validated['password'])) {
+            $validated['password'] = bcrypt($validated['password']);
+        }
+
+        $usuari->update($validated);
 
         return response()->json([
             'success' => true,
-            'data' => $usuari,
+            'data'    => $usuari,
             'message' => 'Usuari actualitzat correctament'
         ]);
     }
@@ -115,7 +126,7 @@ class UserController extends Controller
             ], 404);
         }
 
-        $usuari->active = !$usuari->active;
+        $usuari->actiu = !$usuari->actiu;
         $usuari->save();
 
         return response()->json([

@@ -57,6 +57,8 @@ class AuthController extends Controller
     // GET /api/me
     public function me(Request $request)
     {
+        $user = $request->user();
+        
         return response()->json([
             'id'    => $user->id,
             'nom'   => $user->nom,
