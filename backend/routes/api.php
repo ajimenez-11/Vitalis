@@ -103,11 +103,12 @@ Route::middleware('auth:sanctum')->group(function () {
       LOTS OK
     */
     Route::middleware('role:admin,responsable_cuina,cuiner')->group(function () {
-        Route::get('/lots', [LotController::class, 'list']);
-        Route::get('/lots/{id}', [LotController::class, 'getLot']);
+        Route::get('/lots/proxims-caducitat', [LotController::class, 'getLotsProximsCaducitat']);
         Route::get('/lots/numero/{numero}', [LotController::class, 'findByNumero']);
         Route::get('/lots/producte/{id}', [LotController::class, 'getLotsByProducte']);
-        Route::get('/lots/proxims-caducitat', [LotController::class, 'getLotsProximsCaducitat']);
+
+        Route::get('/lots', [LotController::class, 'list']);
+        Route::get('/lots/{id}', [LotController::class, 'getLot']);
     });
 
 
