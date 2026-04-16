@@ -160,13 +160,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      CONSUM DE RECEPTES
+      CONSUM DE RECEPTES OK
     */
     Route::middleware('role:admin,responsable_cuina,cuiner')->group(function () {
 
-        Route::post('/receptes/{id}/consum', [ReceptaConsumController::class, 'store']);
-        Route::get('/receptes/{id}/consums', [ReceptaConsumController::class, 'index']);
-        Route::get('/consums/{id}', [ReceptaConsumController::class, 'show']);
+        Route::post('/receptes/{id}/consum', [ReceptaConsumController::class, 'new']);
+        Route::get('/receptes/{id}/consums', [ReceptaConsumController::class, 'listByRecepta']);
+        Route::get('/consums/{id}', [ReceptaConsumController::class, 'getConsum']);
     });
 
 
