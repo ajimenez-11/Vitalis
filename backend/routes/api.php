@@ -171,10 +171,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      DASHBOARD
+      DASHBOARD OK
     */
     Route::middleware('role:admin,responsable_cuina,cuiner')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index']);
+        Route::get('/dashboard', [DashboardController::class, 'list']);
     });
 
 });
