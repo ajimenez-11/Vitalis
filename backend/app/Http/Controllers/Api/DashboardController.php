@@ -19,7 +19,7 @@ class DashboardController extends Controller
         $stock_baix = Producte::whereColumn('estoc_actual', '<', 'estoc_minim')->get();
 
         // LOTS QUE CADUCARAN AVIAT (7 dies)
-        $$lots_proxims = Lot::whereBetween('data_caducitat', [now(), now()->addDays(7)])
+        $lots_proxims = Lot::whereBetween('data_caducitat', [now(), now()->addDays(7)])
             ->orderBy('data_caducitat', 'asc')
             ->with('liniaAlbaran.producte')
             ->get();
