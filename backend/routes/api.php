@@ -82,7 +82,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/albarans/{id}', [AlbaranController::class, 'delete']);
 
         Route::post('/albarans/{id}/confirmar', [AlbaranController::class, 'confirmar']);
-    });
+        Route::post('/albarans/{id}/esborrany', [AlbaranController::class, 'tornarEsborrany']);
+        });
 
 
     /*

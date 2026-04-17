@@ -14,7 +14,7 @@ class ReceptaController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => Recepta::all()
+            'data' => Recepta::with('usuari')->orderBy('nom')->get()
         ]);
     }
 
@@ -22,7 +22,7 @@ class ReceptaController extends Controller
     // GET /receptes/{id}
     public function getRecepta($id)
     {
-        $recepta = Recepta::with('linies.producte')->find($id);
+        $recepta = Recepta::with('linies.producte', 'usuari')->find($id);
 
         if (!$recepta) {
             return response()->json([
@@ -42,8 +42,8 @@ class ReceptaController extends Controller
     public function new(Request $request)
     {
         $validated = $request->validate([
-            'nom' => 'required',
-            'descripcio' => 'nullable',
+            'nom' => 'required|string|max:255',
+            'descripcio' => 'nullable|string',
             'porcions_base' => 'nullable|integer|min:1',
             'imatge' => 'nullable|string',
         ]);
@@ -54,7 +54,7 @@ class ReceptaController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $recepta,
+            'data' => $recepta->load('usuari'),
             'message' => 'Recepta creada correctament'
         ], 201);
     }
@@ -73,7 +73,7 @@ class ReceptaController extends Controller
         }
 
         $validated = $request->validate([
-            'nom' => 'sometimes|required',
+            'nom' => 'sometimes|required|string|max:255',
             'descripcio' => 'nullable|string',
             'porcions_base' => 'nullable|integer|min:1',
             'imatge' => 'nullable|string',
@@ -84,7 +84,7 @@ class ReceptaController extends Controller
        
         return response()->json([
             'success' => true,
-            'data' => $recepta,
+            'data' => $recepta->load('linies.producte', 'usuari'),
             'message' => 'Recepta actualitzada correctament'
         ]);
     }

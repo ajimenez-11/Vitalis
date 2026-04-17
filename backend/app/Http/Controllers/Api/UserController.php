@@ -14,7 +14,9 @@ class UserController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => User::all()
+            'data' => User::select('id', 'nom', 'email', 'rol', 'actiu', 'created_at')
+                ->orderBy('nom')
+                ->get()
         ]);
     }
 
@@ -22,7 +24,7 @@ class UserController extends Controller
     // GET /usuaris/{id}
     public function getUsuari($id)
     {
-        $usuari = User::find($id);
+        $usuari = User::select('id', 'nom', 'email', 'rol', 'actiu', 'created_at')->find($id);
 
         if (!$usuari) {
             return response()->json([
@@ -42,19 +44,20 @@ class UserController extends Controller
     public function new(Request $request)
     {
         $validated = $request->validate([
-            'nom'     => 'required',
-            'email'    => 'required|email|unique:users',
+            'nom' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
-            'rol'     => 'required|in:admin,responsable_cuina,cuiner'
+            'rol' => 'required|in:admin,responsable_cuina,cuiner'
         ]);
 
         $validated['password'] = bcrypt($validated['password']);
+        $validated['actiu'] = true;
 
         $usuari = User::create($validated);
 
         return response()->json([
             'success' => true,
-            'data' => $usuari,
+            'data'    => $usuari->only(['id', 'nom', 'email', 'rol', 'actiu']),
             'message' => 'Usuari creat correctament'
         ], 201);
     }
@@ -64,6 +67,7 @@ class UserController extends Controller
     public function edit(Request $request, $id)
     {
         $usuari = User::find($id);
+        
         if (!$usuari) {
             return response()->json([
                 'success' => false, 
@@ -72,7 +76,7 @@ class UserController extends Controller
         }
 
         $validated = $request->validate([
-            'nom'      => 'sometimes|required',
+            'nom'      => 'sometimes|required|string|max:255',
             'email'    => 'sometimes|required|email|unique:users,email,' . $id,
             'password' => 'sometimes|min:6',
             'rol'      => 'sometimes|required|in:admin,responsable_cuina,cuiner',
@@ -87,7 +91,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $usuari,
+            'data'    => $usuari->only(['id', 'nom', 'email', 'rol', 'actiu']),
             'message' => 'Usuari actualitzat correctament'
         ]);
     }
@@ -105,6 +109,14 @@ class UserController extends Controller
             ], 404);
         }
 
+        // Evitar que l'admin s'esborri a si mateix
+        if ($usuari->id === auth()->id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No et pots eliminar a tu mateix'
+            ], 400);
+        }
+
         $usuari->delete();
 
         return response()->json([
@@ -115,8 +127,7 @@ class UserController extends Controller
 
     // ACTIVAR / DESACTIVAR USUARI
     // POST /usuaris/{id}/toggle
-    public function toggleActive($id)
-    {
+    public function toggleActive($id) {
         $usuari = User::find($id);
 
         if (!$usuari) {
@@ -126,13 +137,20 @@ class UserController extends Controller
             ], 404);
         }
 
+        if ($usuari->id === auth()->id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No et pots desactivar a tu mateix'
+            ], 400);
+        }
+
         $usuari->actiu = !$usuari->actiu;
         $usuari->save();
 
         return response()->json([
             'success' => true,
             'message' => 'Estat d\'usuari actualitzat',
-            'data' => $usuari
+            'data'    => $usuari->only(['id', 'nom', 'email', 'rol', 'actiu'])
         ]);
     }
 }

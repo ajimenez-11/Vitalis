@@ -135,44 +135,45 @@ class AlbaranController extends Controller
     public function confirmar($id) {
         $albaran = Albaran::with('linies.lots', 'linies.producte')->find($id);
 
-    if (!$albaran) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Albaran no trobat'
-        ], 404);
-    }
-
-    // Revisar si esta confirmat
-    if ($albaran->estat === 'confirmat') {
-        return response()->json([
-            'success' => false,
-            'message' => 'El albaran ja està confirmat'
-        ], 400);
-    }
-
-    // Validar que contingui linies
-    if ($albaran->linies->count() === 0) {
-        return response()->json([
-            'success' => false,
-            'message' => 'L\' albaran no te linies, no es pot confirmar'
-        ], 400);
-    }
-
-    // Validar que cada linia tengui lots
-    foreach ($albaran->linies as $linia) {
-        if ($linia->lots->count() === 0) {
+        if (!$albaran) {
             return response()->json([
                 'success' => false,
-                'message' => 'La línea '.$linia->id.' no te lots assignats'
+                'message' => 'Albaran no trobat'
+            ], 404);
+        }
+
+        // Revisar si esta confirmat
+        if ($albaran->estat === 'confirmat') {
+            return response()->json([
+                'success' => false,
+                'message' => 'El albaran ja està confirmat'
             ], 400);
         }
-    }
 
-    // Procesar confirmació
-    DB::transaction(function () use ($albaran) {
+        // Validar que contingui linies
+        if ($albaran->linies->count() === 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'L\' albaran no te linies, no es pot confirmar'
+            ], 400);
+        }
+
+        // Validar que cada linia tengui lots
         foreach ($albaran->linies as $linia) {
-            foreach ($linia->lots as $lot) {
-                // FIX: afegit 'data' => now() explícit
+            if ($linia->lots->count() === 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La línea '.$linia->id.' no te lots assignats'
+                ], 400);
+            }
+        }
+
+        // Procesar confirmació
+        DB::transaction(function () use ($albaran) {
+            foreach ($albaran->linies as $linia) {
+                // El lot_id s'assigna al primer lot de la línia per traçabilitat
+                $lot = $linia->lots->first();
+
                 MovimentStock::create([
                     'producte_id'  => $linia->producte_id,
                     'lot_id'       => $lot->id,
@@ -182,20 +183,79 @@ class AlbaranController extends Controller
                     'data'         => now(),
                     'observacions' => 'Entrada per albaran #' . $albaran->id
                 ]);
+
+                // Actualitzar estoc del producte
+                $linia->producte->increment('estoc_actual', $linia->quantitat);
             }
 
-            // Actualitzar estoc del producte
-            $linia->producte->increment('estoc_actual', $linia->quantitat);
+            $albaran->estat = 'confirmat';
+            $albaran->save();
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Albaran confirmat correctamente',
+            'data' => $albaran->load('linies.producte', 'linies.lots', 'proveidor')
+        ]);
+    }
+
+    // TORNAR A ESBORRANY
+    // POST /albarans/{id}/esborrany
+    public function tornarEsborrany($id) {
+        $albaran = Albaran::with('linies.producte')->find($id);
+
+        if (!$albaran) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Albaran no trobat'
+            ], 404);
         }
 
-        $albaran->estat = 'confirmat';
-        $albaran->save();
-    });
+        if ($albaran->estat === 'esborrany') {
+            return response()->json([
+                'success' => false,
+                'message' => 'L\'albaran ja és en esborrany'
+            ], 400);
+        }
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Albaran confirmat correctamente',
-        'data' => $albaran->load('linies.producte', 'linies.lots', 'proveidor')
-    ]);
+        // Comprovar que hi ha estoc suficient per revertir
+        foreach ($albaran->linies as $linia) {
+            if ($linia->producte->estoc_actual < $linia->quantitat) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No es pot revertir: el producte "' . $linia->producte->nom
+                        . '" no té estoc suficient per descomptar ('
+                        . $linia->producte->estoc_actual . ' disponible, '
+                        . $linia->quantitat . ' necessari)'
+                ], 422);
+            }
+        }
+
+        DB::transaction(function () use ($albaran) {
+            foreach ($albaran->linies as $linia) {
+                // Crear moviment d'ajust negatiu per revertir l'entrada
+                MovimentStock::create([
+                    'producte_id'  => $linia->producte_id,
+                    'lot_id'       => null,
+                    'usuari_id'    => auth()->id(),
+                    'tipus'        => 'ajust',
+                    'quantitat'    => -$linia->quantitat,
+                    'data'         => now(),
+                    'observacions' => 'Reversió albaran #' . $albaran->id . ' a esborrany'
+                ]);
+
+                // Descomptar estoc
+                $linia->producte->decrement('estoc_actual', $linia->quantitat);
+            }
+
+            $albaran->estat = 'esborrany';
+            $albaran->save();
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Albaran revertit a esborrany correctament',
+            'data'    => $albaran->load('linies.producte', 'linies.lots', 'proveidor')
+        ]);
     }
 }
