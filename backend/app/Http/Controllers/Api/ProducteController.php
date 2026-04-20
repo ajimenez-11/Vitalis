@@ -21,7 +21,7 @@ class ProducteController extends Controller
     // MOSTRAR UN PRODUCTE
     // GET /productes/{id}
     function getProducte($id) { 
-        $producte = Producte::findOrFail($id);
+        $producte = Producte::find($id);  
 
         if (!$producte){
             return response()->json([
@@ -39,8 +39,16 @@ class ProducteController extends Controller
     // CREAR PRODUCTE
     // POST /productes
     function new(Request $request) {
-        $producte = Producte::create($request->all());
+        
+        $validated = $request->validate([
+            'nom' => 'required|string|max:255',
+            'unitat_mesura' => 'required|string|max:50',
+            'estoc_actual' => 'nullable|numeric|min:0',
+            'estoc_minim' => 'nullable|numeric|min:0',
+        ]);
 
+        $producte = Producte::create($validated);
+        
         return response()->json([
             'success' => true,
             'data' => $producte,
@@ -60,7 +68,14 @@ class ProducteController extends Controller
             ], 404);
         }
 
-        $producte->update($request->all());
+        $validated = $request->validate([
+            'nom' => 'required|string|max:255',
+            'unitat_mesura' => 'required|string|max:50',
+            'estoc_actual' => 'nullable|numeric|min:0',
+            'estoc_minim' => 'nullable|numeric|min:0',
+        ]);
+
+        $producte->update($validated);
 
         return response()->json([
             'success' => true,
