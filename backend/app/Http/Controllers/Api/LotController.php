@@ -13,7 +13,7 @@ class LotController extends Controller
     public function list() {
         return response()->json([
             'success' => true,
-            'data' => Lot::with('liniaAlbaran.producte')->get()
+            'data' => Lot::with('liniaAlbaran.producte')->orderBy('data_caducitat', 'asc')->get()
         ]);    
     }
  
@@ -72,10 +72,10 @@ class LotController extends Controller
     // GET /lots/proxims-caducitat
     public function getLotsProximsCaducitat() {
         // Lots que caduquen en els propers 7 dies
-        $lots = Lot::where('data_caducitat', '<=', now()->addDays(7))
-            ->where('data_caducitat', '>=', now())
-            ->orderBy('data_caducitat', 'asc')
-            ->get();
+        $lots = Lot::whereBetween('data_caducitat', [now(), now()->addDays(7)])
+        ->orderBy('data_caducitat', 'asc')
+        ->with('liniaAlbaran.producte')   
+        ->get();
         
         return response()->json([
             'success' => true,
