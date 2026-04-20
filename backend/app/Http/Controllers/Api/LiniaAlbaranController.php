@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Albaran;
 use App\Models\LiniaAlbaran;
 
 class LiniaAlbaranController extends Controller
