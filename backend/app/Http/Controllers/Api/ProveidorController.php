@@ -99,12 +99,16 @@ class ProveidorController extends Controller
             ], 404);
         }
 
-        $proveidor->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Proveïdor eliminat correctament'
-        ]);
+        try {
+            $proveidor->delete();
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No es pot eliminar el proveïdor: té albarans associats',
+            ], 409);
+        }
+ 
+        return response()->json(['success' => true, 'message' => 'Proveïdor eliminat correctament']);
     }
 
 }
