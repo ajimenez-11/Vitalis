@@ -1,14 +1,15 @@
-import { useState } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Login from './pages/Auth/Login.jsx'
+import Dashboard from './pages/Dashboard/Dashboard.jsx'
 
-import './App.css'
-
-function App() {
+const App = () => {
   return (
-    <div className="p-4">
-      <h1 className="text-3xl font-bold text-blue-500 mb-4">
-        Hola Tailwind 🚀
-      </h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/"          element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
