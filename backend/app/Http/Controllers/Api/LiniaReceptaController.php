@@ -58,11 +58,17 @@ class LiniaReceptaController extends Controller
             ], 404);
         }
 
-        $linia->update($request->all());
+        $validated = $request->validate([
+            'producte_id' => 'sometimes|exists:productes,id',
+            'quantitat_per_porcio' => 'sometimes|numeric|min:0.001',
+            'temperatura_coccio' => 'nullable|numeric'
+        ]);
+
+        $linia->update($validated);
 
         return response()->json([
             'success' => true,
-            'data' => $linia,
+            'data' => $linia->load('producte'),
             'message' => 'Línia actualitzada correctament'
         ]);
     }
