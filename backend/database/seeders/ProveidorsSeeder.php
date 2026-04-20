@@ -31,7 +31,7 @@ class ProveidorsSeeder extends Seeder
             'email'   => 'fruitesdelcamp@mail.com',
         ]);
         Proveidor::create([
-            'nom'     => 'Fruites del Camp',
+            'nom'     => 'Fruites del Bosc',
             'nif'     => 'B34567890',
             'telefon' => '690289736',
             'adreca'  => 'Barcelona',
