@@ -69,8 +69,8 @@ class ProducteController extends Controller
         }
 
         $validated = $request->validate([
-            'nom' => 'required|string|max:255',
-            'unitat_mesura' => 'required|string|max:50',
+            'nom' => 'sometimes|required|string|max:255',
+            'unitat_mesura' => 'sometimes|required|string|max:50',
             'estoc_actual' => 'nullable|numeric|min:0',
             'estoc_minim' => 'nullable|numeric|min:0',
         ]);
@@ -96,11 +96,15 @@ class ProducteController extends Controller
             ], 404);
         }
 
-        $producte->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Producte eliminat correctament'
-        ], 200);
+                try {
+            $producte->delete();
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No es pot eliminar el producte: té moviments o línies associades',
+            ], 409);
+        }
+ 
+        return response()->json(['success' => true, 'message' => 'Producte eliminat correctament']);
     }
 }
