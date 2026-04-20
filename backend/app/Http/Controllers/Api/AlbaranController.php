@@ -122,7 +122,7 @@ class AlbaranController extends Controller
             ], 400);
         }
 
-                try {
+        try {
             $albaran->delete();
         } catch (\Exception $e) {
             return response()->json([
