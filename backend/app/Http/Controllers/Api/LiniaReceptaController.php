@@ -11,6 +11,15 @@ class LiniaReceptaController extends Controller
     // CREAR LÍNIA
     // POST /receptes/{recepta_id}/linies
     public function new(Request $request, $recepta_id) {
+        $recepta = Recepta::find($recepta_id);
+ 
+        if (!$recepta) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Recepta no trobada'
+            ], 404);
+        }    
+
         $validated = $request->validate([
             'producte_id' => 'required|exists:productes,id',
             'quantitat_per_porcio' => 'required|numeric|min:0.001',
@@ -85,11 +94,19 @@ class LiniaReceptaController extends Controller
             ], 404);
         }
 
-        $linia->delete();
-
+        try {
+            $linia->delete();
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No es pot eliminar la línia: ' . $e->getMessage(),
+            ], 409);
+        }
+ 
         return response()->json([
             'success' => true,
             'message' => 'Línia eliminada correctament'
         ]);
+    
     }
 }
