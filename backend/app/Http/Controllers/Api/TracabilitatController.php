@@ -38,10 +38,9 @@ class TracabilitatController extends Controller
     // GET /tracabilitat/producte/{id}
     public function producte($id) {
         $producte = Producte::with([
-                'lots.liniaAlbaran.albaran.proveidor',
-                'lots.moviments.usuari'
-            ])
-            ->find($id);
+            'liniesAlbaran.lots.moviments.usuari',
+            'liniesAlbaran.albaran.proveidor',
+        ])->find($id);
 
         if (!$producte) {
             return response()->json([
