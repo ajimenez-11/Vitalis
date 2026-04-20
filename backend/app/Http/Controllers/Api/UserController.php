@@ -117,8 +117,15 @@ class UserController extends Controller
             ], 400);
         }
 
-        $usuari->delete();
-
+        try {
+            $usuari->delete();
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No es pot eliminar l\'usuari: té registres associats',
+            ], 409);
+        }
+ 
         return response()->json([
             'success' => true,
             'message' => 'Usuari eliminat correctament'
