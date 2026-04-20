@@ -102,11 +102,19 @@ class ReceptaController extends Controller
             ], 404);
         }
 
-        $recepta->delete();
-
+        try {
+            $recepta->delete();
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No es pot eliminar la recepta: té consums registrats',
+            ], 409);
+        }
+ 
         return response()->json([
             'success' => true,
             'message' => 'Recepta eliminada correctament'
         ]);
     }
+    
 }
