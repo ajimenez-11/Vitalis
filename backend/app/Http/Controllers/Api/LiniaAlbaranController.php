@@ -140,11 +140,16 @@ class LiniaAlbaranController extends Controller
             ], 400);
         }
 
-        $linia->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Línia eliminada correctament'
-        ]);
+        try {
+            $linia->delete();
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No es pot eliminar la línia: ' . $e->getMessage(),
+            ], 409);
+        }
+ 
+        return response()->json(['success' => true, 'message' => 'Línia eliminada correctament']);
+    
     }
 }
