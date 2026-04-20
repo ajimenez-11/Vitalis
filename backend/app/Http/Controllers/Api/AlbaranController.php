@@ -178,7 +178,7 @@ class AlbaranController extends Controller
         foreach ($albaran->linies as $linia) {
             $totalLots = $linia->lots->sum('quantitat');
 
-            if ($totalLots != $linia->quantitat) {
+            if (abs($totalLots - $linia->quantitat) > 0.001) {
                 return response()->json([
                     'success' => false,
                     'message' => 'La suma dels lots de la línia ' . $linia->id . ' no coincideix amb la quantitat de la línia'
