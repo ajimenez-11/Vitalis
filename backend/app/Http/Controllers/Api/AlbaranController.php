@@ -122,12 +122,19 @@ class AlbaranController extends Controller
             ], 400);
         }
 
-        $albaran->delete();
-
+                try {
+            $albaran->delete();
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No es pot eliminar l\'albaran: ' . $e->getMessage(),
+            ], 409);
+        }
+ 
         return response()->json([
             'success' => true,
-            'message' => 'Albaran eliminat'
-        ], 200);
+             'message' => 'Albaran eliminat'
+        ]);
     }
 
     // CONFIRMAR ALBARAN
@@ -168,23 +175,36 @@ class AlbaranController extends Controller
             }
         }
 
+        foreach ($albaran->linies as $linia) {
+            $totalLots = $linia->lots->sum('quantitat');
+
+            if ($totalLots != $linia->quantitat) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La suma dels lots de la línia ' . $linia->id . ' no coincideix amb la quantitat de la línia'
+                ], 400);
+            }
+        }
+
         // Procesar confirmació
         DB::transaction(function () use ($albaran) {
             foreach ($albaran->linies as $linia) {
-                // El lot_id s'assigna al primer lot de la línia per traçabilitat
-                $lot = $linia->lots->first();
+                
+                // Crear un moviment per cada lot per garantir la traçabilitat
+                foreach ($linia->lots as $lot) {
 
-                MovimentStock::create([
-                    'producte_id'  => $linia->producte_id,
-                    'lot_id'       => $lot->id,
-                    'usuari_id'    => auth()->id(),
-                    'tipus'        => 'entrada',
-                    'quantitat'    => $linia->quantitat,
-                    'data'         => now(),
-                    'observacions' => 'Entrada per albaran #' . $albaran->id
-                ]);
+                    MovimentStock::create([
+                        'producte_id'  => $linia->producte_id,
+                        'lot_id'       => $lot->id,
+                        'usuari_id'    => auth()->id(),
+                        'tipus'        => 'entrada',
+                        'quantitat'    => $lot->quantitat,
+                        'data'         => now(),
+                        'observacions' => 'Entrada per albaran #' . $albaran->id
+                    ]);
+                }
 
-                // Actualitzar estoc del producte
+                    // Actualitzar estoc del producte
                 $linia->producte->increment('estoc_actual', $linia->quantitat);
             }
 
