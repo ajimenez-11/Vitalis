@@ -32,7 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      USUARIS (ADMIN) OK
+      USUARIS (ADMIN)
     */
     Route::middleware('role:admin')->group(function () {
 
@@ -47,7 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      PRODUCTES OK
+      PRODUCTES
     */
     Route::middleware('role:admin,responsable_cuina')->group(function () {
         Route::get('/productes', [ProducteController::class, 'list']);
@@ -59,7 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      PROVEIDORS OK
+      PROVEIDORS
     */
     Route::middleware('role:admin,responsable_cuina')->group(function () {
         Route::get('/proveidors', [ProveidorController::class, 'list']);
@@ -71,7 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      ALBARANS OK
+      ALBARANS
     */
     Route::middleware('role:admin,responsable_cuina')->group(function () {
 
@@ -87,7 +87,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      LÍNIES D’ALBARÀ (REST) OK
+      LÍNIES D’ALBARÀ (REST)
     */
     Route::middleware('role:admin,responsable_cuina')->group(function () {
 
@@ -96,25 +96,29 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/linies-albaran/{id}', [LiniaAlbaranController::class, 'getLinia']);
         Route::put('/linies-albaran/{id}', [LiniaAlbaranController::class, 'edit']);
         Route::delete('/linies-albaran/{id}', [LiniaAlbaranController::class, 'delete']);
+        Route::get   ('/linies-albaran/{id}/lots', [LiniaAlbaranController::class, 'listLots']);    // ← NOU
+        Route::post  ('/linies-albaran/{id}/lots', [LiniaAlbaranController::class, 'newLot']);      // ← NOU
+        Route::delete('/linies-albaran/{linia_id}/lots/{lot_id}', [LiniaAlbaranController::class, 'deleteLot']); // ← NOU
 
     });
 
 
     /*
-      LOTS OK
+      LOTS
     */
     Route::middleware('role:admin,responsable_cuina,cuiner')->group(function () {
-        Route::get('/lots/proxims-caducitat', [LotController::class, 'getLotsProximsCaducitat']);
-        Route::get('/lots/numero/{numero}', [LotController::class, 'findByNumero']);
-        Route::get('/lots/producte/{id}', [LotController::class, 'getLotsByProducte']);
-
         Route::get('/lots', [LotController::class, 'list']);
+
+        Route::get('/lots/proxims-caducitat', [LotController::class, 'getLotsProximsCaducitat']);
+        Route::get('/lots/producte/{id}', [LotController::class, 'getLotsByProducte']);
+        Route::get('/lots/numero/{numero}', [LotController::class, 'findByNumero']);
+
         Route::get('/lots/{id}', [LotController::class, 'getLot']);
     });
 
 
     /*
-      STOCK OK
+      STOCK
     */
     Route::middleware('role:admin,responsable_cuina,cuiner')->group(function () {
         Route::get('/stock', [StockController::class, 'list']);
@@ -128,7 +132,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      TRAÇABILITAT OK
+      TRAÇABILITAT
     */
     Route::middleware('role:admin,responsable_cuina,cuiner')->group(function () {
         Route::get('/tracabilitat/lot/{numero}', [TracabilitatController::class, 'lot']);
@@ -137,7 +141,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      RECEPTES OK
+      RECEPTES
     */
     Route::middleware('role:admin,responsable_cuina')->group(function () {
 
@@ -150,7 +154,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      LÍNIES DE RECEPTA (REST) OK
+      LÍNIES DE RECEPTA (REST)
     */
     Route::middleware('role:admin,responsable_cuina')->group(function () {
 
@@ -162,7 +166,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      CONSUM DE RECEPTES OK
+      CONSUM DE RECEPTES
     */
     Route::middleware('role:admin,responsable_cuina,cuiner')->group(function () {
 
@@ -173,7 +177,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      DASHBOARD OK
+      DASHBOARD
     */
     Route::middleware('role:admin,responsable_cuina,cuiner')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'list']);
