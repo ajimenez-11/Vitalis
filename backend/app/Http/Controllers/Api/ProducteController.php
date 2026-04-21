@@ -14,7 +14,7 @@ class ProducteController extends Controller
     function list(){ 
         return response()->json([
             'success' => true,
-            'data' => Producte::all()
+            'data' => Producte::orderBy('nom')->get()
         ], 200);
     }
     
