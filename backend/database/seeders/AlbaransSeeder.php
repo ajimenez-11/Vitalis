@@ -11,7 +11,7 @@ class AlbaransSeeder extends Seeder
             'proveidor_id' => 1,
             'usuari_id' => 1,
             'data' => '2025-01-01',
-            'estat' => 'confirmat',
+            'estat' => 'esborrany',
             'observacions' => 'Albarà de prova',
         ]);
 
@@ -27,7 +27,7 @@ class AlbaransSeeder extends Seeder
             'proveidor_id' => 1,
             'usuari_id' => 1,
             'data' => '2025-01-03',
-            'estat' => 'confirmat',
+            'estat' => 'esborrany',
             'observacions' => 'Albarà de prova',
         ]);
     }
