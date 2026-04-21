@@ -11,6 +11,7 @@ class Lot extends Model
     protected $fillable = [
         'linia_albaran_id',
         'numero_lot',
+        'quantitat',
         'data_caducitat',
     ];
 

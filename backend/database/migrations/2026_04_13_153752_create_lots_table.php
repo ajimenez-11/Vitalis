@@ -22,6 +22,7 @@ return new class extends Migration
                 ->onDelete('cascade');
 
             $table->string('numero_lot');
+            $table->decimal('quantitat', 10, 3);
 
             $table->date('data_caducitat');
 

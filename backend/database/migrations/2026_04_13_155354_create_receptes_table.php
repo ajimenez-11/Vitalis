@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('nom');
             $table->text('descripcio')->nullable();
             $table->unsignedInteger('porcions_base')->default(1);
+            $table->string('imatge')->nullable();
 
             $table->timestamps();
         });

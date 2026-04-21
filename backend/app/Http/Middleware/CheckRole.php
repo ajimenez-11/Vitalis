@@ -8,11 +8,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
 {
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, string ...$rols): Response
     {
-        if (!$request->user() || $request->user()->rol !== $role) {
+        $user = $request->user();
+        
+        if (!$user) {
             return response()->json([
-                'message' => 'No tens permisos per accedir aqui'
+            'message' => 'No autenticat'
+            ], 401);
+        }
+
+        if (!in_array($request->user()->rol, $rols)) {
+            return response()->json([
+                'message' => 'Accés no autoritzat'
             ], 403);
         }
         return $next($request);

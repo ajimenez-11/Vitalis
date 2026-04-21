@@ -13,6 +13,7 @@ class Recepta extends Model
         'nom',
         'descripcio',
         'porcions_base',
+        'imatge',
     ];
 
     public function usuari()
