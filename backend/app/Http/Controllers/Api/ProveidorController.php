@@ -70,7 +70,7 @@ class ProveidorController extends Controller
         }
 
         $validated = $request->validate([
-            'nom' => 'required',
+            'nom' => 'sometimes|required',
             'nif' => 'nullable|unique:proveidors,nif,' . $proveidor->id,
             'telefon' => 'nullable',
             'email' => 'nullable|email',
