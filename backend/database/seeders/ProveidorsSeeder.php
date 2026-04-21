@@ -35,7 +35,7 @@ class ProveidorsSeeder extends Seeder
             'nif'     => 'B34567890',
             'telefon' => '690289736',
             'adreca'  => 'Barcelona',
-            'email'   => 'fruitesdelcamp@mail.com',
+            'email'   => 'fruitesdelbosc@mail.com',
         ]);
     }
 }
