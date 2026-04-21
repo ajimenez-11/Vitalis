@@ -31,10 +31,10 @@ class DashboardController extends Controller
             ->get();
 
         // RECEPTES MÉS CONSUMIDES
-        $receptes_mes_consumides = ReceptaConsum::selectRaw('recepta_id, SUM(porcions) as total')
-            ->groupBy('recepta_id')
-            ->orderByDesc('total')
-            ->with('recepta')
+        $receptes_mes_consumides = ReceptaConsum::selectRaw('recepta_consums.recepta_id, receptes.nom, SUM(recepta_consums.porcions) as total_porcions')
+            ->join('receptes', 'recepta_consums.recepta_id', '=', 'receptes.id')
+            ->groupBy('recepta_consums.recepta_id', 'receptes.nom')
+            ->orderByDesc('total_porcions')
             ->limit(5)
             ->get();
 
