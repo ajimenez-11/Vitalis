@@ -47,11 +47,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      PRODUCTES
+      PRODUCTES — lectura: admin, responsable_cuina, cuiner
+                  escriptura: admin, responsable_cuina
     */
-    Route::middleware('role:admin,responsable_cuina')->group(function () {
+    Route::middleware('role:admin,responsable_cuina,cuiner')->group(function () {
         Route::get('/productes', [ProducteController::class, 'list']);
         Route::get('/productes/{id}', [ProducteController::class, 'getProducte']);
+    });
+
+    Route::middleware('role:admin,responsable_cuina')->group(function () {
         Route::post('/productes', [ProducteController::class, 'new']);
         Route::put('/productes/{id}', [ProducteController::class, 'edit']);
         Route::delete('/productes/{id}', [ProducteController::class, 'delete']);
@@ -83,11 +87,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/albarans/{id}/confirmar', [AlbaranController::class, 'confirmar']);
         Route::post('/albarans/{id}/esborrany', [AlbaranController::class, 'tornarEsborrany']);
-        });
+    });
 
 
     /*
-      LÍNIES D’ALBARÀ (REST)
+      LÍNIES D'ALBARÀ (REST)
     */
     Route::middleware('role:admin,responsable_cuina')->group(function () {
 
@@ -96,10 +100,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/linies-albaran/{id}', [LiniaAlbaranController::class, 'getLinia']);
         Route::put('/linies-albaran/{id}', [LiniaAlbaranController::class, 'edit']);
         Route::delete('/linies-albaran/{id}', [LiniaAlbaranController::class, 'delete']);
-        Route::get   ('/linies-albaran/{id}/lots', [LiniaAlbaranController::class, 'listLots']);    // ← NOU
-        Route::post  ('/linies-albaran/{id}/lots', [LiniaAlbaranController::class, 'newLot']);      // ← NOU
-        Route::delete('/linies-albaran/{linia_id}/lots/{lot_id}', [LiniaAlbaranController::class, 'deleteLot']); // ← NOU
-
+        Route::get   ('/linies-albaran/{id}/lots', [LiniaAlbaranController::class, 'listLots']);
+        Route::post  ('/linies-albaran/{id}/lots', [LiniaAlbaranController::class, 'newLot']);
+        Route::delete('/linies-albaran/{linia_id}/lots/{lot_id}', [LiniaAlbaranController::class, 'deleteLot']);
     });
 
 
@@ -118,16 +121,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      STOCK
+      STOCK — lectura i sortida: tots els rols
+              ajust: admin i responsable_cuina
     */
     Route::middleware('role:admin,responsable_cuina,cuiner')->group(function () {
         Route::get('/stock', [StockController::class, 'list']);
-        Route::get('/stock/producte/{id}', [StockController::class, 'getProducteStock']);
         Route::get('/stock/moviments', [StockController::class, 'listMoviments']);
+        Route::get('/stock/producte/{id}', [StockController::class, 'getProducteStock']);
         Route::get('/stock/producte/{id}/moviments', [StockController::class, 'listMovimentsProducte']);
-       
-        Route::post('/stock/ajust', [StockController::class, 'ajust']);
+
         Route::post('/stock/sortida', [StockController::class, 'sortida']);
+    });
+
+    Route::middleware('role:admin,responsable_cuina')->group(function () {
+        Route::post('/stock/ajust', [StockController::class, 'ajust']);
     });
 
 
@@ -141,12 +148,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     /*
-      RECEPTES
+      RECEPTES — lectura: admin, responsable_cuina, cuiner
+                 escriptura: admin, responsable_cuina
     */
-    Route::middleware('role:admin,responsable_cuina')->group(function () {
-
+    Route::middleware('role:admin,responsable_cuina,cuiner')->group(function () {
         Route::get('/receptes', [ReceptaController::class, 'list']);
         Route::get('/receptes/{id}', [ReceptaController::class, 'getRecepta']);
+    });
+
+    Route::middleware('role:admin,responsable_cuina')->group(function () {
         Route::post('/receptes', [ReceptaController::class, 'new']);
         Route::put('/receptes/{id}', [ReceptaController::class, 'edit']);
         Route::delete('/receptes/{id}', [ReceptaController::class, 'delete']);
