@@ -1,6 +1,5 @@
 import api from './client';
 
-
 // albarans
 export const getAlbarans = () => api.get('/albarans');
 export const getAlbaran = (id) => api.get(`/albarans/${id}`);
