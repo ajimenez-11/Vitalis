@@ -1,5 +1,7 @@
-// albarans
 import api from './client';
+
+
+// albarans
 export const getAlbarans = () => api.get('/albarans');
 export const getAlbaran = (id) => api.get(`/albarans/${id}`);
 export const createAlbaran = (data) => api.post('/albarans', data);
@@ -9,7 +11,6 @@ export const confirmarAlbaran = (id) => api.post(`/albarans/${id}/confirmar`);
 export const tornarEsborrany = (id) => api.post(`/albarans/${id}/esborrany`);
 
 // linies albaran
-import api from './client';
 export const getLinies = (albaranId) => api.get(`/albarans/${albaranId}/linies`);
 export const getLinia = (id) => api.get(`/linies-albaran/${id}`);
 export const createLinia = (albaranId, d) => api.post(`/albarans/${albaranId}/linies`, d);
