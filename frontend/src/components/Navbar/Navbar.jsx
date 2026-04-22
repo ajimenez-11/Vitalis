@@ -1,29 +1,44 @@
 import styles from './Navbar.module.css';
-import { MdDashboard, MdInventory, MdReceipt, MdShowChart, MdSearch, MdMenuBook, MdPeople } from 'react-icons/md';
+import {
+  MdDashboard,
+  MdInventory,
+  MdReceipt,
+  MdShowChart,
+  MdSearch,
+  MdMenuBook,
+  MdPeople
+} from 'react-icons/md';
+
+import { NavLink } from 'react-router-dom';
 
 const navItems = [
-  { label: 'Dashboard', icon: <MdDashboard /> },
-  { label: 'Productes', icon: <MdInventory /> },
-  { label: 'Albarans', icon: <MdReceipt /> },
-  { label: 'Estoc', icon: <MdShowChart /> },
-  { label: 'Traçabilitat', icon: <MdSearch /> },
-  { label: 'Receptes', icon: <MdMenuBook /> },
-  { label: 'Usuaris', icon: <MdPeople /> },
+  { label: 'Dashboard', path: '/', icon: <MdDashboard /> },
+  { label: 'Productes', path: '/productes', icon: <MdInventory /> },
+  { label: 'Albarans', path: '/albarans', icon: <MdReceipt /> },
+  { label: 'Estoc', path: '/stock', icon: <MdShowChart /> },
+  { label: 'Traçabilitat', path: '/tracabilitat', icon: <MdSearch /> },
+  { label: 'Receptes', path: '/receptes', icon: <MdMenuBook /> },
+  { label: 'Usuaris', path: '/usuaris', icon: <MdPeople /> },
 ];
 
-const Navbar = ({ activeItem, onNavigate }) => {
+const Navbar = () => {
   return (
     <nav className={styles.sidebar}>
       <div className={styles.logo}>VITALIS</div>
+
       <ul className={styles.navList}>
-        {navItems.map(({ label, icon }) => (
-          <li
-            key={label}
-            className={`${styles.navItem} ${activeItem === label ? styles.active : ''}`}
-            onClick={() => onNavigate?.(label)}
-          >
-            <span className={styles.navIcon}>{icon}</span>
-            {label}
+        {navItems.map(({ label, path, icon }) => (
+          <li key={label}>
+            <NavLink
+              to={path}
+              end={path === '/'}
+              className={({ isActive }) =>
+                `${styles.navItem} ${isActive ? styles.active : ''}`
+              }
+            >
+              <span className={styles.navIcon}>{icon}</span>
+              {label}
+            </NavLink>
           </li>
         ))}
       </ul>
