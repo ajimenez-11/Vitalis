@@ -1,5 +1,6 @@
 import Navbar from '../../components/Navbar/Navbar.jsx';
 import styles from './Receptes.module.css';
+import { useNavigate } from "react-router-dom";
 
 const receptesMock = [
   { id: 1, nom: 'Paella'},
@@ -8,7 +9,9 @@ const receptesMock = [
   { id: 4, nom: 'Sardines'},
 ];
 
-const ReceptaCard = ({ recepta, onVeure }) => (
+const ReceptaCard = ({ recepta }) => {
+  const navigate = useNavigate();
+  return (
   <div className="bg-white border border-neutral-200 rounded-xl shadow-xs overflow-hidden
                   hover:border-neutral-300 transition-colors">
     {recepta.imatge ? (
@@ -28,7 +31,7 @@ const ReceptaCard = ({ recepta, onVeure }) => (
       </h5>
 
       <button
-        onClick={() => onVeure?.(recepta)}
+        onClick={() => navigate(`/receptes/${recepta.id}`)}
         className={styles.buttonLists}
       >
         Veure
@@ -38,11 +41,12 @@ const ReceptaCard = ({ recepta, onVeure }) => (
       </button>
     </div>
   </div>
-);
+  )
+};
 
 const Receptes = () => {
   const receptes = receptesMock;
-
+  
   return (
     <div className="flex bg-gray-50">
       <aside className="w-64">

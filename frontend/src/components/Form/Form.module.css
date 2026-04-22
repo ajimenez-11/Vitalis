@@ -1,0 +1,111 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #5F5E5A;
+  letter-spacing: 0.01em;
+}
+
+.input {
+  width: 100%;
+  padding: 9px 12px;
+  font-size: 14px;
+  color: #2C2C2A;
+  background-color: #ffffff;
+  border: 0.5px solid #d3d1c7;
+  border-radius: 8px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+
+.input:focus {
+  border-color: #534AB7;
+}
+
+.textarea {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.fileWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 0.5px dashed #d3d1c7;
+  border-radius: 8px;
+  background-color: #f8f7f4;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.fileWrapper:hover {
+  border-color: #888780;
+}
+
+.fileLabel {
+  font-size: 13px;
+  color: #888780;
+}
+
+.fileInput {
+  display: none;
+}
+
+.divider {
+  border-top: 0.5px solid #e5e3dc;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btnSecondary {
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #5F5E5A;
+  background-color: transparent;
+  border: 0.5px solid #d3d1c7;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background-color 0.15s;
+}
+
+.btnSecondary:hover {
+  background-color: #f8f7f4;
+}
+
+.btnPrimary {
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: #534AB7;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background-color 0.15s;
+}
+
+.btnPrimary:hover {
+  background-color: #3C3489;
+}

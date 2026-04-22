@@ -23,8 +23,98 @@
     padding: 0.5rem 1rem; 
     transition: background-color 0.2s ease;
     margin: 5px 0px 5px 0px;
+    cursor:pointer;
 }
 
 .buttonLists:hover {
     background-color: #209708; 
+}
+
+
+
+/* Layout general */
+.pageWrapper {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8f7f4;
+}
+
+/* Main content */
+.mainContent {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 3rem 2rem;
+}
+
+.mainInner {
+  width: 100%;
+  max-width: 640px;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: 13px;
+  color: #888780;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.01em;
+}
+
+/* Card */
+.card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 0.5px solid #d3d1c7;
+  overflow: hidden;
+}
+
+/* Card header */
+.cardHeader {
+  padding: 1.75rem 2rem 1.5rem;
+  border-bottom: 0.5px solid #e5e3dc;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cardIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: #EEEDFE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cardTitle {
+  font-size: 17px;
+  font-weight: 500;
+  color: #2C2C2A;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.cardSubtitle {
+  font-size: 13px;
+  color: #888780;
+  margin: 2px 0 0;
+}
+
+/* Form area */
+.formArea {
+  padding: 2rem;
+}
+
+/* Mensajes */
+.errorMessage {
+  color: #E24B4A;
+  font-size: 14px;
+}
+
+.loadingMessage {
+  color: #888780;
+  font-size: 14px;
 }
