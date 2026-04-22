@@ -16,7 +16,6 @@ const Navbar = () => {
     navigate('/login');
   };
 
-  // Definimos los links básicos
   const navItems = [
     { label: 'Dashboard', path: '/', icon: <MdDashboard /> },
     { label: 'Productes', path: '/productes', icon: <MdInventory /> },
@@ -47,7 +46,6 @@ const Navbar = () => {
           </li>
         ))}
 
-        {/* Link condicional para Admin */}
         {isAdmin && (
           <li>
             <NavLink

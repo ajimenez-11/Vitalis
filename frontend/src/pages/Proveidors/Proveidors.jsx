@@ -1,3 +1,3 @@
 export default function Proveidors() {
-  return <h1>PRoveidors</h1>;
+  return <h1>Proveidors</h1>;
 }
