@@ -28,46 +28,55 @@ const Navbar = () => {
 
   return (
     <nav className={styles.sidebar}>
-      <div className={styles.logo}>VITALIS</div>
+      <div>
+        <div className={styles.logo}>VITALIS</div>
 
-      <ul className={styles.navList}>
-        {navItems.map(({ label, path, icon }) => (
-          <li key={path}>
-            <NavLink
-              to={path}
-              end={path === '/'}
-              className={({ isActive }) =>
-                `${styles.navItem} ${isActive ? styles.active : ''}`
-              }
-            >
-              <span className={styles.navIcon}>{icon}</span>
-              {label}
-            </NavLink>
-          </li>
-        ))}
+        <ul className={styles.navList}>
+          {navItems.map(({ label, path, icon }) => (
+            <li key={path}>
+              <NavLink
+                to={path}
+                end={path === '/'}
+                className={({ isActive }) =>
+                  `${styles.navItem} ${isActive ? styles.active : ''}`
+                }
+              >
+                <span className={styles.navIcon}>{icon}</span>
+                {label}
+              </NavLink>
+            </li>
+          ))}
 
-        {isAdmin && (
-          <li>
-            <NavLink
-              to="/usuaris"
-              className={({ isActive }) =>
-                `${styles.navItem} ${isActive ? styles.active : ''}`
-              }
-            >
-              <span className={styles.navIcon}><MdPeople /></span>
-              Usuaris
-            </NavLink>
-          </li>
-        )}
-      </ul>
+          {isAdmin && (
+            <li>
+              <NavLink
+                to="/usuaris"
+                className={({ isActive }) =>
+                  `${styles.navItem} ${isActive ? styles.active : ''}`
+                }
+              >
+                <span className={styles.navIcon}><MdPeople /></span>
+                Usuaris
+              </NavLink>
+            </li>
+          )}
+        </ul>
+      </div>
 
-      <div className={styles.logoutContainer}>
-        <div className={styles.userInfo}>
-           <small>{user?.nom}</small>
+      <div className={styles.footer}>
+        <hr className={styles.divider} />
+        <div className={styles.userProfile}>
+          <div className={styles.userAvatar}>
+            {user?.nom?.charAt(0).toUpperCase() || 'A'}
+          </div>
+          <div className={styles.userText}>
+            <span className={styles.userName}>{user?.nom || 'Administrador'}</span>
+            <span className={styles.userRole}>{isAdmin ? 'Administrador' : 'Usuari'}</span>
+          </div>
         </div>
         <button onClick={handleLogout} className={styles.logoutButton}>
-          <span className={styles.navIcon}><MdLogout /></span>
-          Tancar sessió
+          <MdLogout className={styles.logoutIcon} />
+          <span>Tancar sessió</span>
         </button>
       </div>
     </nav>
