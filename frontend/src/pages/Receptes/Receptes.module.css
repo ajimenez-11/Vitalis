@@ -18,16 +18,16 @@
     font-size: 0.875rem; 
     font-weight: 500; 
     color: white;
-    background-color: #78ce6c; 
+    background-color: #6be2ce; 
     border-radius: 0.375rem; 
-    padding: 0.5rem 1rem; 
+    padding: 0.25rem 0.7rem; 
     transition: background-color 0.2s ease;
     margin: 5px 0px 5px 0px;
     cursor:pointer;
 }
 
 .buttonLists:hover {
-    background-color: #209708; 
+    background-color: #52b4a4; 
 }
 
 
@@ -117,4 +117,21 @@
 .loadingMessage {
   color: #888780;
   font-size: 14px;
+}
+
+.subnav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;  
+}
+
+
+.filter {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease;   
 }
