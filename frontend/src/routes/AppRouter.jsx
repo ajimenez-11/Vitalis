@@ -9,6 +9,7 @@ import AlbaransPage     from '../pages/Albaran/AlbaransList';
 import InventariPage    from '../pages/Estoc/Inventari';
 import TracabilitatPage from '../pages/Estoc/Tracabilitat';
 import ReceptesPage     from '../pages/Receptes/ReceptesList';
+import ReceptaForm     from '../pages/Receptes/ReceptaForm';
 
 function PrivateRoute() {
   const { token } = useAuth();
@@ -32,6 +33,7 @@ export default function AppRouter() {
           <Route path="albarans"     element={<AlbaransPage />} />
           <Route path="stock"        element={<InventariPage />} />
           <Route path="receptes"     element={<ReceptesPage />} />
+          <Route path="receptes/:id" element={<ReceptaForm />} />
           <Route path="tracabilitat" element={<TracabilitatPage />} />
           <Route path="usuaris"      element={<AdminRoute><div>Usuaris (pendent)</div></AdminRoute>} />
         </Route>

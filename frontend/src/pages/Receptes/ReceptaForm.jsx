@@ -1,4 +1,3 @@
-import Navbar from '../../components/Navbar/Navbar.jsx';
 import styles from './Receptes.module.css';
 import { useParams } from 'react-router-dom';
 import Form from '../../components/Form/Form.jsx';
@@ -25,8 +24,6 @@ const ReceptaForm = () => {
 
   return (
     <div className={styles.pageWrapper}>
-
-      <Navbar activeItem="Receptes" />
 
       <main className={styles.mainContent}>
         <div className={styles.mainInner}>
