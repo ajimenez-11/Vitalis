@@ -1,25 +1,17 @@
 import { useNavigate } from 'react-router-dom'
 import FormulariLogin from './components/FormulariLogin.jsx'
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate()
+  const { login } = useAuth()
 
-  const handleLogin = async ({ email, contrasenya }) => {
-    console.log("Intentando login con:", email, contrasenya)
-    
-    if (email && contrasenya) {
-      localStorage.setItem('token', 'token-falso-de-prueba')
-      navigate('/home') 
-    } else {
-      alert("Por favor, rellena los campos")
-    }
+  const handleLogin = async ({ email, password }) => {
+    await login(email, password)
+    navigate('/')
   }
 
-  return (
-    <div className="container mt-5">
-      <FormulariLogin onLogin={handleLogin} />
-    </div>
-  )
+  return <FormulariLogin onLogin={handleLogin} />
 }
 
 export default Login
