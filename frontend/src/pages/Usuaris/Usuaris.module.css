@@ -36,3 +36,18 @@
 .btnIcon { background: none; border: none; cursor: pointer; font-size: 1.2rem; filter: grayscale(1); transition: 0.2s; }
 .btnIcon:hover { filter: grayscale(0); }
 .formError { background: #fee2e2; color: #991b1b; padding: 10px; border-radius: 6px; margin-bottom: 1rem; font-size: 0.85rem; }
+
+.btnActive:disabled,
+.btnInactive:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.status { padding: 2rem; color: var(--color-muted); }
+.error  { color: var(--color-error); }
