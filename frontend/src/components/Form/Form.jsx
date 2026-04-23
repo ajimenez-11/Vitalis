@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useForm } from "react-hook-form";
 import styles from './Form.module.css';
 
-const Form = ({ type, initialData = null, onSubmit }) => {
+const Form = ({ type, initialData = null, onSubmit, onCancel }) => {
   const configs = {
     productos: {
       title: initialData ? 'Editar Producto' : 'Nuevo Producto',
@@ -79,7 +79,7 @@ const Form = ({ type, initialData = null, onSubmit }) => {
       <div className={styles.divider} />
 
       <div className={styles.actions}>
-        <button type="button" className={styles.btnSecondary}>
+        <button type="button" className={styles.btnSecondary} onClick={onCancel}>
           Cancel·lar
         </button>
         <button type="submit" className={styles.btnPrimary}>
