@@ -142,6 +142,7 @@ Route::middleware('auth:sanctum')->group(function () {
       TRAÇABILITAT
     */
     Route::middleware('role:admin,responsable_cuina,cuiner')->group(function () {
+        Route::get('/tracabilitat/lots', [TracabilitatController::class, 'list']);    
         Route::get('/tracabilitat/lot/{numero}', [TracabilitatController::class, 'lot']);
         Route::get('/tracabilitat/producte/{id}', [TracabilitatController::class, 'producte']);
     });
