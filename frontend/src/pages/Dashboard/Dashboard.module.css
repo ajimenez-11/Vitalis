@@ -91,3 +91,7 @@
 .empty   { color: var(--color-muted); font-size: 0.9rem; text-align: center; padding: 1rem 0; }
 .loading { padding: 2rem; color: var(--color-muted); }
 .error   { padding: 2rem; color: var(--color-error); }
+
+.cardWide {
+  grid-column: span 2;
+}
