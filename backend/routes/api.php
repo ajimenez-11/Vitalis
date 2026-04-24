@@ -159,7 +159,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('role:admin,responsable_cuina')->group(function () {
         Route::post('/receptes', [ReceptaController::class, 'new']);
-        Route::put('/receptes/{id}', [ReceptaController::class, 'edit']);
+        Route::post('/receptes/{id}', [ReceptaController::class, 'edit']);
         Route::delete('/receptes/{id}', [ReceptaController::class, 'delete']);
     });
 
