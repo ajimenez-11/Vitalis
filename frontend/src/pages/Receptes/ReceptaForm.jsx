@@ -37,21 +37,25 @@ const ReceptaForm = () => {
 
 const handleFormSubmit = async (data) => {
   const porcions = parseInt(data.porciones_base ?? data.porcions_base);
-  
   if (!porcions || porcions <= 0) {
     alert("El camp 'porcions base' és obligatori i ha de ser un número positiu.");
     return;
   }
 
+  const imatgeFile = data.imatge?.[0] instanceof File ? data.imatge[0] : null;
+
+  console.log("imatgeFile:", imatgeFile); // para verificar
+
   const payload = {
     nom:           data.nombre_receta ?? data.nom,
     descripcio:    data.descripcion   ?? data.descripcio,
     porcions_base: porcions,
+    ...(imatgeFile ? { imatge: imatgeFile } : {}),  // solo si hay archivo real
   };
 
   try {
     await updateRecepta(id, payload);
-    alert("Recepta actualizada correctament!");
+    alert("Recepta actualitzada correctament!");
     navigate('/receptes');
   } catch (error) {
     console.error("Error al actualizar:", error.response?.data || error);
