@@ -55,9 +55,7 @@ const Navbar = () => {
                   `${styles.navItem} ${isActive ? styles.active : ''}`
                 }
               >
-                <span className={styles.navIcon}>
-                  <MdPeople />
-                </span>
+                <span className={styles.navIcon}><MdPeople /></span>
                 Usuaris
               </NavLink>
             </li>
@@ -67,19 +65,13 @@ const Navbar = () => {
 
       <div className={styles.footer}>
         <hr className={styles.divider} />
-
         <div className={styles.userProfile}>
           <div className={styles.userAvatar}>
             {user?.nom?.charAt(0).toUpperCase() || 'A'}
           </div>
-
           <div className={styles.userText}>
-            <span className={styles.userName}>
-              {user?.nom || 'Administrador'}
-            </span>
-            <span className={styles.userRole}>
-              {isAdmin ? 'Administrador' : 'Usuari'}
-            </span>
+            <span className={styles.userName}>{user?.nom || 'Administrador'}</span>
+            <span className={styles.userRole}>{isAdmin ? 'Administrador' : 'Usuari'}</span>
           </div>
         </div>
 

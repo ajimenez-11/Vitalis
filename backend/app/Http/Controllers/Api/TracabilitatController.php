@@ -8,6 +8,40 @@ use App\Models\MovimentStock;
 
 class TracabilitatController extends Controller
 {
+    // LLISTAR TOTS ELS LOTS (per navegar i fer clic)
+    // GET /tracabilitat/lots
+    public function list()
+    {
+        $lots = Lot::with([
+                'liniaAlbaran.producte',
+                'liniaAlbaran.albaran.proveidor',
+            ])
+            ->orderBy('data_caducitat', 'asc')
+            ->get()
+            ->map(function ($lot) {
+                $linia   = $lot->liniaAlbaran;
+                $albaran = $linia?->albaran;
+ 
+                return [
+                    'id'             => $lot->id,
+                    'numero_lot'     => $lot->numero_lot,
+                    'data_caducitat' => $lot->data_caducitat,
+                    'producte_id'    => $linia?->producte?->id,
+                    'producte'       => $linia?->producte?->nom,
+                    'unitat_mesura'  => $linia?->producte?->unitat_mesura,
+                    'quantitat'      => $linia?->quantitat,
+                    'proveidor'      => $albaran?->proveidor?->nom,
+                    'data_entrada'   => $albaran?->data,
+                    'albaran_id'     => $albaran?->id,
+                ];
+            });
+ 
+        return response()->json([
+            'success' => true,
+            'data'    => $lots
+        ]);
+    }
+
     // TRAÇABILITAT PER LOT
     // GET /tracabilitat/lot/{numero}
     // Respon: d'on ve el lot i on ha anat (quines receptes/sortides)
