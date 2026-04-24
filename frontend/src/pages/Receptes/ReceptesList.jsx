@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { MdEdit, MdSearch } from 'react-icons/md';
+import { MdEdit, MdSearch, MdRestaurant, MdClose } from 'react-icons/md';
 import styles from './Receptes.module.css';
-import { getReceptes } from '../../api/receptes';
-import { useAuth } from '../../context/AuthContext'; // adjust if needed
+import { getReceptes, registrarConsum } from '../../api/receptes';
+import { useAuth } from '../../context/AuthContext';
 import ReceptaDetall from './ReceptaDetall';
+import ReceptaForm from './ReceptaForm';
 
 const getImatgeUrl = (recepta) => {
   if (recepta.imatge_url) return recepta.imatge_url;
@@ -12,31 +12,86 @@ const getImatgeUrl = (recepta) => {
   return null;
 };
 
-const ReceptaCard = ({ recepta, onVeure }) => {
+// ── Modal Registrar Consum ──────────────────────────────────────────
+const ConsumModal = ({ recepta, onClose, onSuccess }) => {
+  const [porcions, setPorcions]     = useState(1);
+  const [observacions, setObs]      = useState('');
+  const [saving, setSaving]         = useState(false);
+  const [error, setError]           = useState(null);
+  const [mancances, setMancances]   = useState([]);
+
+  const handleSubmit = async () => {
+    if (!porcions || porcions < 1) {
+      setError('El nombre de porcions ha de ser mínim 1');
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      await registrarConsum(recepta.id, { porcions: parseInt(porcions), observacions: observacions || undefined });
+      onSuccess?.();
+      onClose();
+    } catch (e) {
+      const data = e?.response?.data;
+      if (data?.mancances) {
+        setMancances(data.mancances);
+        setError(data.message || 'Estoc insuficient');
+      } else {
+        setError(data?.message || 'Error en registrar el consum');
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className={styles.overlay}>
+      <div className={styles.modalConsum}>
+        <div className={styles.modalHeader}>
+          <div className={styles.iconCircle}><MdRestaurant size={18} color="#0F6E56" /></div>
+          <div style={{ flex: 1 }}>
+            <p className={styles.modalTitleInline}>Registrar consum</p>
+            <p className={styles.modalSubtitleInline}>{recepta.nom}</p>
+          </div>
+          <button onClick={onClose} style={{background:'none', border:'none', cursor:'pointer'}}><MdClose size={20} /></button>
+        </div>
+        <div style={{ padding: '1.5rem' }}>
+          {error && <div className={styles.formError}>{error}</div>}
+          {mancances.length > 0 && (
+            <div className={styles.mancancesBox}>
+              {mancances.map((m, i) => (
+                <div key={i}><strong>{m.producte}</strong>: calen {m.quantitat_necessaria}, hi ha {m.estoc_actual}</div>
+              ))}
+            </div>
+          )}
+          <div className={styles.field}>
+            <label className={styles.label}>Nombre de porcions *</label>
+            <input type="number" min="1" value={porcions} onChange={(e) => setPorcions(e.target.value)} className={styles.input} />
+          </div>
+          <div className={styles.modalActions}>
+            <button className={styles.btnCancelSm} onClick={onClose}>Cancel·lar</button>
+            <button className={styles.btnPrimary} onClick={handleSubmit} disabled={saving}>{saving ? '...' : 'Registrar'}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── ReceptaCard ────────────────────────────────────────────────────
+const ReceptaCard = ({ recepta, onVeure, onEditar, onConsum, canWrite }) => {
   const nombreMostrar = recepta.nom || recepta.nombre_receta || 'Sense nom';
   const imatgeUrl = getImatgeUrl(recepta);
 
   return (
-    <div className="bg-white border border-neutral-200 rounded-xl shadow-xs overflow-hidden hover:border-neutral-300 transition-colors">
-      {imatgeUrl ? (
-        <img src={imatgeUrl} alt={nombreMostrar} className="w-full h-36 object-cover rounded-t-xl" />
-      ) : (
-        <div className="w-full h-36 flex items-center justify-center bg-neutral-50 text-4xl">
-          🍽️
-        </div>
-      )}
-      <div className="p-4 text-center">
-        <h5 className="mt-2 mb-4 text-base font-semibold tracking-tight text-gray-900 leading-snug">
-          {nombreMostrar}
-        </h5>
-        {/* Two actions: edit metadata (existing route) + manage ingredients (new detall) */}
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => onVeure(recepta)}
-            className={styles.buttonLists}
-          >
-            Ingredients <MdEdit className="ml-1" />
-          </button>
+    <div className={styles.cardList}>
+      {imatgeUrl ? <img src={imatgeUrl} className={styles.cardImg} alt={nombreMostrar} /> : <div className={styles.cardImgPlaceholder}>🍽️</div>}
+      <div className={styles.cardBody}>
+        <h5 className={styles.cardTitleMain}>{nombreMostrar}</h5>
+        <div className={styles.cardActionsGrid}>
+          <button onClick={() => onVeure(recepta)} className={styles.buttonLists}>Ingredients <MdEdit /></button>
+          {canWrite && <button onClick={() => onEditar(recepta)} className={styles.buttonEditAlt}>Editar</button>}
+          {canWrite && <button onClick={() => onConsum(recepta)} className={styles.buttonConsumAlt}>Consum <MdRestaurant /></button>}
         </div>
       </div>
     </div>
@@ -45,91 +100,59 @@ const ReceptaCard = ({ recepta, onVeure }) => {
 
 const Receptes = () => {
   const [receptes, setReceptes] = useState([]);
-  const [query, setQuery]       = useState('');
-  const [loading, setLoading]   = useState(true);
-  const [detall, setDetall]     = useState(null); // recepta object or null
-  const { canWrite } = useAuth(); // adjust to your auth hook
+  const [query, setQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [detall, setDetall] = useState(null);
+  const [editant, setEditant] = useState(null);
+  const [consum, setConsum] = useState(null);
+  const { canWrite } = useAuth();
 
-  useEffect(() => {
-    const fetchReceptes = async () => {
-      try {
-        setLoading(true);
-        const response = await getReceptes();
-        let arrayFinal = [];
-        if (response.data && Array.isArray(response.data.data)) {
-          arrayFinal = response.data.data;
-        } else if (Array.isArray(response.data)) {
-          arrayFinal = response.data;
-        } else if (response.success && Array.isArray(response.data)) {
-          arrayFinal = response.data;
-        }
-        setReceptes(arrayFinal);
-      } catch (error) {
-        console.error('Error cargando recetas:', error);
-        setReceptes([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchReceptes();
-  }, []);
+  const fetchReceptes = async () => {
+    try {
+      setLoading(true);
+      const res = await getReceptes();
+      setReceptes(res.data?.data || res.data || []);
+    } catch (e) { console.error(e); } finally { setLoading(false); }
+  };
 
-  const filteredRecipes = Array.isArray(receptes)
-    ? receptes.filter((r) => {
-        const nombre = (r.nom || r.nombre_receta || '').toLowerCase();
-        return nombre.includes(query.toLowerCase());
-      })
-    : [];
+  useEffect(() => { fetchReceptes(); }, []);
 
-  // ── Show detall view when a recepta is selected ──
-  if (detall) {
-    return (
-      <ReceptaDetall
-        recepta={detall}
-        onBack={() => setDetall(null)}
-        canWrite={canWrite}
-      />
-    );
-  }
+  const filtered = receptes.filter(r => (r.nom || r.nombre_receta || '').toLowerCase().includes(query.toLowerCase()));
+
+  // Aplicamos el contenedor de ancho fijo (640px) a las vistas de detalle y formulario
+  if (detall) return (
+    <div className={styles.pageCenter}>
+      <div className={styles.formContainer}>
+        <ReceptaDetall recepta={detall} onBack={() => setDetall(null)} canWrite={canWrite} />
+      </div>
+    </div>
+  );
+
+  if (editant) return (
+    <div className={styles.pageCenter}>
+      <div className={styles.formContainer}>
+        <ReceptaForm id={editant === 'crear' ? null : editant} onBack={() => {setEditant(null); fetchReceptes();}} />
+      </div>
+    </div>
+  );
 
   return (
-    <div className="max-w-5xl mx-auto p-4">
-      <div className={styles.subnav}>
-        <h1 className="text-2xl font-bold text-gray-900">Receptes</h1>
-        <div className="relative w-20 flex-1 max-w-md">
-          <span className="absolute left-105 top-1/2 transform -translate-y-1/2 text-gray-400">
-            <MdSearch size={20} />
-          </span>
-          <input
-            type="text"
-            placeholder="Cerca per nom..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-          />
+    <div className={styles.pageCenter}>
+      <header className={styles.header}>
+        <div><h1 className={styles.title}>Receptes</h1><p className={styles.subtitle}>{filtered.length} receptes</p></div>
+        <div className={styles.headerRight}>
+          <div className={styles.searchWrapper}>
+            <MdSearch className={styles.searchIcon} /><input type="text" value={query} onChange={e => setQuery(e.target.value)} className={styles.inputSearch} placeholder="Cerca..." />
+          </div>
+          {canWrite && <button className={styles.btnPrimary} onClick={() => setEditant('crear')}>+ Nova recepta</button>}
         </div>
-        <button className={styles.button}>+ Nova recepta</button>
+      </header>
+      <div className={styles.receptaGrid}>
+        {loading ? <div className={styles.emptyFull}>Carregant...</div> : 
+          filtered.map(r => <ReceptaCard key={r.id} recepta={r} canWrite={canWrite} onVeure={setDetall} onEditar={rec => setEditant(rec.id)} onConsum={setConsum} />)
+        }
       </div>
-
-      {loading ? (
-        <div className="text-center py-10 text-gray-500 text-lg italic">
-          Carregant receptes des del servidor...
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredRecipes.length > 0 ? (
-            filteredRecipes.map((r) => (
-              <ReceptaCard key={r.id} recepta={r} onVeure={setDetall} />
-            ))
-          ) : (
-            <div className="col-span-full text-center py-10 text-gray-500">
-              {query
-                ? `No s'ha trobat cap recepta que coincideixi amb "${query}"`
-                : 'No hi ha receptes disponibles al sistema.'}
-            </div>
-          )}
-        </div>
-      )}
+      {consum && <ConsumModal recepta={consum} onClose={() => setConsum(null)} onSuccess={fetchReceptes} />}
     </div>
   );
 };
