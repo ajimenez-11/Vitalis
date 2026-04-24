@@ -4,14 +4,25 @@ import { MdEdit, MdSearch } from "react-icons/md";
 import styles from './Receptes.module.css';
 import { getReceptes } from '../../api/receptes'; // Verifica que esta ruta sea correcta
 
+const getImatgeUrl = (recepta) => {
+  if (recepta.imatge_url) return recepta.imatge_url;
+  if (recepta.imatge) return `http://localhost:8000/${recepta.imatge}`;
+  return null;
+};
+
 const ReceptaCard = ({ recepta }) => {
   const navigate = useNavigate();
   const nombreMostrar = recepta.nom || recepta.nombre_receta || "Sense nom";
+  const imatgeUrl = getImatgeUrl(recepta);
 
   return (
     <div className="bg-white border border-neutral-200 rounded-xl shadow-xs overflow-hidden hover:border-neutral-300 transition-colors">
-      {recepta.imatge ? (
-        <img src={recepta.imatge} alt={nombreMostrar} className="w-full h-36 object-cover rounded-t-xl" />
+      {imatgeUrl ? (
+        <img
+          src={imatgeUrl}
+          alt={nombreMostrar}
+          className="w-full h-36 object-cover rounded-t-xl"
+        />
       ) : (
         <div className="w-full h-36 flex items-center justify-center bg-neutral-50 text-4xl">
           🍽️
