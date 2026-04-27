@@ -125,7 +125,13 @@ class ReceptaController extends Controller
         }
 
         try {
+            $imatgeRuta = $recepta->imatge;
             $recepta->delete();
+
+            if ($imatgeRuta && file_exists(public_path($imatgeRuta))) { 
+                unlink(public_path($imatgeRuta)); 
+            }
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
