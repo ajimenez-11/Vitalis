@@ -52,39 +52,45 @@
   margin: 0 0 24px;
 }
 
-/* Badge seguretat */
-.badge {
+/* Error banner  */
+.errorBanner {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--color-accent-light);
-  border: 1px solid var(--color-accent-border);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  margin-bottom: 28px;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  /* Defecte: error genèric */
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
 }
 
-.badgeDot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--color-accent);
+/* Usuari inactiu */
+.errorBanner_inactive {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #f59e0b;
+}
+
+/* Credencials incorrectes */
+.errorBanner_credentials {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  border-color: var(--color-error);
+}
+
+.errorBannerIcon {
+  font-size: 1rem;
   flex-shrink: 0;
-}
-
-.badgeText {
-  font-size: 12.5px;
-  color: var(--color-accent);
+  margin-top: 1px;
 }
 
 /* Camps */
-.field {
-  margin-bottom: 20px;
-}
-
-.fieldLast {
-  margin-bottom: 28px;
-}
+.field     { margin-bottom: 20px; }
+.fieldLast { margin-bottom: 28px; }
 
 .label {
   display: block;
@@ -94,10 +100,6 @@
   color: var(--color-muted);
   font-weight: 600;
   margin-bottom: 8px;
-}
-
-.inputWrapper {
-  position: relative;
 }
 
 .input {
@@ -112,10 +114,6 @@
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
   box-sizing: border-box;
-}
-
-.inputWithIcon {
-  padding-right: 44px;
 }
 
 .input:focus {
@@ -139,27 +137,7 @@
   margin-top: 6px;
 }
 
-/* Botó ull */
-.eyeBtn {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--color-muted);
-  padding: 2px;
-  display: flex;
-  align-items: center;
-  transition: color 0.15s;
-}
-
-.eyeBtn:hover {
-  color: var(--color-text);
-}
-
-/* Botó principal */
+/* Botó principal  */
 .btnPrimary {
   width: 100%;
   background: var(--color-accent);
@@ -186,20 +164,4 @@
 .btnPrimary:disabled {
   background: var(--color-accent-border);
   cursor: not-allowed;
-}
-
-.btnSecondary {
-  width: 100%;
-  background: none;
-  border: none;
-  color: var(--color-accent);
-  font-size: 14px;
-  font-family: var(--font-sans);
-  margin-top: 16px;
-  cursor: pointer;
-  transition: color 0.15s;
-}
-
-.btnSecondary:hover {
-  color: var(--color-accent-hover);
 }
