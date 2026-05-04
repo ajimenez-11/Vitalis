@@ -1,119 +1,131 @@
-import styles from './Receptes.module.css';
-import { useParams, useNavigate } from 'react-router-dom';
-import Form from '../../components/Form/Form.jsx';
 import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getRecepta, updateRecepta, createRecepta } from '../../api/receptes';
+import { Button, FormField, PageHeader } from '../../components/ui';
+import inputStyles from '../../components/ui/shared/Input.module.css';
+import styles from './Receptes.module.css';
 
 const ReceptaForm = ({ id: idProp, onBack }) => {
   const { id: idParam } = useParams();
   const navigate = useNavigate();
 
-  // Si idProp es 'crear', lo tratamos como nulo para el formulario
   const isCreating = idProp === 'crear' || (!idProp && !idParam);
   const id = isCreating ? null : (idProp ?? idParam);
 
-  const [initialData, setInitialData] = useState(isCreating ? {} : null);
+  const [form, setForm] = useState({ nom: '', descripcio: '', porcions_base: '' });
+  const [imatge, setImatge] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(!isCreating);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchRecepta = async () => {
-      if (isCreating) return;
+    if (isCreating) return;
+    const load = async () => {
       try {
         setLoading(true);
-        const response = await getRecepta(id);
-        const data = response.data?.data || response.data || response;
-        setInitialData({
-          nombre_receta:  data.nom           ?? '',
-          descripcion:    data.descripcio    ?? '',
-          porciones_base: data.porcions_base ?? '',
-          linies:         data.linies        ?? [],
+        const res  = await getRecepta(id);
+        const data = res.data?.data || res.data || res;
+        setForm({
+          nom: data.nom ?? '',
+          descripcio: data.descripcio ?? '',
+          porcions_base: data.porcions_base ?? '',
         });
-      } catch (error) {
-        console.error('Error cargando la receta:', error);
-        setInitialData(undefined);
+        // Si té imatge existent, mostrem preview
+        const url = data.imatge_url || (data.imatge ? `http://localhost:8000/${data.imatge}` : null);
+        if (url) setPreview(url);
+      } catch {
+        setError("No s'ha pogut carregar la recepta.");
       } finally {
         setLoading(false);
       }
     };
-    fetchRecepta();
+    load();
   }, [id, isCreating]);
 
-  const handleFormSubmit = async (data) => {
-    const porcions = parseInt(data.porciones_base ?? data.porcions_base);
-    if (!porcions || porcions <= 0) {
-      alert("El camp 'porcions base' és obligatori.");
-      return;
-    }
+  const handle = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
-    const imatgeFile = data.imatge?.[0] instanceof File ? data.imatge[0] : null;
-    const payload = {
-      nom:           data.nombre_receta ?? data.nom,
-      descripcio:    data.descripcion   ?? data.descripcio,
-      porcions_base: porcions,
-      ...(imatgeFile ? { imatge: imatgeFile } : {}),
-    };
+  const handleImatge = e => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImatge(file);
+    setPreview(URL.createObjectURL(file));
+  };
 
+  const handleSubmit = async () => {
+    const porcions = parseInt(form.porcions_base);
+    if (!form.nom.trim())     { setError('El nom és obligatori'); return; }
+    if (!porcions || porcions <= 0) { setError('Les porcions base han de ser un nombre positiu'); return; }
+
+    setSaving(true);
+    setError(null);
     try {
-      if (isCreating) {
-        await createRecepta(payload);
-        alert('Recepta creada correctament!');
-      } else {
-        await updateRecepta(id, payload);
-        alert('Recepta actualitzada correctament!');
-      }
-      
+      const payload = { ...form, porcions_base: porcions, ...(imatge ? { imatge } : {}) };
+      if (isCreating) await createRecepta(payload);
+      else            await updateRecepta(id, payload);
       if (onBack) onBack();
       else navigate('/receptes');
-    } catch (error) {
-      console.error('Error al guardar:', error.response?.data || error);
-      alert('Error al guardar la recepta.');
+    } catch (e) {
+      setError(e.response?.data?.message ?? 'Error al guardar la recepta.');
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleFormCancel = () => {
-    if (onBack) onBack();
-    else navigate('/receptes');
-  };
+  const handleCancel = () => { if (onBack) onBack(); else navigate('/receptes'); };
+
+  if (loading) return <p className={styles.status}>Carregant...</p>;
 
   return (
-    <div className={styles.pageWrapper}>
-      <main className={styles.mainContent}>
-        <div className={styles.mainInner}>
-          <p className={styles.breadcrumb}>Receptes › {isCreating ? 'Nova' : 'Editar'}</p>
-          <div className={styles.card}>
-            <div className={styles.cardHeader}>
-              <div className={styles.cardIcon}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#534AB7" strokeWidth="2">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                </svg>
-              </div>
-              <div>
-                <h1 className={styles.cardTitle}>{isCreating ? 'Nova Recepta' : 'Editar recepta'}</h1>
-                {!isCreating && (
-                   <p className={styles.cardSubtitle}>
-                    #{id} · {initialData?.nombre_receta || '—'}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className={styles.formArea}>
-              {initialData === undefined ? (
-                <p className={styles.errorMessage}>No s'ha trobat la recepta.</p>
-              ) : loading ? (
-                <p className={styles.loadingMessage}>Carregant...</p>
-              ) : (
-                <Form
-                  type="recetas"
-                  initialData={initialData}
-                  onSubmit={handleFormSubmit}
-                  onCancel={handleFormCancel}
-                />
-              )}
-            </div>
-          </div>
+    <div>
+      <PageHeader
+        title={isCreating ? 'Nova recepta' : 'Editar recepta'}
+        subtitle={!isCreating ? `#${id}` : undefined}
+        action={<Button variant="ghost" onClick={handleCancel}>← Tornar</Button>}
+      />
+
+      {error && <div className={styles.pageError}>{error}</div>}
+
+      <div className={styles.formCard}>
+        <FormField label="Nom *">
+          <input
+            name="nom" value={form.nom} onChange={handle}
+            className={inputStyles.input} placeholder="Ex: Arròs a la cassola"
+          />
+        </FormField>
+
+        <FormField label="Descripció">
+          <textarea
+            name="descripcio" value={form.descripcio} onChange={handle}
+            className={inputStyles.input} rows={3}
+            placeholder="Descripció opcional..."
+          />
+        </FormField>
+
+        <FormField label="Porcions base *">
+          <input
+            name="porcions_base" type="number" min="1"
+            value={form.porcions_base} onChange={handle}
+            className={inputStyles.input} placeholder="Ex: 10"
+          />
+        </FormField>
+
+        <FormField label="Imatge (opcional)">
+          <input type="file" accept="image/*" onChange={handleImatge} className={inputStyles.input} />
+          {preview && (
+            <img src={preview} alt="Preview" className={styles.imatgePreview} />
+          )}
+        </FormField>
+
+        <div className={styles.formActions}>
+          <Button variant="secondary" onClick={handleCancel} disabled={saving}>
+            Cancel·lar
+          </Button>
+          <Button onClick={handleSubmit} disabled={saving}>
+            {saving ? 'Desant…' : isCreating ? 'Crear recepta' : 'Desar canvis'}
+          </Button>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

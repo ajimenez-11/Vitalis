@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { parseApiError } from '../../utils/apiError';
+import { Button, FormField, Modal } from '../../components/ui';
+import inputStyles from '../../components/ui/shared/Input.module.css';
 import styles from './Proveidors.module.css';
 
 export default function ProveidorForm({ proveidor, onSave, onCancel }) {
   const editant = proveidor !== null;
-
   const [form, setForm] = useState({
-    nom:     proveidor?.nom     ?? '',
-    nif:     proveidor?.nif     ?? '',
+    nom: proveidor?.nom ?? '',
+    nif: proveidor?.nif ?? '',
     telefon: proveidor?.telefon ?? '',
-    email:   proveidor?.email   ?? '',
-    adreca:  proveidor?.adreca  ?? '',
+    email: proveidor?.email ?? '',
+    adreca: proveidor?.adreca ?? '',
   });
   const [saving, setSaving] = useState(false);
   const [error,  setError]  = useState(null);
@@ -32,54 +33,47 @@ export default function ProveidorForm({ proveidor, onSave, onCancel }) {
   };
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.modal}>
-        <h2 className={styles.modalTitle}>
-          {editant ? `Editar: ${proveidor.nom}` : 'Nou proveïdor'}
-        </h2>
-
-        {error && <p className={styles.formError}>{error}</p>}
-
-        <div className={styles.field}>
-          <label className={styles.label}>Nom *</label>
-          <input name="nom" value={form.nom} onChange={handle}
-            className={styles.input} placeholder="Ex: Distribucions Martí" />
-        </div>
-
-        <div className={styles.row}>
-          <div className={styles.field}>
-            <label className={styles.label}>NIF</label>
-            <input name="nif" value={form.nif} onChange={handle}
-              className={styles.input} placeholder="B12345678" />
-          </div>
-          <div className={styles.field}>
-            <label className={styles.label}>Telèfon</label>
-            <input name="telefon" value={form.telefon} onChange={handle}
-              className={styles.input} placeholder="93 123 45 67" />
-          </div>
-        </div>
-
-        <div className={styles.field}>
-          <label className={styles.label}>Email</label>
-          <input name="email" type="email" value={form.email} onChange={handle}
-            className={styles.input} placeholder="contacte@proveidor.cat" />
-        </div>
-
-        <div className={styles.field}>
-          <label className={styles.label}>Adreça</label>
-          <input name="adreca" value={form.adreca} onChange={handle}
-            className={styles.input} placeholder="Carrer Exemple, 1 — Barcelona" />
-        </div>
-
-        <div className={styles.modalActions}>
-          <button className={styles.btnSecondary} onClick={onCancel} disabled={saving}>
+    <Modal
+      title={editant ? `Editar: ${proveidor.nom}` : 'Nou proveïdor'}
+      onClose={onCancel}
+      actions={
+        <>
+          <Button variant="secondary" onClick={onCancel} disabled={saving}>
             Cancel·lar
-          </button>
-          <button className={styles.btnPrimary} onClick={submit} disabled={saving}>
+          </Button>
+          <Button onClick={submit} disabled={saving}>
             {saving ? 'Desant…' : editant ? 'Desar canvis' : 'Crear proveïdor'}
-          </button>
-        </div>
+          </Button>
+        </>
+      }
+    >
+      {error && <div className={styles.formError}>{error}</div>}
+
+      <FormField label="Nom *">
+        <input name="nom" value={form.nom} onChange={handle}
+          className={inputStyles.input} placeholder="Ex: Distribucions Martí" />
+      </FormField>
+
+      <div className={styles.row}>
+        <FormField label="NIF">
+          <input name="nif" value={form.nif} onChange={handle}
+            className={inputStyles.input} placeholder="B12345678" />
+        </FormField>
+        <FormField label="Telèfon">
+          <input name="telefon" value={form.telefon} onChange={handle}
+            className={inputStyles.input} placeholder="93 123 45 67" />
+        </FormField>
       </div>
-    </div>
+
+      <FormField label="Email">
+        <input name="email" type="email" value={form.email} onChange={handle}
+          className={inputStyles.input} placeholder="contacte@proveidor.cat" />
+      </FormField>
+
+      <FormField label="Adreça">
+        <input name="adreca" value={form.adreca} onChange={handle}
+          className={inputStyles.input} placeholder="Carrer Exemple, 1 — Barcelona" />
+      </FormField>
+    </Modal>
   );
 }

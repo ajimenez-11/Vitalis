@@ -1,6 +1,17 @@
 import { useApi } from '../../hooks/useApi';
 import { getDashboard } from '../../api/dashboard';
+import { Badge, PageHeader } from '../../components/ui';
 import styles from './Dashboard.module.css';
+
+function KpiCard({ label, value, icon, alert }) {
+  return (
+    <div className={`${styles.kpi} ${alert ? styles.kpiAlert : ''}`}>
+      <span className={styles.kpiIcon}>{icon}</span>
+      <span className={styles.kpiValue}>{value}</span>
+      <span className={styles.kpiLabel}>{label}</span>
+    </div>
+  );
+}
 
 export default function DashboardPage() {
   const { data, loading, error } = useApi(getDashboard);
@@ -9,44 +20,26 @@ export default function DashboardPage() {
   if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
 
   const {
-    stock_baix               = [],
-    lots_proxims_caducitat   = [],
-    moviments_recents        = [],
-    receptes_mes_consumides  = [],
-    albarans_recents         = [],
+    stock_baix = [],
+    lots_proxims_caducitat = [],
+    moviments_recents = [],
+    receptes_mes_consumides = [],
+    albarans_recents = [],
   } = data ?? {};
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Dashboard</h1>
-        <p className={styles.subtitle}>Resum de l'activitat del sistema</p>
-      </header>
+      <PageHeader
+        title="Dashboard"
+        subtitle="Resum de l'activitat del sistema"
+      />
 
       {/* KPIs */}
       <section className={styles.kpis}>
-        <KpiCard
-          label="Sota mínims"
-          value={stock_baix.length}
-          icon="⚠️"
-          alert={stock_baix.length > 0}
-        />
-        <KpiCard
-          label="Lots per caducar"
-          value={lots_proxims_caducitat.length}
-          icon="📅"
-          alert={lots_proxims_caducitat.length > 0}
-        />
-        <KpiCard
-          label="Moviments recents"
-          value={moviments_recents.length}
-          icon="📦"
-        />
-        <KpiCard
-          label="Receptes actives"
-          value={receptes_mes_consumides.length}
-          icon="🍽️"
-        />
+        <KpiCard label="Sota mínims" value={stock_baix.length} icon="⚠️" alert={stock_baix.length > 0} />
+        <KpiCard label="Lots per caducar" value={lots_proxims_caducitat.length} icon="📅" alert={lots_proxims_caducitat.length > 0} />
+        <KpiCard label="Moviments recents" value={moviments_recents.length} icon="📦" />
+        <KpiCard label="Receptes actives"  value={receptes_mes_consumides.length} icon="🍽️" />
       </section>
 
       <div className={styles.grid}>
@@ -61,9 +54,9 @@ export default function DashboardPage() {
               {stock_baix.map((p) => (
                 <li key={p.id} className={styles.listItem}>
                   <span className={styles.itemName}>{p.nom}</span>
-                  <span className={styles.badgeAlert}>
+                  <Badge variant="danger">
                     {p.estoc_actual} / {p.estoc_minim} {p.unitat_mesura}
-                  </span>
+                  </Badge>
                 </li>
               ))}
             </ul>
@@ -86,9 +79,9 @@ export default function DashboardPage() {
                     <span className={styles.info}>
                       {new Date(a.data).toLocaleDateString('ca-ES')}
                     </span>
-                    <span className={`${styles.badge} ${styles[a.estat]}`}>
+                    <Badge variant={a.estat === 'confirmat' ? 'success' : 'warning'}>
                       {a.estat}
-                    </span>
+                    </Badge>
                   </div>
                 </li>
               ))}
@@ -109,9 +102,9 @@ export default function DashboardPage() {
                     {lot.linia_albaran?.producte?.nom ?? '—'}
                     <span className={styles.lotNum}> · Lot {lot.numero_lot}</span>
                   </span>
-                  <span className={styles.badgeAlert}>
+                  <Badge variant="danger">
                     {new Date(lot.data_caducitat).toLocaleDateString('ca-ES')}
-                  </span>
+                  </Badge>
                 </li>
               ))}
             </ul>
@@ -128,9 +121,7 @@ export default function DashboardPage() {
               {receptes_mes_consumides.map((r) => (
                 <li key={r.recepta_id} className={styles.listItem}>
                   <span className={styles.itemName}>{r.nom}</span>
-                  <span className={styles.badgeOk}>
-                    {r.total_porcions} porcions
-                  </span>
+                  <Badge variant="success">{r.total_porcions} porcions</Badge>
                 </li>
               ))}
             </ul>
@@ -146,14 +137,16 @@ export default function DashboardPage() {
             <ul className={styles.list}>
               {moviments_recents.map((m) => (
                 <li key={m.id} className={styles.listItem}>
-                  <span className={styles.itemName}>
-                    {m.producte?.nom ?? '—'}
-                  </span>
+                  <span className={styles.itemName}>{m.producte?.nom ?? '—'}</span>
                   <div className={styles.itemRight}>
                     <span className={styles.info}>{m.usuari?.nom ?? '—'}</span>
-                    <span className={`${styles.badge} ${styles[m.tipus]}`}>
+                    <Badge variant={
+                      m.tipus === 'entrada' ? 'success'
+                      : m.tipus === 'sortida' ? 'danger'
+                      : 'warning'
+                    }>
                       {m.tipus}
-                    </span>
+                    </Badge>
                     <span className={styles.info}>
                       {m.quantitat} · {new Date(m.created_at).toLocaleDateString('ca-ES')}
                     </span>
@@ -165,16 +158,6 @@ export default function DashboardPage() {
         </section>
 
       </div>
-    </div>
-  );
-}
-
-function KpiCard({ label, value, icon, alert }) {
-  return (
-    <div className={`${styles.kpi} ${alert ? styles.kpiAlert : ''}`}>
-      <span className={styles.kpiIcon}>{icon}</span>
-      <span className={styles.kpiValue}>{value}</span>
-      <span className={styles.kpiLabel}>{label}</span>
     </div>
   );
 }

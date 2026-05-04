@@ -1,128 +1,28 @@
 .page { max-width: 1100px; margin: 0 auto; }
 
-.header {
-  display: flex; justify-content: space-between;
-  align-items: flex-start; margin-bottom: 1.75rem; gap: 1rem;
-}
-.title    { font-size: 1.75rem; font-weight: 700; color: var(--color-text); margin: 0; }
-.subtitle { color: var(--color-muted); font-size: 0.875rem; margin: 4px 0 0;
-            display: flex; align-items: center; gap: 6px; }
-
-.btnBack {
-  background: none; border: none; color: var(--color-accent);
-  cursor: pointer; font-size: 0.875rem; padding: 0; margin-bottom: 6px;
-  font-family: var(--font-sans);
-}
-.btnBack:hover { text-decoration: underline; }
-
 /* Taula */
-.tableWrapper {
-  overflow-x: auto; border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border); box-shadow: var(--shadow-card);
-}
-.table { width: 100%; border-collapse: collapse; background: var(--color-surface); font-size: 0.9rem; }
-.table thead tr { background: var(--color-bg); border-bottom: 1px solid var(--color-border); }
-.table th {
-  text-align: left; padding: 12px 16px; font-size: 0.72rem;
-  text-transform: uppercase; letter-spacing: 0.07em;
-  color: var(--color-muted); font-weight: 600;
-}
-.table td { padding: 13px 16px; border-bottom: 1px solid var(--color-border); color: var(--color-text); }
-.table tbody tr:last-child td { border-bottom: none; }
-.table tbody tr:hover { background: var(--color-bg); }
 .idCol { color: var(--color-muted); font-size: 0.85rem; }
 .nom   { font-weight: 500; }
-
-/* Badges estat */
-.badge { display: inline-block; font-size: 0.72rem; padding: 3px 10px;
-         border-radius: 999px; font-weight: 600; text-transform: capitalize; }
-.esborrany { background: #f0f0f0; color: #555; }
-.confirmat { background: var(--color-accent-light); color: var(--color-accent); }
-
-/* Accions taula */
 .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-
-.btnPrimary {
-  background: var(--color-accent); color: #fff; font-weight: 600;
-  padding: 9px 18px; border-radius: var(--radius-md); border: none;
-  cursor: pointer; font-size: 0.875rem; font-family: var(--font-sans);
-  transition: background 0.15s; white-space: nowrap;
-}
-.btnPrimary:hover:not(:disabled) { background: var(--color-accent-hover); }
-.btnPrimary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.btnSecondary {
-  background: transparent; border: 1.5px solid var(--color-border);
-  color: var(--color-text); font-weight: 500; padding: 9px 18px;
-  border-radius: var(--radius-md); cursor: pointer; font-size: 0.875rem;
-  font-family: var(--font-sans);
-}
-.btnEdit {
-  padding: 5px 12px; border-radius: var(--radius-sm); font-size: 0.8rem;
-  font-weight: 600; cursor: pointer; border: 1.5px solid var(--color-accent);
-  color: var(--color-accent); background: transparent; transition: opacity 0.15s;
-}
-.btnEdit:hover { opacity: 0.7; }
-
-.btnConfirm {
-  padding: 5px 12px; border-radius: var(--radius-sm); font-size: 0.8rem;
-  font-weight: 600; cursor: pointer; background: var(--color-accent);
-  color: #fff; border: none; transition: opacity 0.15s; white-space: nowrap;
-}
-.btnConfirm:hover { opacity: 0.85; }
-
-.btnWarning {
-  padding: 5px 12px; border-radius: var(--radius-sm); font-size: 0.8rem;
-  font-weight: 600; cursor: pointer; border: 1.5px solid #e65100;
-  color: #e65100; background: transparent; transition: opacity 0.15s;
-}
-.btnWarning:hover { opacity: 0.7; }
-
-.btnDelete {
-  padding: 5px 12px; border-radius: var(--radius-sm); font-size: 0.8rem;
-  font-weight: 600; cursor: pointer; border: 1.5px solid var(--color-error);
-  color: var(--color-error); background: transparent; transition: opacity 0.15s;
-}
-.btnDelete:hover { opacity: 0.7; }
-
-/* Modal crear albaran */
-.overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.35);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 100; padding: 24px;
-}
-.modal {
-  background: var(--color-surface); border-radius: var(--radius-lg);
-  padding: 2rem; width: 100%; max-width: 480px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-}
-.modalTitle { font-size: 1.2rem; font-weight: 700; color: var(--color-text); margin: 0 0 1.5rem; }
-.modalActions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem; }
-
-.field    { margin-bottom: 1rem; }
-.label {
-  display: block; font-size: 0.72rem; text-transform: uppercase;
-  letter-spacing: 0.08em; color: var(--color-muted); font-weight: 600; margin-bottom: 6px;
-}
-.input {
-  width: 100%; background: var(--color-bg); border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md); padding: 10px 14px; font-size: 0.875rem;
-  color: var(--color-text); outline: none; box-sizing: border-box;
-  font-family: var(--font-sans); transition: border-color 0.15s;
-}
-.input:focus { border-color: var(--color-accent); }
 
 /* Detall albaran — línies */
 .seccio      { margin-bottom: 2rem; }
 .seccioTitol { font-size: 1rem; font-weight: 600; color: var(--color-text); margin: 0 0 1rem; }
 
 .liniaCard {
-  background: var(--color-surface); border: 1px solid var(--color-border);
-  border-radius: var(--radius-md); margin-bottom: 1rem; overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
+  overflow: hidden;
 }
 .liniaHeader {
-  display: flex; align-items: center; gap: 12px; padding: 12px 16px;
-  background: var(--color-bg); border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
 }
 .liniaNom  { font-weight: 600; color: var(--color-text); flex: 1; }
 .liniaInfo { color: var(--color-muted); font-size: 0.85rem; }
@@ -132,68 +32,57 @@
 .lotsEmpty { color: var(--color-muted); font-size: 0.85rem; margin: 0; }
 
 .lotItem {
-  display: flex; align-items: center; gap: 16px; padding: 8px 12px;
-  background: var(--color-bg); border-radius: var(--radius-sm);
-  font-size: 0.85rem; color: var(--color-text); flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 12px;
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--color-text);
+  flex-wrap: wrap;
 }
 
 .lotForm {
-  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
   padding: 8px 0;
 }
-.inputSm {
-  background: var(--color-bg); border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-sm); padding: 6px 10px; font-size: 0.825rem;
-  color: var(--color-text); outline: none; font-family: var(--font-sans);
-  transition: border-color 0.15s; min-width: 0;
-}
-.inputSm:focus { border-color: var(--color-accent); }
 
 .btnAddLot {
-  background: none; border: 1px dashed var(--color-border); color: var(--color-muted);
-  border-radius: var(--radius-sm); padding: 6px 12px; font-size: 0.8rem;
-  cursor: pointer; transition: border-color 0.15s, color 0.15s; align-self: flex-start;
+  background: none;
+  border: 1px dashed var(--color-border);
+  color: var(--color-muted);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  align-self: flex-start;
 }
 .btnAddLot:hover { border-color: var(--color-accent); color: var(--color-accent); }
 
-.btnConfirmSm {
-  background: var(--color-accent); color: #fff; border: none;
-  border-radius: var(--radius-sm); padding: 6px 12px; font-size: 0.8rem;
-  font-weight: 600; cursor: pointer; white-space: nowrap;
-}
-.btnConfirmSm:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.btnCancelSm {
-  background: transparent; border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-sm); padding: 6px 12px; font-size: 0.8rem;
-  cursor: pointer; color: var(--color-muted);
-}
-
-.btnDeleteSm {
-  background: none; border: none; color: var(--color-error);
-  cursor: pointer; font-size: 0.9rem; padding: 2px 6px;
-  border-radius: var(--radius-sm); margin-left: auto;
-  transition: background 0.15s;
-}
-.btnDeleteSm:hover { background: var(--color-error-bg); }
-
 /* Formulari nova línia */
 .liniaFormRow {
-  display: grid; grid-template-columns: 2fr 1fr 1fr auto;
-  gap: 10px; align-items: end;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
 }
 
-/* Errors i estats */
+/* Errors */
 .pageError {
-  background: var(--color-error-bg); color: var(--color-error);
-  border: 1px solid var(--color-error); border-radius: var(--radius-sm);
-  padding: 12px 16px; margin-bottom: 1.25rem; font-size: 0.875rem;
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
 }
-.formError {
-  background: var(--color-error-bg); color: var(--color-error);
-  border-radius: var(--radius-sm); padding: 10px 14px;
-  font-size: 0.85rem; margin-bottom: 1rem;
-}
+
 .status { padding: 2rem; color: var(--color-muted); }
 .error  { color: var(--color-error); }
 .empty  { text-align: center; padding: 1.5rem; color: var(--color-muted); font-size: 0.9rem; }

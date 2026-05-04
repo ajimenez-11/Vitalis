@@ -5,19 +5,22 @@ import {
   updateProveidor, deleteProveidor,
 } from '../../api/proveidors';
 import { useAuth } from '../../context/AuthContext';
+import { Badge, Button, PageHeader, Table, Modal } from '../../components/ui';
+import { FormField } from '../../components/ui';
+import inputStyles from '../../components/ui/shared/Input.module.css';
 import ProveidorForm from './ProveidorForm';
 import styles from './Proveidors.module.css';
 
 export default function ProveidorsPage() {
   const { data: proveidors, loading, error, refetch } = useApi(getProveidors);
   const { canWrite } = useAuth();
-  const [modal,    setModal]    = useState(null);
+  const [modal, setModal] = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [pageError, setPageError] = useState(null);
 
   const obrirCrear  = ()  => { setPageError(null); setModal('crear'); };
   const obrirEditar = (p) => { setPageError(null); setModal(p); };
-  const tancar      = ()  => setModal(null);
+  const tancar = () => setModal(null);
 
   const handleSave = async (formData) => {
     if (modal === 'crear') await createProveidor(formData);
@@ -34,7 +37,7 @@ export default function ProveidorsPage() {
       await deleteProveidor(id);
       refetch();
     } catch (e) {
-      setPageError(e.response?.data?.message ?? 'No s\'ha pogut eliminar el proveïdor');
+      setPageError(e.response?.data?.message ?? "No s'ha pogut eliminar el proveïdor");
     } finally {
       setDeleting(null);
     }
@@ -45,71 +48,58 @@ export default function ProveidorsPage() {
 
   const llista = proveidors ?? [];
 
+  const columns = [
+    { key: 'nom', label: 'Nom' },
+    { key: 'nif', label: 'NIF' },
+    { key: 'telefon', label: 'Telèfon' },
+    { key: 'email', label: 'Email' },
+    { key: 'adreca', label: 'Adreça' },
+    ...(canWrite ? [{ key: 'accions', label: 'Accions' }] : []),
+  ];
+
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <div>
-          <h1 className={styles.title}>Proveïdors</h1>
-          <p className={styles.subtitle}>{llista.length} proveïdors al catàleg</p>
-        </div>
-        {canWrite && (
-          <button className={styles.btnPrimary} onClick={obrirCrear}>
-            + Nou proveïdor
-          </button>
-        )}
-      </header>
+      <PageHeader
+        title="Proveïdors"
+        subtitle={`${llista.length} proveïdors al catàleg`}
+        action={
+          canWrite && (
+            <Button onClick={obrirCrear}>+ Nou proveïdor</Button>
+          )
+        }
+      />
 
       {pageError && <div className={styles.pageError}>{pageError}</div>}
 
-      <div className={styles.tableWrapper}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Nom</th>
-              <th>NIF</th>
-              <th>Telèfon</th>
-              <th>Email</th>
-              <th>Adreça</th>
-              {canWrite && <th>Accions</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {llista.length === 0 && (
-              <tr>
-                <td colSpan={6} className={styles.empty}>
-                  Cap proveïdor registrat. Crea el primer!
-                </td>
-              </tr>
+      <Table
+        columns={columns}
+        data={llista}
+        emptyMessage="Cap proveïdor registrat. Crea el primer!"
+        renderRow={(p) => (
+          <tr key={p.id}>
+            <td className={styles.nom}>{p.nom}</td>
+            <td>{p.nif ?? '—'}</td>
+            <td>{p.telefon ?? '—'}</td>
+            <td>{p.email ?? '—'}</td>
+            <td>{p.adreca ?? '—'}</td>
+            {canWrite && (
+              <td className={styles.actions}>
+                <Button variant="secondary" size="sm" onClick={() => obrirEditar(p)}>
+                  Editar
+                </Button>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => handleDelete(p.id)}
+                  disabled={deleting === p.id}
+                >
+                  {deleting === p.id ? '…' : 'Eliminar'}
+                </Button>
+              </td>
             )}
-            {llista.map((p) => (
-              <tr key={p.id}>
-                <td className={styles.nom}>{p.nom}</td>
-                <td>{p.nif ?? '—'}</td>
-                <td>{p.telefon ?? '—'}</td>
-                <td>{p.email ?? '—'}</td>
-                <td>{p.adreca ?? '—'}</td>
-                {canWrite && (
-                  <td className={styles.actions}>
-                    <button
-                      className={styles.btnEdit}
-                      onClick={() => obrirEditar(p)}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      className={styles.btnDelete}
-                      onClick={() => handleDelete(p.id)}
-                      disabled={deleting === p.id}
-                    >
-                      {deleting === p.id ? '…' : 'Eliminar'}
-                    </button>
-                  </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          </tr>
+        )}
+      />
 
       {modal !== null && (
         <ProveidorForm

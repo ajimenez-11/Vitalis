@@ -7,6 +7,8 @@ import {
 } from '../../api/albarans';
 import { getProductes } from '../../api/productes';
 import { parseApiError } from '../../utils/apiError';
+import { Badge, Button, FormField, PageHeader } from '../../components/ui';
+import inputStyles from '../../components/ui/shared/Input.module.css';
 import styles from './Albarans.module.css';
 
 export default function AlbaranDetall({ albaran: initial, onBack, onConfirmar, onEsborrany, canWrite }) {
@@ -17,13 +19,12 @@ export default function AlbaranDetall({ albaran: initial, onBack, onConfirmar, o
   const [novaLinia, setNovaLinia] = useState({ producte_id: '', quantitat: '', preu_unitari: '' });
   const [nouLot,    setNouLot]    = useState({ numero_lot: '', data_caducitat: '', quantitat: '' });
   const [lotLiniaId, setLotLiniaId] = useState(null);
-  const [pageError,  setPageError]  = useState(null);
-  const [saving,     setSaving]     = useState(false);
+  const [pageError,  setPageError] = useState(null);
+  const [saving,     setSaving] = useState(false);
 
   const albaran = alb ?? initial;
   const esEsborrany = albaran.estat === 'esborrany';
 
-  // ── Afegir línia ──────────────────────────────────────────────
   const handleAfegirLinia = async () => {
     if (!novaLinia.producte_id || !novaLinia.quantitat) {
       setPageError('Selecciona producte i quantitat'); return;
@@ -44,7 +45,6 @@ export default function AlbaranDetall({ albaran: initial, onBack, onConfirmar, o
     catch (e) { setPageError(parseApiError(e)); }
   };
 
-  // ── Afegir lot ────────────────────────────────────────────────
   const handleAfegirLot = async (liniaId) => {
     if (!nouLot.numero_lot || !nouLot.data_caducitat || !nouLot.quantitat) {
       setPageError('Omple tots els camps del lot'); return;
@@ -69,40 +69,33 @@ export default function AlbaranDetall({ albaran: initial, onBack, onConfirmar, o
 
   return (
     <div className={styles.page}>
-      {/* Capçalera */}
-      <header className={styles.header}>
-        <div>
-          <button className={styles.btnBack} onClick={onBack}>← Tornar</button>
-          <h1 className={styles.title}>Albaran #{albaran.id}</h1>
-          <p className={styles.subtitle}>
+      <PageHeader
+        title={`Albaran #${albaran.id}`}
+        subtitle={
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {albaran.proveidor?.nom ?? '—'} ·{' '}
             {new Date(albaran.data).toLocaleDateString('ca-ES')} ·{' '}
-            <span className={`${styles.badge} ${styles[albaran.estat]}`}>
+            <Badge variant={albaran.estat === 'confirmat' ? 'success' : 'warning'}>
               {albaran.estat}
-            </span>
-          </p>
-        </div>
-        {canWrite && (
-          <div className={styles.actions}>
-            {esEsborrany && (
-              <button
-                className={styles.btnConfirm}
-                onClick={() => onConfirmar(albaran.id)}
-              >
+            </Badge>
+          </span>
+        }
+        action={
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <Button variant="ghost" onClick={onBack}>← Tornar</Button>
+            {canWrite && esEsborrany && (
+              <Button onClick={() => onConfirmar(albaran.id)}>
                 ✓ Confirmar albaran
-              </button>
+              </Button>
             )}
-            {!esEsborrany && (
-              <button
-                className={styles.btnWarning}
-                onClick={() => onEsborrany(albaran.id)}
-              >
+            {canWrite && !esEsborrany && (
+              <Button variant="warning" onClick={() => onEsborrany(albaran.id)}>
                 Revertir a esborrany
-              </button>
+              </Button>
             )}
           </div>
-        )}
-      </header>
+        }
+      />
 
       {pageError && <div className={styles.pageError}>{pageError}</div>}
 
@@ -117,22 +110,16 @@ export default function AlbaranDetall({ albaran: initial, onBack, onConfirmar, o
         {linies.map((linia) => (
           <div key={linia.id} className={styles.liniaCard}>
             <div className={styles.liniaHeader}>
-              <span className={styles.liniaNom}>
-                {linia.producte?.nom ?? '—'}
-              </span>
+              <span className={styles.liniaNom}>{linia.producte?.nom ?? '—'}</span>
               <span className={styles.liniaInfo}>
                 {linia.quantitat} {linia.producte?.unitat_mesura}
                 {linia.preu_unitari ? ` · ${linia.preu_unitari} €/u` : ''}
               </span>
               {canWrite && esEsborrany && (
-                <button
-                  className={styles.btnDeleteSm}
-                  onClick={() => handleEliminarLinia(linia.id)}
-                >✕</button>
+                <Button variant="danger" size="sm" onClick={() => handleEliminarLinia(linia.id)}>✕</Button>
               )}
             </div>
 
-            {/* Lots de la línia */}
             <div className={styles.lots}>
               {(linia.lots ?? []).length === 0 && (
                 <p className={styles.lotsEmpty}>Cap lot assignat</p>
@@ -143,39 +130,57 @@ export default function AlbaranDetall({ albaran: initial, onBack, onConfirmar, o
                   <span>Caducitat: {new Date(lot.data_caducitat).toLocaleDateString('ca-ES')}</span>
                   <span>{lot.quantitat} {linia.producte?.unitat_mesura}</span>
                   {canWrite && esEsborrany && (
-                    <button
-                      className={styles.btnDeleteSm}
-                      onClick={() => handleEliminarLot(linia.id, lot.id)}
-                    >✕</button>
+                    <Button variant="danger" size="sm" onClick={() => handleEliminarLot(linia.id, lot.id)}>✕</Button>
                   )}
                 </div>
               ))}
 
-              {/* Formulari nou lot */}
               {canWrite && esEsborrany && (
                 lotLiniaId === linia.id ? (
                   <div className={styles.lotForm}>
-                    <input placeholder="Núm. lot" value={nouLot.numero_lot}
+                    <input
+                      placeholder="Núm. lot"
+                      value={nouLot.numero_lot}
                       onChange={(e) => setNouLot(p => ({ ...p, numero_lot: e.target.value }))}
-                      className={styles.inputSm} />
-                    <input type="date" value={nouLot.data_caducitat}
+                      className={inputStyles.input}
+                      style={{ flex: 1, minWidth: 100 }}
+                    />
+                    <input
+                      type="date"
+                      value={nouLot.data_caducitat}
                       onChange={(e) => setNouLot(p => ({ ...p, data_caducitat: e.target.value }))}
-                      className={styles.inputSm} />
-                    <input type="number" placeholder="Quantitat" value={nouLot.quantitat}
+                      className={inputStyles.input}
+                      style={{ flex: 1, minWidth: 130 }}
+                    />
+                    <input
+                      type="number"
+                      placeholder="Quantitat"
+                      value={nouLot.quantitat}
                       onChange={(e) => setNouLot(p => ({ ...p, quantitat: e.target.value }))}
-                      className={styles.inputSm} min="0" step="0.01" />
-                    <button className={styles.btnConfirmSm}
-                      onClick={() => handleAfegirLot(linia.id)} disabled={saving}>
+                      className={inputStyles.input}
+                      style={{ flex: 1, minWidth: 90 }}
+                      min="0"
+                      step="0.01"
+                    />
+                    <Button size="sm" onClick={() => handleAfegirLot(linia.id)} disabled={saving}>
                       Afegir
-                    </button>
-                    <button className={styles.btnCancelSm}
-                      onClick={() => { setLotLiniaId(null); setNouLot({ numero_lot: '', data_caducitat: '', quantitat: '' }); }}>
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => {
+                        setLotLiniaId(null);
+                        setNouLot({ numero_lot: '', data_caducitat: '', quantitat: '' });
+                      }}
+                    >
                       Cancel·lar
-                    </button>
+                    </Button>
                   </div>
                 ) : (
-                  <button className={styles.btnAddLot}
-                    onClick={() => { setLotLiniaId(linia.id); setPageError(null); }}>
+                  <button
+                    className={styles.btnAddLot}
+                    onClick={() => { setLotLiniaId(linia.id); setPageError(null); }}
+                  >
                     + Afegir lot
                   </button>
                 )
@@ -193,25 +198,34 @@ export default function AlbaranDetall({ albaran: initial, onBack, onConfirmar, o
             <select
               value={novaLinia.producte_id}
               onChange={(e) => setNovaLinia(p => ({ ...p, producte_id: e.target.value }))}
-              className={styles.input}
+              className={inputStyles.input}
             >
               <option value="">— Producte —</option>
               {(productes ?? []).map((p) => (
                 <option key={p.id} value={p.id}>{p.nom} ({p.unitat_mesura})</option>
               ))}
             </select>
-            <input type="number" placeholder="Quantitat" min="0" step="0.01"
+            <input
+              type="number"
+              placeholder="Quantitat"
+              min="0"
+              step="0.01"
               value={novaLinia.quantitat}
               onChange={(e) => setNovaLinia(p => ({ ...p, quantitat: e.target.value }))}
-              className={styles.input} />
-            <input type="number" placeholder="Preu unit. (opcional)" min="0" step="0.01"
+              className={inputStyles.input}
+            />
+            <input
+              type="number"
+              placeholder="Preu unit. (opcional)"
+              min="0"
+              step="0.01"
               value={novaLinia.preu_unitari}
               onChange={(e) => setNovaLinia(p => ({ ...p, preu_unitari: e.target.value }))}
-              className={styles.input} />
-            <button className={styles.btnPrimary}
-              onClick={handleAfegirLinia} disabled={saving}>
+              className={inputStyles.input}
+            />
+            <Button onClick={handleAfegirLinia} disabled={saving}>
               {saving ? '…' : 'Afegir'}
-            </button>
+            </Button>
           </div>
         </section>
       )}
