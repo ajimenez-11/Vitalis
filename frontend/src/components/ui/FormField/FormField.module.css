@@ -1,0 +1,17 @@
+.field { margin-bottom: 1rem; }
+
+.label {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.error {
+  color: var(--color-error);
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
