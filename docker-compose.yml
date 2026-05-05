@@ -1,0 +1,88 @@
+services:
+
+  # BASE DE DADES
+  db:
+    image: mysql:8.0
+    container_name: vitalis_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: vitalis
+      MYSQL_USER: vitalis_user
+      MYSQL_PASSWORD: vitalis_pass
+      MYSQL_ROOT_PASSWORD: root_pass
+    ports:
+      - "3307:3306"          
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - vitalis_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # BACKEND — Laravel
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: vitalis_backend
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./backend:/var/www          # hot reload: els canvis es reflecteixen al moment
+    ports:
+      - "8000:8000"                 # API accessible a http://localhost:8000
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: vitalis
+      DB_USERNAME: vitalis_user
+      DB_PASSWORD: vitalis_pass
+      RUTA_RECEPTES: uploads/imatges/receptes 
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - vitalis_net
+    command: >
+      sh -c "
+        composer install --no-interaction &&
+        php artisan key:generate --ansi &&
+        php artisan vendor:publish --provider='Illuminate\\Http\\Middleware\\HandleCors' --force &&
+        php artisan migrate --force &&
+        php artisan db:seed --force &&
+        php artisan serve --host=0.0.0.0 --port=8000
+      "
+
+  # FRONTEND — React + Tailwind
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: vitalis_frontend
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./frontend:/app             # hot reload
+      - /app/node_modules           # evita que el volum sobreescrigui node_modules
+    ports:
+      - "5173:5173"                 # app accessible a http://localhost:5173
+    environment:
+      VITE_API_URL: http://localhost:8000/api   # URL de l'API Laravel
+    depends_on:
+      - backend
+    networks:
+      - vitalis_net
+
+# VOLUMS I XARXA
+volumes:
+  db_data:
+
+networks:
+  vitalis_net:
+    driver: bridge
