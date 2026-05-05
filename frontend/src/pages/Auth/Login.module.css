@@ -1,0 +1,167 @@
+.wrapper {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  padding: 24px;
+  overflow: auto;
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: 48px 40px;
+  box-shadow: var(--shadow-card);
+}
+
+/* Logo */
+.logoWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.logoBox {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Títols */
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--color-text);
+  margin: 0 0 4px;
+}
+
+.subtitle {
+  font-size: 14px;
+  text-align: center;
+  color: var(--color-muted);
+  margin: 0 0 24px;
+}
+
+/* Error banner  */
+.errorBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  /* Defecte: error genèric */
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+}
+
+/* Usuari inactiu */
+.errorBanner_inactive {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #f59e0b;
+}
+
+/* Credencials incorrectes */
+.errorBanner_credentials {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  border-color: var(--color-error);
+}
+
+.errorBannerIcon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Camps */
+.field     { margin-bottom: 20px; }
+.fieldLast { margin-bottom: 28px; }
+
+.label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-muted);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.input {
+  width: 100%;
+  background: #fafaf9;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-size: 15px;
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(30, 92, 46, 0.1);
+}
+
+.inputError {
+  background: var(--color-error-bg);
+  border-color: var(--color-error);
+}
+
+.inputError:focus {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
+}
+
+.errorMsg {
+  color: var(--color-error);
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+/* Botó principal  */
+.btnPrimary {
+  width: 100%;
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  font-family: var(--font-sans);
+  padding: 14px;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  letter-spacing: 0.01em;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.btnPrimary:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+.btnPrimary:disabled {
+  background: var(--color-accent-border);
+  cursor: not-allowed;
+}

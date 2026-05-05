@@ -1,0 +1,33 @@
+.page   { max-width: 1100px; margin: 0 auto; }
+.status { padding: 2rem; color: var(--color-muted); }
+.error  { color: var(--color-error); }
+
+.userName    { font-weight: 600; color: var(--color-text); }
+.inactiveRow { opacity: 0.55; }
+
+.actions { display: flex; gap: 6px; justify-content: flex-end; }
+
+.btnActive {
+  color: #166534;
+  background: none;
+  border: 1px solid #bbf7d0;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+}
+.btnInactive {
+  color: #991b1b;
+  background: none;
+  border: 1px solid #fecaca;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+}
+.btnActive:disabled,
+.btnInactive:disabled { opacity: 0.4; cursor: not-allowed; }
