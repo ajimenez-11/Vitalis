@@ -1,17 +1,16 @@
 services:
-
   # BASE DE DADES
   db:
     image: mysql:8.0
     container_name: vitalis_db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: vitalis
-      MYSQL_USER: vitalis_user
-      MYSQL_PASSWORD: vitalis_pass
-      MYSQL_ROOT_PASSWORD: root_pass
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     ports:
-      - "3307:3306"          
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
     networks:
@@ -31,19 +30,20 @@ services:
     restart: unless-stopped
     working_dir: /var/www
     volumes:
-      - ./backend:/var/www          # hot reload: els canvis es reflecteixen al moment
+      - ./backend:/var/www
     ports:
-      - "8000:8000"                 # API accessible a http://localhost:8000
+      - "8000:8000"
     environment:
-      APP_ENV: local
-      APP_DEBUG: "true"
+      APP_ENV: ${APP_ENV}
+      APP_DEBUG: ${APP_DEBUG}
+      APP_KEY: ${APP_KEY}
       DB_CONNECTION: mysql
       DB_HOST: db
       DB_PORT: 3306
-      DB_DATABASE: vitalis
-      DB_USERNAME: vitalis_user
-      DB_PASSWORD: vitalis_pass
-      RUTA_RECEPTES: uploads/imatges/receptes 
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      RUTA_RECEPTES: uploads/imatges/receptes
     depends_on:
       db:
         condition: service_healthy
@@ -68,12 +68,12 @@ services:
     restart: unless-stopped
     working_dir: /app
     volumes:
-      - ./frontend:/app             # hot reload
-      - /app/node_modules           # evita que el volum sobreescrigui node_modules
+      - ./frontend:/app
+      - /app/node_modules
     ports:
-      - "5173:5173"                 # app accessible a http://localhost:5173
+      - "5173:5173"
     environment:
-      VITE_API_URL: http://localhost:8000/api   # URL de l'API Laravel
+      VITE_API_URL: ${VITE_API_URL}
     depends_on:
       - backend
     networks:
@@ -82,7 +82,6 @@ services:
 # VOLUMS I XARXA
 volumes:
   db_data:
-
 networks:
   vitalis_net:
     driver: bridge
