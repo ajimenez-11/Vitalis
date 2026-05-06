@@ -1,212 +1,162 @@
-# Vitalis — Docker (Desenvolupament Local i Servidor)
+# Vitalis | **Antonio Jiménez & David Moya**
+Aplicació web per a la gestió d'albarans i estoc en cuines professionals i empreses de càtering. Digitalitza i centralitza la recepció de mercaderia, el control d'estoc en temps real, la traçabilitat per lots i la gestió de receptes amb descàrrega automàtica d'estoc.
 
-## Estructura del repositori
-```
-vitalis/
-├── docker-compose.yml
-├── .env              ← el teu .env real (NO es puja a GitHub)
-├── .env.example      ← plantilla sense credencials (SÍ es puja a GitHub)
-├── backend/
-│   ├── Dockerfile
-│   ├── .dockerignore
-│   ├── .env              ← el teu .env real de Laravel (NO es puja a GitHub)
-│   ├── .env.example      ← plantilla sense credencials (SÍ es puja a GitHub)
-│   └── ... (codi Laravel)
-└── frontend/
-    ├── Dockerfile
-    ├── .dockerignore
-    └── ... (codi React)
-```
 ---
 
-## Primers passos en local (només la primera vegada)
+## 🚀 Funcionalitats Principals
 
-### 1. Clona el repositori
+- **Gestió d'Albarans:** Registre digital d'entrades de mercaderia associades a proveïdors, amb confirmació que actualitza l'estoc automàticament.
+- **Control d'Estoc en Temps Real:** Consulta de l'estoc actual de cada producte amb alertes visuals quan es troba per sota del mínim.
+- **Traçabilitat per Lots:** Cada línia d'albaran registra número de lot i data de caducitat. Permet rastrejar l'origen d'un ingredient fins al proveïdor.
+- **Gestió de Receptes:** CRUD de receptes amb llista d'ingredients per porció. En registrar un consum, el sistema genera automàticament els moviments de sortida d'estoc.
+- **Autenticació i Rols:** Sistema de rols diferenciat (administrador, responsable de cuina, cuiner) amb tokens JWT via Laravel Sanctum.
+- **Gestió d'Usuaris (Admin):** Creació, edició i desactivació de comptes d'usuari.
+- **Moviments Manuals:** Registre de sortides, ajustos i pèrdues d'estoc amb impacte automàtic.
+
+---
+
+## 🛠️ Stack Tècnic
+
+- **Backend:** Laravel 11 + API REST
+- **Frontend:** React + Tailwind CSS
+- **Base de Dades:** MySQL 8
+- **Autenticació:** Laravel Sanctum (JWT)
+- **Infraestructura:** Docker + Docker Compose
+- **Eines:** Eloquent ORM, Migracions, Seeders, Form Requests
+
+---
+
+## 📦 Instal·lació
+
+### Prerequisits
+- Docker i Docker Compose instal·lats a la màquina.
+
+### Passos
+
+1. **Clonar el repositori:**
+   ```bash
+   git clone https://github.com/ajimenez-11/vitalis.git
+   cd vitalis
+   ```
+
+2. **Crear els fitxers d'entorn:**
+   ```bash
+   cp .env.example .env
+   cp backend/.env.example backend/.env
+   ```
+   Edita `.env` amb les credencials:
+   ```env
+   DB_DATABASE=vitalis
+   DB_USERNAME=vitalis_user
+   DB_PASSWORD=vitalis_pass
+   DB_ROOT_PASSWORD=root_pass
+   VITE_API_URL=http://localhost:8000/api
+   ```
+
+3. **Construir i aixecar els contenidors:**
+   ```bash
+   docker compose up --build -d
+   ```
+   > La primera vegada tarda uns minuts. Les migracions i seeders s'executen automàticament.
+
+4. **Accés a l'aplicació:** http://localhost:5173
+
+---
+
+## 🖥️ Ports Utilitzats
+
+| Port | Servei |
+|------|--------|
+| 5173 | Frontend React |
+| 8000 | API Laravel |
+| 3307 | MySQL (accessible externament per a eines com TablePlus o DBeaver) |
+
+---
+
+## 🔑 Credencials de Prova
+
+| Rol | Email | Contrasenya |
+|-----|-------|-------------|
+| Administrador | admin@vitalis.cat | password |
+| Responsable de Cuina | responsable@vitalis.cat | password |
+| Cuiner | cuiner@vitalis.cat | password |
+
+---
+
+## 🌐 Desplegament en Servidor
+
+### ⚠️ Configuració CORS obligatòria
+
+Si desplegueu en una IP diferent de `localhost` o `172.20.2.205`, cal afegir la IP del servidor a `backend/config/cors.php` **abans** d'aixecar els contenidors:
+
+```php
+'allowed_origins' => [
+    'http://localhost:5173',
+    'http://172.20.2.205:5173',
+    'http://IP-DEL-SERVIDOR:5173',   // ← afegeix la teva IP aquí
+],
+```
+
+> Sense aquest pas, el navegador bloquejarà totes les crides a l'API per política CORS.
+
+### Passos de desplegament
+
 ```bash
-git clone https://github.com/el-teu-usuari/vitalis.git
+# 1. Clonar el repositori
+git clone https://github.com/ajimenez-11/vitalis.git
 cd vitalis
-```
 
-### 2. Crea el fitxer d'entorn de Docker
-```bash
+# 2. Crear els fitxers d'entorn
 cp .env.example .env
-```
-Edita `.env` i omple les credencials:
-```env
-APP_KEY=
-DB_DATABASE=vitalis
-DB_USERNAME=vitalis_user
-DB_PASSWORD=vitalis_pass
-DB_ROOT_PASSWORD=root_pass
-VITE_API_URL=http://localhost:8000/api
-```
-
-### 3. Crea el fitxer d'entorn del backend
-```bash
 cp backend/.env.example backend/.env
-```
-Edita `backend/.env` i omple les credencials:
-```env
-DB_USERNAME=vitalis_user
-DB_PASSWORD=vitalis_pass
-```
-> El `APP_KEY` es generarà automàticament quan arranqui el contenidor.
-
-### 4. Arranca tots els serveis
-```bash
-docker compose up --build
-```
-La primera vegada tarda uns minuts perquè:
-- Descarrega les imatges de PHP, Node i MySQL
-- Executa `composer install`
-- Executa les migracions i seeders de Laravel
-
----
-
-## Desplegament en servidor
-
-### 1. Connecta't al servidor per SSH
-```bash
-ssh usuari@ip-del-servidor
-```
-
-### 2. Clona el repositori
-```bash
-git clone https://github.com/el-teu-usuari/vitalis.git
-cd vitalis
-```
-
-### 3. Crea el fitxer d'entorn de Docker
-```bash
-cp .env.example .env
-```
-Edita `.env` amb les dades del servidor:
-```env
+# Editar .env amb les següents variables (substitueix IP-DEL-SERVIDOR per la IP real):
 APP_ENV=production
 APP_DEBUG=false
-APP_KEY=
 DB_DATABASE=vitalis
 DB_USERNAME=vitalis_user
 DB_PASSWORD=vitalis_pass
 DB_ROOT_PASSWORD=root_pass
 VITE_API_URL=http://IP-DEL-SERVIDOR:8000/api
-```
-> Substitueix `IP-DEL-SERVIDOR` per la IP real del servidor.
 
-### 4. Crea el fitxer d'entorn del backend
-```bash
-cp backend/.env.example backend/.env
-```
-Edita `backend/.env`:
-```env
-APP_ENV=production
-APP_DEBUG=false
-DB_USERNAME=vitalis_user
-DB_PASSWORD=vitalis_pass
-```
+# 3. Afegir la IP a backend/config/cors.php (vegeu apartat anterior)
 
-### 5. Arranca els serveis en segon pla
-```bash
+# 4. Construir i aixecar els contenidors en segon pla
 docker compose up --build -d
 ```
 
-### URLs en el servidor
-| Servei   | URL                          |
-|----------|------------------------------|
-| Frontend | http://IP-DEL-SERVIDOR:5173  |
-| API      | http://IP-DEL-SERVIDOR:8000  |
+Accés a l'aplicació: `http://IP-DEL-SERVIDOR:5173`
 
 ---
 
-## URLs en local
-| Servei   | URL                    |
-|----------|------------------------|
-| Frontend | http://localhost:5173  |
-| API      | http://localhost:8000  |
-| MySQL    | localhost:3307         |
+## 📂 Model de Dades
 
-Credencials MySQL per connectar amb TablePlus o DBeaver:
-| Camp     | Valor         |
-|----------|---------------|
-| Host     | localhost     |
-| Port     | 3307          |
-| Database | vitalis       |
-| User     | vitalis_user  |
-| Password | vitalis_pass  |
+- **User:** id, nom, email, password, rol (admin | responsable_cuina | cuiner), actiu
+  Relacions: `hasMany` Albaran, Recepta, ReceptaConsum, MovimentStock.
 
----
+- **Proveidor:** id, nom, nif, telefon, email, adreca
+  Relació: `hasMany` Albaran.
 
-## Comandes del dia a dia
-```bash
-# Arrancar en segon pla (sense veure logs)
-docker compose up -d
-# Veure logs de tots els serveis
-docker compose logs -f
-# Veure logs només del backend
-docker compose logs -f backend
-# Veure logs només del frontend
-docker compose logs -f frontend
-# Aturar tots els serveis
-docker compose down
-# Aturar i eliminar la base de dades (compte! es perden les dades)
-docker compose down -v
-# Reconstruir les imatges (després de canviar un Dockerfile)
-docker compose up --build
-```
+- **Producte:** id, nom, unitat_mesura, estoc_actual `decimal(10,3)`, estoc_minim `decimal(10,3)`
+  Relacions: `hasMany` LiniaAlbaran, LiniaRecepta, MovimentStock.
 
-### Comandes Artisan (Laravel)
-```bash
-# Executar migracions
-docker compose exec backend php artisan migrate
-# Executar seeders
-docker compose exec backend php artisan db:seed
-# Crear un nou model
-docker compose exec backend php artisan make:model NomModel -m
-# Llistat de rutes de l'API
-docker compose exec backend php artisan route:list
-# Netejar caché
-docker compose exec backend php artisan cache:clear
-docker compose exec backend php artisan config:clear
-```
+- **Albaran:** id, proveidor_id, usuari_id, data, estat (esborrany | confirmat), observacions
+  Relacions: `belongsTo` Proveidor, User — `hasMany` LiniaAlbaran.
 
-### Comandes npm (React)
-```bash
-# Instal·lar un nou paquet
-docker compose exec frontend npm install nom-paquet
-# Executar linter
-docker compose exec frontend npm run lint
-```
+- **LiniaAlbaran:** id, albaran_id, producte_id, quantitat `decimal(10,3)`, preu_unitari `decimal(10,4)`
+  Relacions: `belongsTo` Albaran, Producte — `hasMany` Lot.
 
----
+- **Lot:** id, linia_albaran_id, numero_lot, quantitat `decimal(10,3)`, data_caducitat
+  Relacions: `belongsTo` LiniaAlbaran — `hasMany` MovimentStock.
 
-## Solució de problemes freqüents
+- **Recepta:** id, usuari_id, nom, descripcio, porcions_base, imatge
+  Relacions: `belongsTo` User — `hasMany` LiniaRecepta, ReceptaConsum.
 
-**Error de permisos a Laravel (storage / cache)**
-```bash
-docker compose exec backend chmod -R 775 storage bootstrap/cache
-```
+- **LiniaRecepta:** id, recepta_id, producte_id, quantitat_per_porcio `decimal(10,4)`, temperatura_coccio `decimal(5,2)`
+  Relacions: `belongsTo` Recepta, Producte.
 
-**El backend no connecta amb la base de dades**
-→ Verifica que `DB_HOST=db` al teu `backend/.env` (no `127.0.0.1`).
+- **ReceptaConsum:** id, recepta_id, usuari_id, porcions, data, observacions
+  Relacions: `belongsTo` Recepta, User — `hasMany` MovimentStock.
+  En crear-se, genera automàticament un `MovimentStock` de sortida per a cada ingredient de la recepta.
 
-**Canvis al codi no es reflecteixen**
-```bash
-docker compose restart backend
-# o
-docker compose restart frontend
-```
-
-**Vull resetejat la base de dades des de zero**
-```bash
-docker compose down -v
-docker compose up --build
-```
-
-**Error `APP_KEY` buit**
-```bash
-docker compose exec backend php artisan key:generate
-```
-
-**El frontend no connecta amb el backend en el servidor**
-→ Verifica que `VITE_API_URL` al `.env` de l'arrel té la IP correcta del servidor i no `localhost`.
-→ Verifica que `allowed_origins` a `backend/config/cors.php` inclou la URL del frontend del servidor.
+- **MovimentStock:** id, producte_id, lot_id *(nullable)*, usuari_id, recepta_consum_id *(nullable)*, tipus (entrada | sortida | ajust), quantitat `decimal(10,3)`, data, observacions
+  Relacions: `belongsTo` Producte, Lot, User, ReceptaConsum.
