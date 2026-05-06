@@ -16,10 +16,9 @@
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   padding: 48px 40px;
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
-/* Logo */
 .logoWrapper {
   display: flex;
   justify-content: center;
@@ -36,7 +35,6 @@
   justify-content: center;
 }
 
-/* Títols */
 .title {
   font-size: 22px;
   font-weight: 600;
@@ -52,7 +50,6 @@
   margin: 0 0 24px;
 }
 
-/* Error banner  */
 .errorBanner {
   display: flex;
   align-items: flex-start;
@@ -63,19 +60,17 @@
   font-size: 0.85rem;
   line-height: 1.45;
   /* Defecte: error genèric */
-  background: var(--color-error-bg);
-  color: var(--color-error);
-  border: 1px solid var(--color-error);
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
 }
 
-/* Usuari inactiu */
 .errorBanner_inactive {
   background: #fffbeb;
   color: #92400e;
   border-color: #f59e0b;
 }
 
-/* Credencials incorrectes */
 .errorBanner_credentials {
   background: var(--color-error-bg);
   color: var(--color-error);
@@ -88,24 +83,23 @@
   margin-top: 1px;
 }
 
-/* Camps */
 .field     { margin-bottom: 20px; }
 .fieldLast { margin-bottom: 28px; }
 
 .label {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--color-muted);
-  font-weight: 600;
+  color: #6b7280;
+  font-weight: 700;
   margin-bottom: 8px;
 }
 
 .input {
   width: 100%;
-  background: #fafaf9;
-  border: 1.5px solid var(--color-border);
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
   border-radius: var(--radius-md);
   padding: 12px 16px;
   font-size: 15px;
@@ -116,28 +110,36 @@
   box-sizing: border-box;
 }
 
+.input::placeholder {
+  color: #9ca3af;
+  font-style: italic;
+  opacity: 0.8;
+}
+
 .input:focus {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px rgba(30, 92, 46, 0.1);
+  background: #fafafa;
 }
 
 .inputError {
-  background: var(--color-error-bg);
+  background: #fef2f2;
   border-color: var(--color-error);
 }
 
 .inputError:focus {
   border-color: var(--color-error);
   box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
+  background: #fef2f2;
 }
 
 .errorMsg {
-  color: var(--color-error);
+  color: #dc2626;
   font-size: 12px;
   margin-top: 6px;
+  font-weight: 500;
 }
 
-/* Botó principal  */
 .btnPrimary {
   width: 100%;
   background: var(--color-accent);
@@ -149,19 +151,22 @@
   border-radius: var(--radius-md);
   border: none;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
   letter-spacing: 0.01em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btnPrimary:hover:not(:disabled) {
   background: var(--color-accent-hover);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .btnPrimary:active:not(:disabled) {
-  transform: scale(0.985);
+  transform: scale(0.98);
 }
 
 .btnPrimary:disabled {
-  background: var(--color-accent-border);
+  background: #9ca3af;
   cursor: not-allowed;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
