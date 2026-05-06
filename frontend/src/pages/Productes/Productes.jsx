@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { MdSearch } from 'react-icons/md';
 import { useApi } from '../../hooks/useApi';
 import {
   getProductes, createProducte, updateProducte, deleteProducte,
@@ -9,9 +10,10 @@ import styles from './Productes.module.css';
 
 export default function ProductesPage() {
   const { data: productes, loading, error, refetch } = useApi(getProductes);
-  const [modal, setModal] = useState(null); // null | 'crear' | {producte}
+  const [modal, setModal] = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [apiError, setApiError] = useState(null);
+  const [query, setQuery] = useState('');
 
   const obrirCrear = () => { setApiError(null); setModal('crear'); };
   const obrirEditar = (p) => { setApiError(null); setModal(p); };
@@ -41,7 +43,9 @@ export default function ProductesPage() {
   if (loading) return <div className={styles.status}>Carregant productes…</div>;
   if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
 
-  const llista = productes ?? [];
+  const llista = (productes ?? []).filter(p =>
+    p.nom.toLowerCase().includes(query.toLowerCase())
+  );
 
   const columns = [
     { key: 'nom', label: 'Nom' },
@@ -56,16 +60,29 @@ export default function ProductesPage() {
     <div className={styles.page}>
       <PageHeader
         title="Productes"
-        subtitle={`${llista.length} productes al catàleg`}
+        subtitle={`${llista.length} producte${llista.length !== 1 ? 's' : ''} al catàleg`}
         action={<Button onClick={obrirCrear}>+ Nou producte</Button>}
       />
 
       {apiError && <div className={styles.pageError}>{apiError}</div>}
 
+      <div className={styles.toolbar}>
+        <div className={styles.searchWrapper}>
+          <MdSearch className={styles.searchIcon} />
+          <input
+            type="text"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            className={styles.searchInput}
+            placeholder="Cercar producte..."
+          />
+        </div>
+      </div>
+
       <Table
         columns={columns}
         data={llista}
-        emptyMessage="Cap producte registrat. Crea el primer!"
+        emptyMessage={query ? 'Cap producte coincideix amb la cerca' : 'Cap producte registrat. Crea el primer!'}
         renderRow={(p) => {
           const sota = Number(p.estoc_actual) <= Number(p.estoc_minim);
           return (
