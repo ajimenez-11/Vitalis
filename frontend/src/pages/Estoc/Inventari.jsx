@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { MdSearch } from 'react-icons/md';
 import { useApi } from '../../hooks/useApi';
 import { getStock } from '../../api/stock';
 import { useAuth } from '../../context/AuthContext';
@@ -56,19 +57,23 @@ export default function InventariPage() {
             </button>
           ))}
         </div>
-        <input
-          type="text"
-          className={styles.cerca}
-          placeholder="Cercar producte..."
-          value={cerca}
-          onChange={(e) => setCerca(e.target.value)}
-        />
+
+        <div className={styles.searchWrapper}>
+          <MdSearch className={styles.searchIcon} />
+          <input
+            type="text"
+            className={styles.searchInput}
+            placeholder="Cercar producte..."
+            value={cerca}
+            onChange={(e) => setCerca(e.target.value)}
+          />
+        </div>
       </div>
 
       <Table
         columns={columns}
         data={llista}
-        emptyMessage="Sense resultats."
+        emptyMessage={cerca ? 'Cap producte coincideix amb la cerca' : 'Sense resultats.'}
         renderRow={(p) => (
           <tr key={p.id} className={p.baix_minim ? styles.rowBaix : ''}>
             <td className={styles.nomProducte}>{p.nom}</td>
@@ -85,18 +90,10 @@ export default function InventariPage() {
             {canWrite && (
               <td>
                 <div className={styles.accions}>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => setModal({ producte: p, mode: 'ajust' })}
-                  >
+                  <Button size="sm" variant="secondary" onClick={() => setModal({ producte: p, mode: 'ajust' })}>
                     Ajust
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="danger"
-                    onClick={() => setModal({ producte: p, mode: 'sortida' })}
-                  >
+                  <Button size="sm" variant="danger" onClick={() => setModal({ producte: p, mode: 'sortida' })}>
                     Sortida
                   </Button>
                 </div>
