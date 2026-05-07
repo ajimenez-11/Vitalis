@@ -128,6 +128,62 @@ Accés a l'aplicació: `http://IP-DEL-SERVIDOR:5173`
 
 ---
 
+## 🔄 CI/CD — Deploy Automàtic
+
+Cada `push` a la branca `develop` llança automàticament el deploy al servidor via GitHub Actions.
+
+### Workflow: `.github/workflows/deploy.yml`
+
+```yaml
+name: Deploy a Servidor
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    name: Deploy via SSH
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout codi
+        uses: actions/checkout@v4
+
+      - name: Deploy al servidor
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            set -e
+            cd /home/${{ secrets.SERVER_USER }}/Vitalis
+            git pull origin develop
+            docker compose down
+            docker compose up --build -d
+            sleep 20
+            docker compose exec -T backend php artisan migrate --force
+            docker compose exec -T backend php artisan cache:clear
+            docker compose exec -T backend php artisan config:clear
+            echo "✅ Deploy completat!"
+```
+
+### Secrets necessaris a GitHub
+
+Afegeix-los a: **Settings → Secrets and variables → Actions**
+
+| Secret | Valor |
+|--------|-------|
+| `SERVER_HOST` | IP del servidor |
+| `SERVER_USER` | Usuari SSH (ex: `proj5`) |
+| `SERVER_SSH_KEY` | Clau privada SSH (`~/.ssh/github_actions`) |
+| `SERVER_PORT` | Port SSH (normalment `22`) |
+
+---
+
 ## 📂 Model de Dades
 
 - **User:** id, nom, email, password, rol (admin | responsable_cuina | cuiner), actiu
