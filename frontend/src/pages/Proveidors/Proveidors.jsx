@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { MdSearch } from 'react-icons/md';
 import { useApi } from '../../hooks/useApi';
 import {
   getProveidors, createProveidor,
@@ -17,6 +18,7 @@ export default function ProveidorsPage() {
   const [modal, setModal] = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [pageError, setPageError] = useState(null);
+  const [query, setQuery] = useState('');
 
   const obrirCrear  = ()  => { setPageError(null); setModal('crear'); };
   const obrirEditar = (p) => { setPageError(null); setModal(p); };
@@ -46,7 +48,9 @@ export default function ProveidorsPage() {
   if (loading) return <div className={styles.status}>Carregant proveïdors…</div>;
   if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
 
-  const llista = proveidors ?? [];
+  const llista = (proveidors ?? []).filter(p =>
+    p.nom.toLowerCase().includes(query.toLowerCase())
+  );
 
   const columns = [
     { key: 'nom', label: 'Nom' },
@@ -61,7 +65,7 @@ export default function ProveidorsPage() {
     <div className={styles.page}>
       <PageHeader
         title="Proveïdors"
-        subtitle={`${llista.length} proveïdors al catàleg`}
+        subtitle={`${llista.length} proveïdor${llista.length !== 1 ? 's' : ''} al catàleg`}
         action={
           canWrite && (
             <Button onClick={obrirCrear}>+ Nou proveïdor</Button>
@@ -71,10 +75,23 @@ export default function ProveidorsPage() {
 
       {pageError && <div className={styles.pageError}>{pageError}</div>}
 
+      <div className={styles.toolbar}>
+        <div className={styles.searchWrapper}>
+          <MdSearch className={styles.searchIcon} />
+          <input
+            type="text"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            className={styles.searchInput}
+            placeholder="Cercar proveïdor..."
+          />
+        </div>
+      </div>
+
       <Table
         columns={columns}
         data={llista}
-        emptyMessage="Cap proveïdor registrat. Crea el primer!"
+        emptyMessage={query ? 'Cap proveïdor coincideix amb la cerca' : 'Cap proveïdor registrat. Crea el primer!'}
         renderRow={(p) => (
           <tr key={p.id}>
             <td className={styles.nom}>{p.nom}</td>
