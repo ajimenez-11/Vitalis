@@ -145,7 +145,7 @@ on:
 jobs:
   deploy:
     name: Deploy via SSH
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout codi
