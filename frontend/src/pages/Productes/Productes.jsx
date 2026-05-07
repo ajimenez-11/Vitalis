@@ -4,6 +4,7 @@ import { useApi } from '../../hooks/useApi';
 import {
   getProductes, createProducte, updateProducte, deleteProducte,
 } from '../../api/productes';
+import { useSortable } from '../../hooks/useSortable'; // 1. Importación añadida
 import { Badge, Button, PageHeader, Table } from '../../components/ui';
 import ProducteForm from './ProducteForm';
 import styles from './Productes.module.css';
@@ -15,15 +16,45 @@ export default function ProductesPage() {
   const [apiError, setApiError] = useState(null);
   const [query, setQuery] = useState('');
 
+  // 2. Definición de columnas con sortValue
+  const columns = [
+    { key: 'nom',          label: 'Nom',         sortable: true },
+    { key: 'unitat',       label: 'Unitat',       sortable: true,
+      sortValue: (p) => p.unitat_mesura ?? '' },
+    { key: 'estoc_actual', label: 'Estoc actual', sortable: true,
+      sortValue: (p) => Number(p.estoc_actual) },
+    { key: 'estoc_minim',  label: 'Estoc mínim',  sortable: true,
+      sortValue: (p) => Number(p.estoc_minim) },
+    { key: 'estat',        label: 'Estat',        sortable: true,
+      sortValue: (p) => Number(p.estoc_actual) <= Number(p.estoc_minim) ? 0 : 1 },
+    { key: 'accions',      label: 'Accions' },
+  ];
+
+  // 3. Cálculo de la lista filtrada
+  const llista = (productes ?? []).filter(p =>
+    p.nom.toLowerCase().includes(query.toLowerCase())
+  );
+
+  // 4. Hook de ordenación (Siempre se llama, independientemente de si carga o no)
+  const { sorted, sortKey, sortDir, handleSort } = useSortable(llista, columns);
+
+  // 5. Early returns DESPUÉS de los hooks
+  if (loading) return <div className={styles.status}>Carregant productes…</div>;
+  if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
+
   const obrirCrear = () => { setApiError(null); setModal('crear'); };
   const obrirEditar = (p) => { setApiError(null); setModal(p); };
   const tancar = () => setModal(null);
 
   const handleSave = async (formData) => {
-    if (modal === 'crear') await createProducte(formData);
-    else                   await updateProducte(modal.id, formData);
-    tancar();
-    refetch();
+    try {
+      if (modal === 'crear') await createProducte(formData);
+      else                   await updateProducte(modal.id, formData);
+      tancar();
+      refetch();
+    } catch (e) {
+      setApiError(e.response?.data?.message ?? "Error en desar");
+    }
   };
 
   const handleDelete = async (id) => {
@@ -39,22 +70,6 @@ export default function ProductesPage() {
       setDeleting(null);
     }
   };
-
-  if (loading) return <div className={styles.status}>Carregant productes…</div>;
-  if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
-
-  const llista = (productes ?? []).filter(p =>
-    p.nom.toLowerCase().includes(query.toLowerCase())
-  );
-
-  const columns = [
-    { key: 'nom', label: 'Nom' },
-    { key: 'unitat', label: 'Unitat' },
-    { key: 'estoc_actual', label: 'Estoc actual' },
-    { key: 'estoc_minim', label: 'Estoc mínim' },
-    { key: 'estat', label: 'Estat' },
-    { key: 'accions', label: 'Accions' },
-  ];
 
   return (
     <div className={styles.page}>
@@ -81,7 +96,10 @@ export default function ProductesPage() {
 
       <Table
         columns={columns}
-        data={llista}
+        data={sorted} // Usamos la lista ordenada aquí
+        sortKey={sortKey}
+        sortDir={sortDir}
+        onSort={handleSort}
         emptyMessage={query ? 'Cap producte coincideix amb la cerca' : 'Cap producte registrat. Crea el primer!'}
         renderRow={(p) => {
           const sota = Number(p.estoc_actual) <= Number(p.estoc_minim);
