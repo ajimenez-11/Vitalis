@@ -55,7 +55,7 @@ services:
         php artisan key:generate --ansi &&
         php artisan vendor:publish --provider='Illuminate\\Http\\Middleware\\HandleCors' --force &&
         php artisan migrate --force &&
-        php artisan db:seed --force &&
+        php artisan tinker --execute=\"if(\\App\\Models\\User::count() == 0) { \\Artisan::call('db:seed', ['--force' => true]); echo 'Seeded'; } else { echo 'Skip seed'; }\" &&
         php artisan serve --host=0.0.0.0 --port=8000
       "
 
@@ -82,6 +82,7 @@ services:
 # VOLUMS I XARXA
 volumes:
   db_data:
+
 networks:
   vitalis_net:
     driver: bridge
