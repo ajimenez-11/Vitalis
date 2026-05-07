@@ -90,3 +90,8 @@
   box-sizing: border-box;
 }
 .searchInput:focus { border-color: var(--color-accent); }
+
+.page table th.thActive:nth-child(5) {
+  color: var(--color-warning, #d97706);
+  background-color: var(--color-warning-bg, #fef3c7);
+}
