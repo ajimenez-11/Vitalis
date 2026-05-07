@@ -6,9 +6,8 @@ import {
   updateProveidor, deleteProveidor,
 } from '../../api/proveidors';
 import { useAuth } from '../../context/AuthContext';
+import { useSortable } from '../../hooks/useSortable'; // 1. Importación añadida
 import { Badge, Button, PageHeader, Table, Modal } from '../../components/ui';
-import { FormField } from '../../components/ui';
-import inputStyles from '../../components/ui/shared/Input.module.css';
 import ProveidorForm from './ProveidorForm';
 import styles from './Proveidors.module.css';
 
@@ -20,15 +19,45 @@ export default function ProveidorsPage() {
   const [pageError, setPageError] = useState(null);
   const [query, setQuery] = useState('');
 
+  // 2. Definición de columnas con sortValue y sortable: true
+  const columns = [
+    { key: 'nom',     label: 'Nom',     sortable: true },
+    { key: 'nif',     label: 'NIF',     sortable: true,
+      sortValue: (p) => p.nif ?? '' },
+    { key: 'telefon', label: 'Telèfon', sortable: true,
+      sortValue: (p) => p.telefon ?? '' },
+    { key: 'email',   label: 'Email',   sortable: true,
+      sortValue: (p) => p.email ?? '' },
+    { key: 'adreca',  label: 'Adreça',  sortable: true,
+      sortValue: (p) => p.adreca ?? '' },
+    ...(canWrite ? [{ key: 'accions', label: 'Accions' }] : []),
+  ];
+
+  // 3. Cálculo de la lista filtrada
+  const llista = (proveidors ?? []).filter(p =>
+    p.nom.toLowerCase().includes(query.toLowerCase())
+  );
+
+  // 4. Hook de ordenación (Justo después de calcular la llista)
+  const { sorted, sortKey, sortDir, handleSort } = useSortable(llista, columns);
+
+  // 5. Early returns DESPUÉS de todos los hooks
+  if (loading) return <div className={styles.status}>Carregant proveïdors…</div>;
+  if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
+
   const obrirCrear  = ()  => { setPageError(null); setModal('crear'); };
   const obrirEditar = (p) => { setPageError(null); setModal(p); };
   const tancar = () => setModal(null);
 
   const handleSave = async (formData) => {
-    if (modal === 'crear') await createProveidor(formData);
-    else                   await updateProveidor(modal.id, formData);
-    tancar();
-    refetch();
+    try {
+      if (modal === 'crear') await createProveidor(formData);
+      else                   await updateProveidor(modal.id, formData);
+      tancar();
+      refetch();
+    } catch (e) {
+      setPageError(e.response?.data?.message ?? "Error en desar");
+    }
   };
 
   const handleDelete = async (id) => {
@@ -44,22 +73,6 @@ export default function ProveidorsPage() {
       setDeleting(null);
     }
   };
-
-  if (loading) return <div className={styles.status}>Carregant proveïdors…</div>;
-  if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
-
-  const llista = (proveidors ?? []).filter(p =>
-    p.nom.toLowerCase().includes(query.toLowerCase())
-  );
-
-  const columns = [
-    { key: 'nom', label: 'Nom' },
-    { key: 'nif', label: 'NIF' },
-    { key: 'telefon', label: 'Telèfon' },
-    { key: 'email', label: 'Email' },
-    { key: 'adreca', label: 'Adreça' },
-    ...(canWrite ? [{ key: 'accions', label: 'Accions' }] : []),
-  ];
 
   return (
     <div className={styles.page}>
@@ -90,7 +103,10 @@ export default function ProveidorsPage() {
 
       <Table
         columns={columns}
-        data={llista}
+        data={sorted} // 6. Usamos los datos ordenados
+        sortKey={sortKey}
+        sortDir={sortDir}
+        onSort={handleSort}
         emptyMessage={query ? 'Cap proveïdor coincideix amb la cerca' : 'Cap proveïdor registrat. Crea el primer!'}
         renderRow={(p) => (
           <tr key={p.id}>

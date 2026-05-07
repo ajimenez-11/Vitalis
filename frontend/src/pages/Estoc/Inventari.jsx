@@ -3,6 +3,7 @@ import { MdSearch } from 'react-icons/md';
 import { useApi } from '../../hooks/useApi';
 import { getStock } from '../../api/stock';
 import { useAuth } from '../../context/AuthContext';
+import { useSortable } from '../../hooks/useSortable'; // 1. Import añadido
 import { Badge, Button, PageHeader, Table } from '../../components/ui';
 import InventariForm from './InventariForm';
 import styles from './Inventari.module.css';
@@ -14,25 +15,35 @@ export default function InventariPage() {
   const [cerca, setCerca]   = useState('');
   const [modal, setModal]   = useState(null);
 
+  // 2. Definición de columnas con sortValue y sortable: true
+  const columns = [
+    { key: 'nom',          label: 'Producte',    sortable: true },
+    { key: 'unitat',       label: 'Unitat',       sortable: true,
+      sortValue: (p) => p.unitat_mesura ?? '' },
+    { key: 'estoc_actual', label: 'Estoc actual', sortable: true,
+      sortValue: (p) => Number(p.estoc_actual) },
+    { key: 'estoc_minim',  label: 'Estoc mínim',  sortable: true,
+      sortValue: (p) => Number(p.estoc_minim) },
+    { key: 'estat',        label: 'Estat',        sortable: true,
+      sortValue: (p) => p.baix_minim ? 0 : 1 },
+    ...(canWrite ? [{ key: 'accions', label: 'Accions' }] : []),
+  ];
+
+  // 3. Cálculo de la lista filtrada (Filtre + Cerca)
   const llista = (productes ?? []).filter((p) => {
     const matchFiltre = filtre === 'tots' || (filtre === 'baix' && p.baix_minim);
     const matchCerca  = p.nom.toLowerCase().includes(cerca.toLowerCase());
     return matchFiltre && matchCerca;
   });
 
+  // 4. Hook de ordenación (Justo DESPUÉS de calcular la llista)
+  const { sorted, sortKey, sortDir, handleSort } = useSortable(llista, columns);
+
   const totalBaix = (productes ?? []).filter((p) => p.baix_minim).length;
 
+  // 5. Early returns DESPUÉS de los hooks
   if (loading) return <p className={styles.info}>Carregant estoc...</p>;
   if (error)   return <p className={styles.errorMsg}>{error}</p>;
-
-  const columns = [
-    { key: 'nom', label: 'Producte' },
-    { key: 'unitat', label: 'Unitat' },
-    { key: 'estoc_actual', label: 'Estoc actual' },
-    { key: 'estoc_minim', label: 'Estoc mínim' },
-    { key: 'estat', label: 'Estat' },
-    ...(canWrite ? [{ key: 'accions', label: 'Accions' }] : []),
-  ];
 
   return (
     <div className={styles.page}>
@@ -72,7 +83,10 @@ export default function InventariPage() {
 
       <Table
         columns={columns}
-        data={llista}
+        data={sorted} // 6. Usamos la lista ya ordenada
+        sortKey={sortKey}
+        sortDir={sortDir}
+        onSort={handleSort}
         emptyMessage={cerca ? 'Cap producte coincideix amb la cerca' : 'Sense resultats.'}
         renderRow={(p) => (
           <tr key={p.id} className={p.baix_minim ? styles.rowBaix : ''}>

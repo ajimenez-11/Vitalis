@@ -31,3 +31,7 @@
 }
 .btnActive:disabled,
 .btnInactive:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.page table th.thActive:nth-child(3) {
+  color: var(--color-primary, #4f46e5);
+}

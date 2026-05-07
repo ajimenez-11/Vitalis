@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useApi } from '../../hooks/useApi';
 import { getUsuaris, createUsuari, updateUsuari, deleteUsuari, toggleUsuari } from '../../api/usuaris';
 import { useAuth } from '../../context/AuthContext';
+import { useSortable } from '../../hooks/useSortable'; // 1. Importación añadida
 import { Badge, Button, PageHeader, Table } from '../../components/ui';
 import UsuariForm from './UsuariForm';
 import styles from './Usuaris.module.css';
@@ -12,6 +13,21 @@ export default function Usuaris() {
   const [modalOpen, setModalOpen] = useState(false);
   const [usuariAEditar, setUsuariAEditar] = useState(null);
 
+  // 2. Definición de columnas con sortValue
+  const columns = [
+    { key: 'nom',   label: 'Nom',   sortable: true },
+    { key: 'email', label: 'Email', sortable: true },
+    { key: 'rol',   label: 'Rol',   sortable: true },
+    { key: 'estat', label: 'Estat', sortable: true, 
+      sortValue: (u) => u.actiu ? 1 : 0 },
+    { key: 'accions', label: 'Accions' },
+  ];
+
+  // 3. Preparar la lista y aplicar ordenación
+  const llista = usuaris ?? [];
+  const { sorted, sortKey, sortDir, handleSort } = useSortable(llista, columns);
+
+  // 4. Early returns DESPUÉS de los hooks
   if (loading) return <div className={styles.status}>Carregant usuaris...</div>;
   if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
 
@@ -36,14 +52,6 @@ export default function Usuaris() {
     catch (e) { alert(e.response?.data?.message || 'Error en canviar estat'); }
   };
 
-  const columns = [
-    { key: 'nom', label: 'Nom' },
-    { key: 'email', label: 'Email' },
-    { key: 'rol', label: 'Rol' },
-    { key: 'estat', label: 'Estat' },
-    { key: 'accions', label: 'Accions' },
-  ];
-
   return (
     <div className={styles.page}>
       <PageHeader
@@ -54,7 +62,10 @@ export default function Usuaris() {
 
       <Table
         columns={columns}
-        data={usuaris ?? []}
+        data={sorted} // 5. Usamos la lista ordenada
+        sortKey={sortKey}
+        sortDir={sortDir}
+        onSort={handleSort}
         emptyMessage="Cap usuari registrat."
         renderRow={(u) => (
           <tr key={u.id} className={!u.actiu ? styles.inactiveRow : ''}>
