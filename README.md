@@ -160,15 +160,21 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script: |
             set -e
-            cd /home/${{ secrets.SERVER_USER }}/Vitalis
+            echo "📁 Accedint al directori del projecte..."
+            cd /home/${{ secrets.SERVER_USER }}/Vitalis  # → /home/proj5/Vitalis
+            echo "⬇️  Baixant canvis de develop..."
             git pull origin develop
+            echo "🐳 Reconstruint i reiniciant contenidors..."
             docker compose down
             docker compose up --build -d
+            echo "⏳ Esperant que el backend estigui sa..."
             sleep 20
+            echo "🗃️  Executant migracions..."
             docker compose exec -T backend php artisan migrate --force
+            echo "🧹 Netejant caché..."
             docker compose exec -T backend php artisan cache:clear
             docker compose exec -T backend php artisan config:clear
-            echo "✅ Deploy completat!"
+            echo "✅ Deploy completat correctament!"
 ```
 
 ### Secrets necessaris a GitHub
