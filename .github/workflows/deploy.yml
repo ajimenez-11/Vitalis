@@ -1,19 +1,15 @@
 name: Deploy a Servidor
-
 on:
   push:
     branches:
       - develop
-
 jobs:
   deploy:
     name: Deploy via SSH
     runs-on: self-hosted
-
     steps:
       - name: Checkout codi
         uses: actions/checkout@v4
-
       - name: Deploy al servidor
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -26,7 +22,8 @@ jobs:
             echo "📁 Accedint al directori del projecte..."
             cd /home/${{ secrets.SERVER_USER }}/Vitalis
             echo "⬇️  Baixant canvis de develop..."
-            git pull origin develop
+            git fetch origin
+            git reset --hard origin/develop
             echo "🐳 Reconstruint i reiniciant contenidors..."
             docker compose down
             docker compose up --build -d
