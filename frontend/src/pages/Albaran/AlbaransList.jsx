@@ -3,6 +3,7 @@ import { useApi } from '../../hooks/useApi';
 import { getAlbarans, createAlbaran, deleteAlbaran,
          confirmarAlbaran, tornarEsborrany } from '../../api/albarans';
 import { useAuth } from '../../context/AuthContext';
+import { useSortable } from '../../hooks/useSortable';
 import { Badge, Button, PageHeader, Table } from '../../components/ui';
 import AlbaranForm from './AlbaranForm';
 import AlbaranDetall from './AlbaranDetall';
@@ -14,6 +15,25 @@ export default function AlbaransPage() {
   const [vista, setVista] = useState(null);
   const [detall, setDetall] = useState(null);
   const [pageError, setPageError] = useState(null);
+
+  const columns = [
+    { key: 'id',        label: '#',             sortable: true },
+    { key: 'proveidor', label: 'Proveïdor',     sortable: true,
+      sortValue: (a) => a.proveidor?.nom ?? '' },
+    { key: 'data',      label: 'Data',          sortable: true,
+      sortValue: (a) => new Date(a.data).getTime() },
+    { key: 'usuari',    label: 'Registrat per', sortable: true,
+      sortValue: (a) => a.usuari?.nom ?? '' },
+    { key: 'estat',     label: 'Estat',         sortable: true },
+    { key: 'accions',   label: 'Accions' },
+  ];
+
+  const llista = albarans ?? [];
+  const { sorted, sortKey, sortDir, handleSort } = useSortable(llista, columns);
+
+  // Early returns DESPUÉS de todos los hooks
+  if (loading) return <div className={styles.status}>Carregant albarans…</div>;
+  if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
 
   const handleCreate = async (formData) => {
     const res = await createAlbaran(formData);
@@ -54,11 +74,6 @@ export default function AlbaransPage() {
     }
   };
 
-  if (loading) return <div className={styles.status}>Carregant albarans…</div>;
-  if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
-
-  const llista = albarans ?? [];
-
   if (detall) {
     return (
       <AlbaranDetall
@@ -70,15 +85,6 @@ export default function AlbaransPage() {
       />
     );
   }
-
-  const columns = [
-    { key: 'id',         label: '#' },
-    { key: 'proveidor',  label: 'Proveïdor' },
-    { key: 'data',       label: 'Data' },
-    { key: 'usuari',     label: 'Registrat per' },
-    { key: 'estat',      label: 'Estat' },
-    { key: 'accions',    label: 'Accions' },
-  ];
 
   return (
     <div className={styles.page}>
@@ -96,8 +102,11 @@ export default function AlbaransPage() {
 
       <Table
         columns={columns}
-        data={llista}
+        data={sorted}
         emptyMessage="Cap albaran registrat."
+        sortKey={sortKey}
+        sortDir={sortDir}
+        onSort={handleSort}
         renderRow={(a) => (
           <tr key={a.id}>
             <td className={styles.idCol}>#{a.id}</td>
