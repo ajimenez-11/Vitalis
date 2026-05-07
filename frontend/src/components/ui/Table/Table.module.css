@@ -42,3 +42,43 @@
   color: var(--color-muted);
   font-size: 0.9rem;
 }
+
+.thSortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.thSortable:hover {
+  background-color: var(--color-surface-hover, #f0f4ff);
+  color: var(--color-primary, #4f46e5);
+}
+
+.thActive {
+  background-color: var(--color-surface-active, #e8edff);
+  color: var(--color-primary, #4f46e5);
+  font-weight: 700;
+}
+
+.thContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sortIcon {
+  font-size: 0.65rem;
+  opacity: 0.4;
+  transition: opacity 0.15s ease;
+  display: inline-block;
+  line-height: 1;
+}
+
+.thActive .sortIcon {
+  opacity: 1;
+}
+
+.thSortable:hover .sortIcon {
+  opacity: 0.75;
+}
