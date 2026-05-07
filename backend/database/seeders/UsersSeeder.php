@@ -10,7 +10,7 @@ class UsersSeeder extends Seeder
 {
     public function run(): void
     {
-        User::insert([
+        User::insertOrIgnore([
             [
                 'nom' => 'Administrador',
                 'email' => 'admin@vitalis.com',
