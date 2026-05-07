@@ -22,6 +22,7 @@ Aplicació web per a la gestió d'albarans i estoc en cuines professionals i emp
 - **Base de Dades:** MySQL 8
 - **Autenticació:** Laravel Sanctum (JWT)
 - **Infraestructura:** Docker + Docker Compose
+- **CI/CD:** GitHub Actions + Self-hosted Runner
 - **Eines:** Eloquent ORM, Migracions, Seeders, Form Requests
 
 ---
@@ -34,30 +35,30 @@ Aplicació web per a la gestió d'albarans i estoc en cuines professionals i emp
 ### Passos
 
 1. **Clonar el repositori:**
-   ```bash
+```bash
    git clone https://github.com/ajimenez-11/vitalis.git
    cd vitalis
-   ```
+```
 
 2. **Crear els fitxers d'entorn:**
-   ```bash
+```bash
    cp .env.example .env
    cp backend/.env.example backend/.env
-   ```
+```
    Edita `.env` amb les credencials:
-   ```env
+```env
    DB_DATABASE=vitalis
    DB_USERNAME=vitalis_user
    DB_PASSWORD=vitalis_pass
    DB_ROOT_PASSWORD=root_pass
    VITE_API_URL=http://localhost:8000/api
-   ```
+```
 
 3. **Construir i aixecar els contenidors:**
-   ```bash
+```bash
    docker compose up --build -d
-   ```
-   > La primera vegada tarda uns minuts. Les migracions i seeders s'executen automàticament.
+```
+   > La primera vegada tarda uns minuts. Les migracions s'executen automàticament. Els seeders només s'executen si la base de dades està buida.
 
 4. **Accés a l'aplicació:** http://localhost:5173
 
@@ -77,9 +78,9 @@ Aplicació web per a la gestió d'albarans i estoc en cuines professionals i emp
 
 | Rol | Email | Contrasenya |
 |-----|-------|-------------|
-| Administrador | admin@vitalis.cat | password |
-| Responsable de Cuina | responsable@vitalis.cat | password |
-| Cuiner | cuiner@vitalis.cat | password |
+| Administrador | admin@vitalis.com | password |
+| Responsable de Cuina | capcuina@vitalis.com | password |
+| Cuiner | cuiner@vitalis.com | password |
 
 ---
 
@@ -99,7 +100,7 @@ Si desplegueu en una IP diferent de `localhost` o `172.20.2.205`, cal afegir la 
 
 > Sense aquest pas, el navegador bloquejarà totes les crides a l'API per política CORS.
 
-### Passos de desplegament
+### Passos de desplegament manual
 
 ```bash
 # 1. Clonar el repositori
@@ -161,9 +162,10 @@ jobs:
           script: |
             set -e
             echo "📁 Accedint al directori del projecte..."
-            cd /home/${{ secrets.SERVER_USER }}/Vitalis  # → /home/proj5/Vitalis
+            cd /home/${{ secrets.SERVER_USER }}/Vitalis
             echo "⬇️  Baixant canvis de develop..."
-            git pull origin develop
+            git fetch origin
+            git reset --hard origin/develop
             echo "🐳 Reconstruint i reiniciant contenidors..."
             docker compose down
             docker compose up --build -d
