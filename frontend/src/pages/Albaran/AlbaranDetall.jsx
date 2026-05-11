@@ -1,71 +1,61 @@
 import { useState, useCallback } from 'react';
 import { useApi } from '../../hooks/useApi';
-import { getAlbaran } from '../../api/albarans';
-import {
-  createLinia, deleteLinia,
-  createLot,   deleteLot,
-} from '../../api/albarans';
+import { getAlbaran, createLinia, deleteLinia, createLot, deleteLot } from '../../api/albarans';
 import { getProductes } from '../../api/productes';
 import { parseApiError } from '../../utils/apiError';
 import { Badge, Button, FormField, PageHeader } from '../../components/ui';
 import inputStyles from '../../components/ui/shared/Input.module.css';
 import styles from './Albarans.module.css';
 
-export default function AlbaranDetall({ albaran: initial, onBack, onConfirmar, onEsborrany, canWrite }) {
-  const fetchAlbaran = useCallback(() => getAlbaran(initial.id), [initial.id]);
-  const { data: alb, refetch } = useApi(fetchAlbaran);
+export default function AlbaranDetall({ albaran: inicial, onBack, onConfirmar, onEsborrany, canWrite }) {
+  const { data: alb, refetch } = useApi(useCallback(() => getAlbaran(inicial.id), [inicial.id]));
   const { data: productes } = useApi(getProductes);
 
-  const [novaLinia, setNovaLinia] = useState({ producte_id: '', quantitat: '', preu_unitari: '' });
-  const [nouLot,    setNouLot]    = useState({ numero_lot: '', data_caducitat: '', quantitat: '' });
-  const [lotLiniaId, setLotLiniaId] = useState(null);
-  const [pageError,  setPageError] = useState(null);
-  const [saving,     setSaving] = useState(false);
+  const [linia, setLinia] = useState({ producte_id: '', quantitat: '', preu_unitari: '' });
+  const [lot, setLot] = useState({ numero_lot: '', data_caducitat: '', quantitat: '' });
+  const [lotObert, setLotObert] = useState(null);
+  const [error, setError] = useState(null);
+  const [guardant, setGuardant] = useState(false);
 
-  const albaran = alb ?? initial;
+  const albaran = alb ?? inicial;
   const esEsborrany = albaran.estat === 'esborrany';
-
-  const handleAfegirLinia = async () => {
-    if (!novaLinia.producte_id || !novaLinia.quantitat) {
-      setPageError('Selecciona producte i quantitat'); return;
-    }
-    setSaving(true); setPageError(null);
-    try {
-      await createLinia(albaran.id, novaLinia);
-      setNovaLinia({ producte_id: '', quantitat: '', preu_unitari: '' });
-      refetch();
-    } catch (e) { setPageError(parseApiError(e)); }
-    finally     { setSaving(false); }
-  };
-
-  const handleEliminarLinia = async (liniaId) => {
-    if (!window.confirm('Eliminar aquesta línia?')) return;
-    setPageError(null);
-    try { await deleteLinia(liniaId); refetch(); }
-    catch (e) { setPageError(parseApiError(e)); }
-  };
-
-  const handleAfegirLot = async (liniaId) => {
-    if (!nouLot.numero_lot || !nouLot.data_caducitat || !nouLot.quantitat) {
-      setPageError('Omple tots els camps del lot'); return;
-    }
-    setSaving(true); setPageError(null);
-    try {
-      await createLot(liniaId, nouLot);
-      setNouLot({ numero_lot: '', data_caducitat: '', quantitat: '' });
-      setLotLiniaId(null);
-      refetch();
-    } catch (e) { setPageError(parseApiError(e)); }
-    finally     { setSaving(false); }
-  };
-
-  const handleEliminarLot = async (liniaId, lotId) => {
-    setPageError(null);
-    try { await deleteLot(liniaId, lotId); refetch(); }
-    catch (e) { setPageError(parseApiError(e)); }
-  };
-
   const linies = albaran.linies ?? [];
+
+  const afegirLinia = async () => {
+    if (!linia.producte_id || !linia.quantitat) { setError('Selecciona producte i quantitat'); return; }
+    setGuardant(true); setError(null);
+    try {
+      await createLinia(albaran.id, linia);
+      setLinia({ producte_id: '', quantitat: '', preu_unitari: '' });
+      refetch();
+    } catch (e) { setError(parseApiError(e)); }
+    finally { setGuardant(false); }
+  };
+
+  const eliminarLinia = async (id) => {
+    if (!window.confirm('Eliminar aquesta línia?')) return;
+    setError(null);
+    try { await deleteLinia(id); refetch(); }
+    catch (e) { setError(parseApiError(e)); }
+  };
+
+  const afegirLot = async (liniaId) => {
+    if (!lot.numero_lot || !lot.data_caducitat || !lot.quantitat) { setError('Omple tots els camps del lot'); return; }
+    setGuardant(true); setError(null);
+    try {
+      await createLot(liniaId, lot);
+      setLot({ numero_lot: '', data_caducitat: '', quantitat: '' });
+      setLotObert(null);
+      refetch();
+    } catch (e) { setError(parseApiError(e)); }
+    finally { setGuardant(false); }
+  };
+
+  const eliminarLot = async (liniaId, lotId) => {
+    setError(null);
+    try { await deleteLot(liniaId, lotId); refetch(); }
+    catch (e) { setError(parseApiError(e)); }
+  };
 
   return (
     <div className={styles.page}>
@@ -84,9 +74,7 @@ export default function AlbaranDetall({ albaran: initial, onBack, onConfirmar, o
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <Button variant="ghost" onClick={onBack}>← Tornar</Button>
             {canWrite && esEsborrany && (
-              <Button onClick={() => onConfirmar(albaran.id)}>
-                ✓ Confirmar albaran
-              </Button>
+              <Button onClick={() => onConfirmar(albaran.id)}>✓ Confirmar albaran</Button>
             )}
             {canWrite && !esEsborrany && (
               <Button variant="warning" onClick={() => onEsborrany(albaran.id)}>
@@ -97,9 +85,8 @@ export default function AlbaranDetall({ albaran: initial, onBack, onConfirmar, o
         }
       />
 
-      {pageError && <div className={styles.pageError}>{pageError}</div>}
+      {error && <div className={styles.pageError}>{error}</div>}
 
-      {/* Línies */}
       <section className={styles.seccio}>
         <h2 className={styles.seccioTitol}>Línies de l'albaran</h2>
 
@@ -107,80 +94,67 @@ export default function AlbaranDetall({ albaran: initial, onBack, onConfirmar, o
           <p className={styles.empty}>Cap línia. Afegeix productes a continuació.</p>
         )}
 
-        {linies.map((linia) => (
-          <div key={linia.id} className={styles.liniaCard}>
+        {linies.map((l) => (
+          <div key={l.id} className={styles.liniaCard}>
             <div className={styles.liniaHeader}>
-              <span className={styles.liniaNom}>{linia.producte?.nom ?? '—'}</span>
+              <span className={styles.liniaNom}>{l.producte?.nom ?? '—'}</span>
               <span className={styles.liniaInfo}>
-                {linia.quantitat} {linia.producte?.unitat_mesura}
-                {linia.preu_unitari ? ` · ${linia.preu_unitari} €/u` : ''}
+                {l.quantitat} {l.producte?.unitat_mesura}
+                {l.preu_unitari ? ` · ${l.preu_unitari} €/u` : ''}
               </span>
               {canWrite && esEsborrany && (
-                <Button variant="danger" size="sm" onClick={() => handleEliminarLinia(linia.id)}>✕</Button>
+                <Button variant="danger" size="sm" onClick={() => eliminarLinia(l.id)}>✕</Button>
               )}
             </div>
 
             <div className={styles.lots}>
-              {(linia.lots ?? []).length === 0 && (
-                <p className={styles.lotsEmpty}>Cap lot assignat</p>
-              )}
-              {(linia.lots ?? []).map((lot) => (
-                <div key={lot.id} className={styles.lotItem}>
-                  <span>Lot <strong>{lot.numero_lot}</strong></span>
-                  <span>Caducitat: {new Date(lot.data_caducitat).toLocaleDateString('ca-ES')}</span>
-                  <span>{lot.quantitat} {linia.producte?.unitat_mesura}</span>
+              {(l.lots ?? []).length === 0 && <p className={styles.lotsEmpty}>Cap lot assignat</p>}
+
+              {(l.lots ?? []).map((lt) => (
+                <div key={lt.id} className={styles.lotItem}>
+                  <span>Lot <strong>{lt.numero_lot}</strong></span>
+                  <span>Caducitat: {new Date(lt.data_caducitat).toLocaleDateString('ca-ES')}</span>
+                  <span>{lt.quantitat} {l.producte?.unitat_mesura}</span>
                   {canWrite && esEsborrany && (
-                    <Button variant="danger" size="sm" onClick={() => handleEliminarLot(linia.id, lot.id)}>✕</Button>
+                    <Button variant="danger" size="sm" onClick={() => eliminarLot(l.id, lt.id)}>✕</Button>
                   )}
                 </div>
               ))}
 
               {canWrite && esEsborrany && (
-                lotLiniaId === linia.id ? (
+                lotObert === l.id ? (
                   <div className={styles.lotForm}>
                     <input
                       placeholder="Núm. lot"
-                      value={nouLot.numero_lot}
-                      onChange={(e) => setNouLot(p => ({ ...p, numero_lot: e.target.value }))}
+                      value={lot.numero_lot}
+                      onChange={(e) => setLot(p => ({ ...p, numero_lot: e.target.value }))}
                       className={inputStyles.input}
                       style={{ flex: 1, minWidth: 100 }}
                     />
                     <input
                       type="date"
-                      value={nouLot.data_caducitat}
-                      onChange={(e) => setNouLot(p => ({ ...p, data_caducitat: e.target.value }))}
+                      value={lot.data_caducitat}
+                      onChange={(e) => setLot(p => ({ ...p, data_caducitat: e.target.value }))}
                       className={inputStyles.input}
                       style={{ flex: 1, minWidth: 130 }}
                     />
                     <input
                       type="number"
                       placeholder="Quantitat"
-                      value={nouLot.quantitat}
-                      onChange={(e) => setNouLot(p => ({ ...p, quantitat: e.target.value }))}
+                      value={lot.quantitat}
+                      onChange={(e) => setLot(p => ({ ...p, quantitat: e.target.value }))}
                       className={inputStyles.input}
                       style={{ flex: 1, minWidth: 90 }}
                       min="0"
                       step="0.01"
                     />
-                    <Button size="sm" onClick={() => handleAfegirLot(linia.id)} disabled={saving}>
-                      Afegir
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => {
-                        setLotLiniaId(null);
-                        setNouLot({ numero_lot: '', data_caducitat: '', quantitat: '' });
-                      }}
-                    >
+                    <Button size="sm" onClick={() => afegirLot(l.id)} disabled={guardant}>Afegir</Button>
+                    <Button variant="secondary" size="sm" onClick={() => { setLotObert(null); setLot({ numero_lot: '', data_caducitat: '', quantitat: '' }); }}>
                       Cancel·lar
                     </Button>
                   </div>
                 ) : (
-                  <button
-                    className={styles.btnAddLot}
-                    onClick={() => { setLotLiniaId(linia.id); setPageError(null); }}
-                  >
+                  <button className={styles.btnAddLot} onClick={() => { setLotObert(l.id); setError(null); }}>
                     + Afegir lot
                   </button>
                 )
@@ -190,14 +164,13 @@ export default function AlbaranDetall({ albaran: initial, onBack, onConfirmar, o
         ))}
       </section>
 
-      {/* Formulari nova línia */}
       {canWrite && esEsborrany && (
         <section className={styles.seccio}>
           <h2 className={styles.seccioTitol}>Afegir línia</h2>
           <div className={styles.liniaFormRow}>
             <select
-              value={novaLinia.producte_id}
-              onChange={(e) => setNovaLinia(p => ({ ...p, producte_id: e.target.value }))}
+              value={linia.producte_id}
+              onChange={(e) => setLinia(p => ({ ...p, producte_id: e.target.value }))}
               className={inputStyles.input}
             >
               <option value="">— Producte —</option>
@@ -206,25 +179,19 @@ export default function AlbaranDetall({ albaran: initial, onBack, onConfirmar, o
               ))}
             </select>
             <input
-              type="number"
-              placeholder="Quantitat"
-              min="0"
-              step="0.01"
-              value={novaLinia.quantitat}
-              onChange={(e) => setNovaLinia(p => ({ ...p, quantitat: e.target.value }))}
+              type="number" placeholder="Quantitat" min="0" step="0.01"
+              value={linia.quantitat}
+              onChange={(e) => setLinia(p => ({ ...p, quantitat: e.target.value }))}
               className={inputStyles.input}
             />
             <input
-              type="number"
-              placeholder="Preu unit. (opcional)"
-              min="0"
-              step="0.01"
-              value={novaLinia.preu_unitari}
-              onChange={(e) => setNovaLinia(p => ({ ...p, preu_unitari: e.target.value }))}
+              type="number" placeholder="Preu unit. (opcional)" min="0" step="0.01"
+              value={linia.preu_unitari}
+              onChange={(e) => setLinia(p => ({ ...p, preu_unitari: e.target.value }))}
               className={inputStyles.input}
             />
-            <Button onClick={handleAfegirLinia} disabled={saving}>
-              {saving ? '…' : 'Afegir'}
+            <Button onClick={afegirLinia} disabled={guardant}>
+              {guardant ? '…' : 'Afegir'}
             </Button>
           </div>
         </section>
