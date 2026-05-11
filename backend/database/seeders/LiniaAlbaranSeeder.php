@@ -52,13 +52,6 @@ class LiniaAlbaranSeeder extends Seeder
         ]);
 
         LiniaAlbaran::create([
-            'albaran_id' => 2,
-            'producte_id' => 6,
-            'quantitat' => 30,
-            'preu_unitari' => 3.50
-        ]);
-
-        LiniaAlbaran::create([
             'albaran_id' => 3,
             'producte_id' => 4,
             'quantitat' => 60,
@@ -77,6 +70,13 @@ class LiniaAlbaranSeeder extends Seeder
             'producte_id' => 14,
             'quantitat' => 50,
             'preu_unitari' => 0.60
+        ]);
+
+        LiniaAlbaran::create([
+            'albaran_id' => 3,
+            'producte_id' => 6,
+            'quantitat' => 30,
+            'preu_unitari' => 3.50
         ]);
 
         LiniaAlbaran::create([
