@@ -5,28 +5,25 @@ import inputStyles from '../../components/ui/shared/Input.module.css';
 
 export default function InventariForm({ producte, mode, onClose, onSuccess }) {
   const [quantitat, setQuantitat] = useState('');
-  const [motiu, setMotiu]         = useState('');
-  const [error, setError]         = useState('');
-  const [loading, setLoading]     = useState(false);
+  const [motiu, setMotiu] = useState('');
+  const [error, setError] = useState('');
+  const [guardant, setGuardant] = useState(false);
 
-  const handleSubmit = async () => {
+  const enviar = async () => {
     const q = parseFloat(quantitat);
     if (!q || q === 0) { setError('Introdueix una quantitat vàlida.'); return; }
     if (mode === 'sortida' && q < 0) { setError('La quantitat ha de ser positiva.'); return; }
-    setLoading(true);
+    setGuardant(true);
     setError('');
     try {
-      if (mode === 'ajust') {
-        await ajustStock({ producte_id: producte.id, quantitat: q, motiu });
-      } else {
-        await sortidaStock({ producte_id: producte.id, quantitat: q, motiu });
-      }
+      if (mode === 'ajust') await ajustStock({ producte_id: producte.id, quantitat: q, motiu });
+      else                  await sortidaStock({ producte_id: producte.id, quantitat: q, motiu });
       onSuccess();
       onClose();
     } catch (e) {
       setError(e.response?.data?.message ?? "Error en realitzar l'operació.");
     } finally {
-      setLoading(false);
+      setGuardant(false);
     }
   };
 
@@ -36,15 +33,9 @@ export default function InventariForm({ producte, mode, onClose, onSuccess }) {
       onClose={onClose}
       actions={
         <>
-          <Button variant="secondary" onClick={onClose} disabled={loading}>
-            Cancel·lar
-          </Button>
-          <Button
-            variant={mode === 'ajust' ? 'warning' : 'danger'}
-            onClick={handleSubmit}
-            disabled={loading}
-          >
-            {loading ? 'Guardant...' : 'Confirmar'}
+          <Button variant="secondary" onClick={onClose} disabled={guardant}>Cancel·lar</Button>
+          <Button variant={mode === 'ajust' ? 'warning' : 'danger'} onClick={enviar} disabled={guardant}>
+            {guardant ? 'Guardant...' : 'Confirmar'}
           </Button>
         </>
       }
@@ -53,11 +44,7 @@ export default function InventariForm({ producte, mode, onClose, onSuccess }) {
         <strong style={{ color: 'var(--color-text)' }}>{producte.nom}</strong>
         {' '}— estoc actual: {producte.estoc_actual} {producte.unitat_mesura}
       </p>
-
-      <FormField
-        label={`Quantitat${mode === 'ajust' ? ' (negatiu per reduir)' : ''}`}
-        error={error}
-      >
+      <FormField label={`Quantitat${mode === 'ajust' ? ' (negatiu per reduir)' : ''}`} error={error}>
         <input
           type="number"
           className={inputStyles.input}
@@ -67,7 +54,6 @@ export default function InventariForm({ producte, mode, onClose, onSuccess }) {
           step="0.001"
         />
       </FormField>
-
       <FormField label="Motiu (opcional)">
         <input
           type="text"
