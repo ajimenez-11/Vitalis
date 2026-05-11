@@ -17,10 +17,10 @@ export default function AlbaranDetall({ albaran: initial, onBack, onConfirmar, o
   const { data: productes } = useApi(getProductes);
 
   const [novaLinia, setNovaLinia] = useState({ producte_id: '', quantitat: '', preu_unitari: '' });
-  const [nouLot,    setNouLot]    = useState({ numero_lot: '', data_caducitat: '', quantitat: '' });
+  const [nouLot, setNouLot]    = useState({ numero_lot: '', data_caducitat: '', quantitat: '' });
   const [lotLiniaId, setLotLiniaId] = useState(null);
   const [pageError,  setPageError] = useState(null);
-  const [saving,     setSaving] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const albaran = alb ?? initial;
   const esEsborrany = albaran.estat === 'esborrany';
@@ -35,7 +35,7 @@ export default function AlbaranDetall({ albaran: initial, onBack, onConfirmar, o
       setNovaLinia({ producte_id: '', quantitat: '', preu_unitari: '' });
       refetch();
     } catch (e) { setPageError(parseApiError(e)); }
-    finally     { setSaving(false); }
+    finally { setSaving(false); }
   };
 
   const handleEliminarLinia = async (liniaId) => {
@@ -56,7 +56,7 @@ export default function AlbaranDetall({ albaran: initial, onBack, onConfirmar, o
       setLotLiniaId(null);
       refetch();
     } catch (e) { setPageError(parseApiError(e)); }
-    finally     { setSaving(false); }
+    finally { setSaving(false); }
   };
 
   const handleEliminarLot = async (liniaId, lotId) => {

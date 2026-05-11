@@ -17,21 +17,20 @@ export default function AlbaransPage() {
   const [pageError, setPageError] = useState(null);
 
   const columns = [
-    { key: 'id',        label: '#',             sortable: true },
+    { key: 'id', label: '#', sortable: true },
     { key: 'proveidor', label: 'Proveïdor',     sortable: true,
       sortValue: (a) => a.proveidor?.nom ?? '' },
-    { key: 'data',      label: 'Data',          sortable: true,
+    { key: 'data', label: 'Data', sortable: true,
       sortValue: (a) => new Date(a.data).getTime() },
-    { key: 'usuari',    label: 'Registrat per', sortable: true,
+    { key: 'usuari', label: 'Registrat per', sortable: true,
       sortValue: (a) => a.usuari?.nom ?? '' },
-    { key: 'estat',     label: 'Estat',         sortable: true },
-    { key: 'accions',   label: 'Accions' },
+    { key: 'estat', label: 'Estat', sortable: true },
+    { key: 'accions', label: 'Accions' },
   ];
 
   const llista = albarans ?? [];
   const { sorted, sortKey, sortDir, handleSort } = useSortable(llista, columns);
 
-  // Early returns DESPUÉS de todos los hooks
   if (loading) return <div className={styles.status}>Carregant albarans…</div>;
   if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
 

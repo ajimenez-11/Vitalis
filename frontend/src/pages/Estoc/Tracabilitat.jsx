@@ -59,12 +59,12 @@ const OrigenCard = ({ origen }) => {
     <div className={styles.card}>
       <h3 className={styles.cardTitle}>Origen</h3>
       <div className={styles.grid2}>
-        <Field label="Albarà #"     value={origen.albaran_id} />
+        <Field label="Albarà #" value={origen.albaran_id} />
         <Field label="Data entrada" value={formatData(origen.data_entrada)} />
-        <Field label="Proveïdor"    value={origen.proveidor?.nom} />
-        <Field label="NIF"          value={origen.proveidor?.nif} />
-        <Field label="Usuari"       value={origen.usuari?.nom} />
-        <Field label="Estat"        value={origen.estat} />
+        <Field label="Proveïdor" value={origen.proveidor?.nom} />
+        <Field label="NIF" value={origen.proveidor?.nif} />
+        <Field label="Usuari" value={origen.usuari?.nom} />
+        <Field label="Estat" value={origen.estat} />
       </div>
     </div>
   );
@@ -78,9 +78,9 @@ const ResultatLot = ({ data }) => {
         <h3 className={styles.cardTitle}>Lot</h3>
         <div className={styles.grid2}>
           <Field label="Número lot" value={data.lot.numero_lot} />
-          <Field label="Quantitat"  value={data.lot.quantitat} />
-          <Field label="Caducitat"  value={formatData(data.lot.data_caducitat)} />
-          <Field label="Producte"   value={data.producte?.nom} />
+          <Field label="Quantitat" value={data.lot.quantitat} />
+          <Field label="Caducitat" value={formatData(data.lot.data_caducitat)} />
+          <Field label="Producte" value={data.producte?.nom} />
         </div>
       </div>
       <OrigenCard origen={data.origen} />
@@ -99,8 +99,8 @@ const ResultatProducte = ({ data }) => {
       <div className={styles.card}>
         <h3 className={styles.cardTitle}>Producte</h3>
         <div className={styles.grid2}>
-          <Field label="Nom"          value={data.producte?.nom} />
-          <Field label="Unitat"       value={data.producte?.unitat_mesura} />
+          <Field label="Nom" value={data.producte?.nom} />
+          <Field label="Unitat" value={data.producte?.unitat_mesura} />
           <Field label="Estoc actual" value={data.estoc_actual} />
         </div>
         <div className={styles.resumRow}>
