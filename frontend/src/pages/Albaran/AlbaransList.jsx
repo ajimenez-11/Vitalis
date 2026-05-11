@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useApi } from '../../hooks/useApi';
-import { getAlbarans, createAlbaran, deleteAlbaran,
-         confirmarAlbaran, tornarEsborrany } from '../../api/albarans';
+import { getAlbarans, createAlbaran, deleteAlbaran, confirmarAlbaran, tornarEsborrany } from '../../api/albarans';
 import { useAuth } from '../../context/AuthContext';
 import { useSortable } from '../../hooks/useSortable';
 import { Badge, Button, PageHeader, Table } from '../../components/ui';
@@ -12,18 +11,15 @@ import styles from './Albarans.module.css';
 export default function AlbaransPage() {
   const { data: albarans, loading, error, refetch } = useApi(getAlbarans);
   const { canWrite } = useAuth();
-  const [vista, setVista] = useState(null);
-  const [detall, setDetall] = useState(null);
+  const [modal, setModal] = useState(false);
+  const [obert, setObert] = useState(null);
   const [pageError, setPageError] = useState(null);
 
   const columns = [
     { key: 'id',        label: '#',             sortable: true },
-    { key: 'proveidor', label: 'Proveïdor',     sortable: true,
-      sortValue: (a) => a.proveidor?.nom ?? '' },
-    { key: 'data',      label: 'Data',          sortable: true,
-      sortValue: (a) => new Date(a.data).getTime() },
-    { key: 'usuari',    label: 'Registrat per', sortable: true,
-      sortValue: (a) => a.usuari?.nom ?? '' },
+    { key: 'proveidor', label: 'Proveïdor',     sortable: true, sortValue: (a) => a.proveidor?.nom ?? '' },
+    { key: 'data',      label: 'Data',          sortable: true, sortValue: (a) => new Date(a.data).getTime() },
+    { key: 'usuari',    label: 'Registrat per', sortable: true, sortValue: (a) => a.usuari?.nom ?? '' },
     { key: 'estat',     label: 'Estat',         sortable: true },
     { key: 'accions',   label: 'Accions' },
   ];
@@ -31,18 +27,17 @@ export default function AlbaransPage() {
   const llista = albarans ?? [];
   const { sorted, sortKey, sortDir, handleSort } = useSortable(llista, columns);
 
-  // Early returns DESPUÉS de todos los hooks
   if (loading) return <div className={styles.status}>Carregant albarans…</div>;
   if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
 
-  const handleCreate = async (formData) => {
-    const res = await createAlbaran(formData);
-    setVista(null);
+  const crear = async (dades) => {
+    const res = await createAlbaran(dades);
+    setModal(false);
     refetch();
-    setDetall(res.data.data);
+    setObert(res.data.data);
   };
 
-  const handleDelete = async (id) => {
+  const eliminar = async (id) => {
     if (!window.confirm('Segur que vols eliminar aquest albaran?')) return;
     setPageError(null);
     try {
@@ -53,18 +48,18 @@ export default function AlbaransPage() {
     }
   };
 
-  const handleConfirmar = async (id) => {
+  const confirmar = async (id) => {
     setPageError(null);
     try {
       await confirmarAlbaran(id);
       refetch();
-      setDetall(null);
+      setObert(null);
     } catch (e) {
       setPageError(e.response?.data?.message ?? 'Error en confirmar');
     }
   };
 
-  const handleEsborrany = async (id) => {
+  const revertir = async (id) => {
     setPageError(null);
     try {
       await tornarEsborrany(id);
@@ -74,13 +69,13 @@ export default function AlbaransPage() {
     }
   };
 
-  if (detall) {
+  if (obert) {
     return (
       <AlbaranDetall
-        albaran={detall}
-        onBack={() => { setDetall(null); refetch(); }}
-        onConfirmar={handleConfirmar}
-        onEsborrany={handleEsborrany}
+        albaran={obert}
+        onBack={() => { setObert(null); refetch(); }}
+        onConfirmar={confirmar}
+        onEsborrany={revertir}
         canWrite={canWrite}
       />
     );
@@ -91,11 +86,7 @@ export default function AlbaransPage() {
       <PageHeader
         title="Albarans"
         subtitle={`${llista.length} albarans registrats`}
-        action={
-          canWrite && (
-            <Button onClick={() => setVista('crear')}>+ Nou albaran</Button>
-          )
-        }
+        action={canWrite && <Button onClick={() => setModal(true)}>+ Nou albaran</Button>}
       />
 
       {pageError && <div className={styles.pageError}>{pageError}</div>}
@@ -114,40 +105,25 @@ export default function AlbaransPage() {
             <td>{new Date(a.data).toLocaleDateString('ca-ES')}</td>
             <td>{a.usuari?.nom ?? '—'}</td>
             <td>
-              <Badge variant={a.estat === 'confirmat' ? 'success' : 'warning'}>
-                {a.estat}
-              </Badge>
+              <Badge variant={a.estat === 'confirmat' ? 'success' : 'warning'}>{a.estat}</Badge>
             </td>
             <td className={styles.actions}>
-              <Button variant="secondary" size="sm" onClick={() => setDetall(a)}>
-                Veure
-              </Button>
+              <Button variant="secondary" size="sm" onClick={() => setObert(a)}>Veure</Button>
               {canWrite && a.estat === 'esborrany' && (
                 <>
-                  <Button size="sm" onClick={() => handleConfirmar(a.id)}>
-                    Confirmar
-                  </Button>
-                  <Button variant="danger" size="sm" onClick={() => handleDelete(a.id)}>
-                    Eliminar
-                  </Button>
+                  <Button size="sm" onClick={() => confirmar(a.id)}>Confirmar</Button>
+                  <Button variant="danger" size="sm" onClick={() => eliminar(a.id)}>Eliminar</Button>
                 </>
               )}
               {canWrite && a.estat === 'confirmat' && (
-                <Button variant="warning" size="sm" onClick={() => handleEsborrany(a.id)}>
-                  Revertir
-                </Button>
+                <Button variant="warning" size="sm" onClick={() => revertir(a.id)}>Revertir</Button>
               )}
             </td>
           </tr>
         )}
       />
 
-      {vista === 'crear' && (
-        <AlbaranForm
-          onSave={handleCreate}
-          onCancel={() => setVista(null)}
-        />
-      )}
+      {modal && <AlbaranForm onSave={crear} onCancel={() => setModal(false)} />}
     </div>
   );
 }
