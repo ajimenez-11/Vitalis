@@ -6,7 +6,7 @@ import {
   updateProveidor, deleteProveidor,
 } from '../../api/proveidors';
 import { useAuth } from '../../context/AuthContext';
-import { useSortable } from '../../hooks/useSortable'; // 1. Importación añadida
+import { useSortable } from '../../hooks/useSortable'; 
 import { Badge, Button, PageHeader, Table, Modal } from '../../components/ui';
 import ProveidorForm from './ProveidorForm';
 import styles from './Proveidors.module.css';
@@ -19,29 +19,25 @@ export default function ProveidorsPage() {
   const [pageError, setPageError] = useState(null);
   const [query, setQuery] = useState('');
 
-  // 2. Definición de columnas con sortValue y sortable: true
   const columns = [
-    { key: 'nom',     label: 'Nom',     sortable: true },
-    { key: 'nif',     label: 'NIF',     sortable: true,
+    { key: 'nom', label: 'Nom', sortable: true },
+    { key: 'nif', label: 'NIF', sortable: true,
       sortValue: (p) => p.nif ?? '' },
     { key: 'telefon', label: 'Telèfon', sortable: true,
       sortValue: (p) => p.telefon ?? '' },
-    { key: 'email',   label: 'Email',   sortable: true,
+    { key: 'email', label: 'Email', sortable: true,
       sortValue: (p) => p.email ?? '' },
-    { key: 'adreca',  label: 'Adreça',  sortable: true,
+    { key: 'adreca', label: 'Adreça', sortable: true,
       sortValue: (p) => p.adreca ?? '' },
     ...(canWrite ? [{ key: 'accions', label: 'Accions' }] : []),
   ];
 
-  // 3. Cálculo de la lista filtrada
   const llista = (proveidors ?? []).filter(p =>
     p.nom.toLowerCase().includes(query.toLowerCase())
   );
 
-  // 4. Hook de ordenación (Justo después de calcular la llista)
   const { sorted, sortKey, sortDir, handleSort } = useSortable(llista, columns);
 
-  // 5. Early returns DESPUÉS de todos los hooks
   if (loading) return <div className={styles.status}>Carregant proveïdors…</div>;
   if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
 
@@ -103,7 +99,7 @@ export default function ProveidorsPage() {
 
       <Table
         columns={columns}
-        data={sorted} // 6. Usamos los datos ordenados
+        data={sorted} 
         sortKey={sortKey}
         sortDir={sortDir}
         onSort={handleSort}
