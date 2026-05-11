@@ -154,11 +154,11 @@
   cursor: pointer;
   transition: all 0.15s;
 }
-.actionBtn:hover        { background: var(--color-bg); color: var(--color-text); border-color: var(--color-text); }
-.actionBtnEdit          { color: #534AB7; border-color: #c4c0f5; background: #EEEDFE; }
-.actionBtnEdit:hover    { background: #dddcfc; }
-.actionBtnConsum        { color: #0F6E56; border-color: #a7f3d0; background: #E1F5EE; }
-.actionBtnConsum:hover  { background: #c6ede0; }
+.actionBtn:hover { background: var(--color-bg); color: var(--color-text); border-color: var(--color-text); }
+.actionBtnEdit { color: #534AB7; border-color: #c4c0f5; background: #EEEDFE; }
+.actionBtnEdit:hover { background: #dddcfc; }
+.actionBtnConsum { color: #0F6E56; border-color: #a7f3d0; background: #E1F5EE; }
+.actionBtnConsum:hover { background: #c6ede0; }
 
 /* Estat buit */
 .empty {
