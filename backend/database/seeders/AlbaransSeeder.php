@@ -10,25 +10,49 @@ class AlbaransSeeder extends Seeder
         Albaran::create([
             'proveidor_id' => 1,
             'usuari_id' => 1,
-            'data' => '2025-01-01',
-            'estat' => 'esborrany',
+            'data' => '2026-06-02',
+            'estat' => 'confirmat',
+            'observacions' => 'Albarà de prova',
+        ]);
+        
+        Albaran::create([
+            'proveidor_id' => 1,
+            'usuari_id' => 1,
+            'data' => '2026-06-15',
+            'estat' => 'confirmat',
             'observacions' => 'Albarà de prova',
         ]);
 
         Albaran::create([
             'proveidor_id' => 1,
             'usuari_id' => 1,
-            'data' => '2025-01-02',
+            'data' => '2026-07-03',
             'estat' => 'esborrany',
             'observacions' => 'Albarà de prova',
         ]);
 
         Albaran::create([
-            'proveidor_id' => 1,
+            'proveidor_id' => 2,
             'usuari_id' => 1,
-            'data' => '2025-01-03',
+            'data' => '2026-07-08',
             'estat' => 'esborrany',
-            'observacions' => 'Albarà de prova',
+            'observacions' => 'Albarà pendent de revisió',
+        ]);
+
+        Albaran::create([
+            'proveidor_id' => 2,
+            'usuari_id' => 2,
+            'data' => '2026-07-10',
+            'estat' => 'esborrany',
+            'observacions' => 'Albarà pendent de confirmar',
+        ]);
+
+        Albaran::create([
+            'proveidor_id' => 3,
+            'usuari_id' => 2,
+            'data' => '2026-07-12',
+            'estat' => 'esborrany',
+            'observacions' => 'Albarà en procés de validació',
         ]);
     }
 }
