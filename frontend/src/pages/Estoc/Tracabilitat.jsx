@@ -4,7 +4,7 @@ import { Badge, Button, PageHeader } from '../../components/ui';
 import inputStyles from '../../components/ui/shared/Input.module.css';
 import styles from './Tracabilitat.module.css';
 
-const Field = ({ label, value }) => (
+const Camp = ({ label, value }) => (
   <div>
     <p className={styles.fieldLabel}>{label}</p>
     <p className={styles.fieldValue}>{value ?? '—'}</p>
@@ -29,21 +29,13 @@ const TaulaMoviments = ({ moviments }) => {
             <tr key={m.id}>
               <td>{formatData(m.data)}</td>
               <td>
-                <Badge variant={
-                  m.tipus === 'entrada' ? 'success'
-                  : m.tipus === 'sortida' ? 'danger'
-                  : 'warning'
-                }>
+                <Badge variant={m.tipus === 'entrada' ? 'success' : m.tipus === 'sortida' ? 'danger' : 'warning'}>
                   {m.tipus}
                 </Badge>
               </td>
               <td>{m.quantitat}</td>
               <td>{m.usuari ?? '—'}</td>
-              <td>
-                {m.recepta
-                  ? `${m.recepta.recepta ?? m.recepta.nom} (${m.recepta.porcions} p.)`
-                  : '—'}
-              </td>
+              <td>{m.recepta ? `${m.recepta.recepta ?? m.recepta.nom} (${m.recepta.porcions} p.)` : '—'}</td>
               <td>{m.observacions ?? '—'}</td>
             </tr>
           ))}
@@ -59,28 +51,28 @@ const OrigenCard = ({ origen }) => {
     <div className={styles.card}>
       <h3 className={styles.cardTitle}>Origen</h3>
       <div className={styles.grid2}>
-        <Field label="Albarà #"     value={origen.albaran_id} />
-        <Field label="Data entrada" value={formatData(origen.data_entrada)} />
-        <Field label="Proveïdor"    value={origen.proveidor?.nom} />
-        <Field label="NIF"          value={origen.proveidor?.nif} />
-        <Field label="Usuari"       value={origen.usuari?.nom} />
-        <Field label="Estat"        value={origen.estat} />
+        <Camp label="Albarà #"     value={origen.albaran_id} />
+        <Camp label="Data entrada" value={formatData(origen.data_entrada)} />
+        <Camp label="Proveïdor"    value={origen.proveidor?.nom} />
+        <Camp label="NIF"          value={origen.proveidor?.nif} />
+        <Camp label="Usuari"       value={origen.usuari?.nom} />
+        <Camp label="Estat"        value={origen.estat} />
       </div>
     </div>
   );
 };
 
-const ResultatLot = ({ data }) => {
+const DetallLot = ({ data }) => {
   if (!data?.lot) return null;
   return (
     <div className={styles.resultWrap}>
       <div className={styles.card}>
         <h3 className={styles.cardTitle}>Lot</h3>
         <div className={styles.grid2}>
-          <Field label="Número lot" value={data.lot.numero_lot} />
-          <Field label="Quantitat"  value={data.lot.quantitat} />
-          <Field label="Caducitat"  value={formatData(data.lot.data_caducitat)} />
-          <Field label="Producte"   value={data.producte?.nom} />
+          <Camp label="Número lot" value={data.lot.numero_lot} />
+          <Camp label="Quantitat"  value={data.lot.quantitat} />
+          <Camp label="Caducitat"  value={formatData(data.lot.data_caducitat)} />
+          <Camp label="Producte"   value={data.producte?.nom} />
         </div>
       </div>
       <OrigenCard origen={data.origen} />
@@ -92,16 +84,16 @@ const ResultatLot = ({ data }) => {
   );
 };
 
-const ResultatProducte = ({ data }) => {
+const DetallProducte = ({ data }) => {
   if (!data?.producte) return null;
   return (
     <div className={styles.resultWrap}>
       <div className={styles.card}>
         <h3 className={styles.cardTitle}>Producte</h3>
         <div className={styles.grid2}>
-          <Field label="Nom"          value={data.producte?.nom} />
-          <Field label="Unitat"       value={data.producte?.unitat_mesura} />
-          <Field label="Estoc actual" value={data.estoc_actual} />
+          <Camp label="Nom"          value={data.producte?.nom} />
+          <Camp label="Unitat"       value={data.producte?.unitat_mesura} />
+          <Camp label="Estoc actual" value={data.estoc_actual} />
         </div>
         <div className={styles.resumRow}>
           <Badge variant="success">↑ Entrades: {data.resum?.total_entrades ?? 0}</Badge>
@@ -143,16 +135,16 @@ const ResultatProducte = ({ data }) => {
   );
 };
 
-const PanelLots = ({ onSelect, lotActiu }) => {
+const LlistaLots = ({ onSelect, lotActiu }) => {
   const [lots, setLots] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [carregant, setCarregant] = useState(true);
   const [filtre, setFiltre] = useState('');
 
   useEffect(() => {
     tracabilitatList()
       .then((r) => setLots(r.data.data))
       .catch((err) => console.error('Error al llistat:', err))
-      .finally(() => setLoading(false));
+      .finally(() => setCarregant(false));
   }, []);
 
   const lotsFiltrats = lots.filter((l) =>
@@ -167,29 +159,15 @@ const PanelLots = ({ onSelect, lotActiu }) => {
         <span className={styles.panelTitle}>Lots disponibles</span>
         <span className={styles.panelCount}>{lots.length}</span>
       </div>
-      <input
-        className={styles.panelInput}
-        type="text"
-        placeholder="Filtrar..."
-        value={filtre}
-        onChange={(e) => setFiltre(e.target.value)}
-      />
+      <input className={styles.panelInput} type="text" placeholder="Filtrar..." value={filtre} onChange={(e) => setFiltre(e.target.value)} />
       <div className={styles.panelList}>
-        {loading && <p className={styles.panelEmpty}>Carregant...</p>}
-        {!loading && lotsFiltrats.length === 0 && (
-          <p className={styles.panelEmpty}>Sense resultats.</p>
-        )}
+        {carregant && <p className={styles.panelEmpty}>Carregant...</p>}
+        {!carregant && lotsFiltrats.length === 0 && <p className={styles.panelEmpty}>Sense resultats.</p>}
         {lotsFiltrats.map((l) => (
-          <button
-            key={l.id}
-            className={`${styles.panelItem} ${lotActiu === l.numero_lot ? styles.panelItemActive : ''}`}
-            onClick={() => onSelect(l.numero_lot)}
-          >
+          <button key={l.id} className={`${styles.panelItem} ${lotActiu === l.numero_lot ? styles.panelItemActive : ''}`} onClick={() => onSelect(l.numero_lot)}>
             <span className={styles.panelLotNum}>{l.numero_lot}</span>
             <span className={styles.panelLotProd}>{l.producte ?? '—'}</span>
-            <span className={styles.panelLotMeta}>
-              {l.proveidor ?? '—'} · {formatData(l.data_caducitat)}
-            </span>
+            <span className={styles.panelLotMeta}>{l.proveidor ?? '—'} · {formatData(l.data_caducitat)}</span>
           </button>
         ))}
       </div>
@@ -201,28 +179,28 @@ export default function TracabilitatPage() {
   const [mode, setMode] = useState('lot');
   const [query, setQuery] = useState('');
   const [resultat, setResultat] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [carregant, setCarregant] = useState(false);
   const [error, setError] = useState('');
 
   const cercar = async (q) => {
     let val = (q ?? query).trim();
     if (!val) return;
     if (mode === 'lot') val = val.toUpperCase();
-    setLoading(true);
+    setCarregant(true);
     setError('');
     setResultat(null);
     try {
-      const fn  = mode === 'lot' ? tracabilitatLot : tracabilitatProducte;
+      const fn = mode === 'lot' ? tracabilitatLot : tracabilitatProducte;
       const res = await fn(val);
       setResultat(res.data.data);
     } catch (e) {
       setError(e.response?.data?.message ?? "No s'ha trobat cap resultat.");
     } finally {
-      setLoading(false);
+      setCarregant(false);
     }
   };
 
-  const handleSelectLot = (numeroLot) => {
+  const seleccionarLot = (numeroLot) => {
     setMode('lot');
     setQuery(numeroLot);
     cercar(numeroLot);
@@ -231,23 +209,16 @@ export default function TracabilitatPage() {
   return (
     <div className={styles.page}>
       <PageHeader title="Traçabilitat" />
-
       <div className={styles.layout}>
-        <PanelLots onSelect={handleSelectLot} lotActiu={query} />
-
+        <LlistaLots onSelect={seleccionarLot} lotActiu={query} />
         <div className={styles.main}>
           <div className={styles.modeRow}>
             {['lot', 'producte'].map((m) => (
-              <button
-                key={m}
-                className={`${styles.modeBtn} ${mode === m ? styles.modeBtnActive : ''}`}
-                onClick={() => { setMode(m); setResultat(null); setQuery(''); setError(''); }}
-              >
+              <button key={m} className={`${styles.modeBtn} ${mode === m ? styles.modeBtnActive : ''}`} onClick={() => { setMode(m); setResultat(null); setQuery(''); setError(''); }}>
                 {m === 'lot' ? 'Per número de lot' : 'Per ID de producte'}
               </button>
             ))}
           </div>
-
           <div className={styles.searchRow}>
             <input
               type="text"
@@ -257,22 +228,13 @@ export default function TracabilitatPage() {
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') cercar(); }}
             />
-            <Button onClick={() => cercar()} disabled={loading}>
-              {loading ? 'Cercant...' : 'Cercar'}
+            <Button onClick={() => cercar()} disabled={carregant}>
+              {carregant ? 'Cercant...' : 'Cercar'}
             </Button>
           </div>
-
-          {error && (
-            <div className={styles.errorMsg}>{error}</div>
-          )}
-
-          {resultat && (
-            mode === 'lot'
-              ? <ResultatLot data={resultat} />
-              : <ResultatProducte data={resultat} />
-          )}
-
-          {!resultat && !error && !loading && (
+          {error && <div className={styles.errorMsg}>{error}</div>}
+          {resultat && (mode === 'lot' ? <DetallLot data={resultat} /> : <DetallProducte data={resultat} />)}
+          {!resultat && !error && !carregant && (
             <div className={styles.emptyState}>
               <p>Selecciona un lot del panell o introdueix un número manualment.</p>
             </div>
