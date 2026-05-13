@@ -75,20 +75,13 @@ const ConsumModal = ({ recepta, onClose, onSuccess }) => {
   );
 };
 
-const EliminarSeleccioModal = ({ count, onClose, onConfirm, deleting }) => (
+const EliminarSeleccioModal = ({ count, onClose, onConfirm, deleting, error }) => (
   <div className={styles.overlay}>
     <div className={styles.modalConsum}>
       <div className={styles.modalHeader}>
-        <div className={`${styles.iconCircle} ${styles.iconCircleDanger}`}>
-          <MdDelete size={18} color="#dc2626" />
-        </div>
-        <div style={{ flex: 1 }}>
-          <p className={styles.modalTitleInline}>Eliminar receptes</p>
-          <p className={styles.modalSubtitleInline}>{count} recepta{count !== 1 ? 's' : ''} seleccionada{count !== 1 ? 's' : ''}</p>
-        </div>
-        <button onClick={onClose} className={styles.btnClose}><MdClose size={20} /></button>
       </div>
       <div className={styles.modalBody}>
+        {error && <div className={styles.formError}>{error}</div>}
         <p className={styles.deleteWarning}>
           Estàs a punt d'eliminar <strong>{count} recepta{count !== 1 ? 's' : ''}</strong>. Aquesta acció no es pot desfer.
         </p>
@@ -164,6 +157,8 @@ const Receptes = () => {
   const [confirmDelete, setConfirmDelete] = useState(false); 
   const [deleting, setDeleting] = useState(false);
   const { canWrite } = useAuth();
+  const [deleteError, setDeleteError] = useState(null);
+
 
   const fetchReceptes = async () => {
     try {
@@ -187,13 +182,15 @@ const Receptes = () => {
 
   const handleEliminarSeleccionades = async () => {
     setDeleting(true);
+    setDeleteError(null);
     try {
       await Promise.all([...seleccionades].map(id => deleteRecepta(id)));
       setSeleccionades(new Set());
       setConfirmDelete(false);
       fetchReceptes();
     } catch (e) {
-      console.error(e);
+      const msg = e?.response?.data?.message || e?.response?.data?.detail || 'Error en eliminar la recepta';
+      setDeleteError(msg);
     } finally {
       setDeleting(false);
     }
@@ -307,9 +304,10 @@ const Receptes = () => {
       {confirmDelete && (
         <EliminarSeleccioModal
           count={seleccionades.size}
-          onClose={() => setConfirmDelete(false)}
+          onClose={() => { setConfirmDelete(false); setDeleteError(null); }}
           onConfirm={handleEliminarSeleccionades}
           deleting={deleting}
+          error={deleteError}
         />
       )}
     </div>
