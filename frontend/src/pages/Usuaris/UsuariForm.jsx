@@ -4,61 +4,70 @@ import { Button, FormField, Modal } from '../../components/ui';
 import inputStyles from '../../components/ui/shared/Input.module.css';
 
 export default function UsuariForm({ usuari, onSave, onCancel }) {
-  const editant = !!usuari;
+  const isEdit = !!usuari;
   const [form, setForm] = useState({
     nom: usuari?.nom ?? '',
     email: usuari?.email ?? '',
     password: '',
     rol: usuari?.rol ?? 'cuiner',
   });
-  const [guardant, setGuardant] = useState(false);
-  const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [error,  setError] = useState(null);
 
-  const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const enviar = async () => {
-    setGuardant(true);
+  const handleSubmit = async () => {
+    setSaving(true);
     setError(null);
     try {
-      const dades = { ...form };
-      if (editant && !dades.password) delete dades.password;
-      await onSave(dades);
+      const dataToSend = { ...form };
+      if (isEdit && !dataToSend.password) delete dataToSend.password;
+      await onSave(dataToSend);
     } catch (err) {
       setError(parseApiError(err));
     } finally {
-      setGuardant(false);
+      setSaving(false);
     }
   };
 
   return (
     <Modal
-      title={editant ? 'Editar Usuari' : 'Nou Usuari'}
+      title={isEdit ? 'Editar Usuari' : 'Nou Usuari'}
       onClose={onCancel}
       actions={
         <>
-          <Button variant="secondary" onClick={onCancel} disabled={guardant}>Cancel·lar</Button>
-          <Button onClick={enviar} disabled={guardant}>
-            {guardant ? 'Guardant...' : 'Guardar'}
+          <Button variant="secondary" onClick={onCancel} disabled={saving}>
+            Cancel·lar
+          </Button>
+          <Button onClick={handleSubmit} disabled={saving}>
+            {saving ? 'Guardant...' : 'Guardar'}
           </Button>
         </>
       }
     >
-      {error && (
-        <div style={{ background: 'var(--color-error-bg)', color: 'var(--color-error)', padding: '10px 14px', borderRadius: 'var(--radius-sm)', marginBottom: '1rem', fontSize: '0.85rem' }}>
-          {error}
-        </div>
-      )}
+      {error && <div style={{
+        background: 'var(--color-error-bg)', color: 'var(--color-error)',
+        padding: '10px 14px', borderRadius: 'var(--radius-sm)',
+        marginBottom: '1rem', fontSize: '0.85rem'
+      }}>{error}</div>}
+
       <FormField label="Nom complet">
-        <input name="nom" value={form.nom} onChange={handle} required className={inputStyles.input} />
+        <input name="nom" value={form.nom} onChange={handleChange}
+          required className={inputStyles.input} />
       </FormField>
+
       <FormField label="Email">
-        <input name="email" type="email" value={form.email} onChange={handle} required className={inputStyles.input} />
+        <input name="email" type="email" value={form.email} onChange={handleChange}
+          required className={inputStyles.input} />
       </FormField>
-      <FormField label={`Contrasenya${editant ? ' (deixar buit per no canviar)' : ''}`}>
-        <input name="password" type="password" value={form.password} onChange={handle} required={!editant} className={inputStyles.input} />
+
+      <FormField label={`Contrasenya${isEdit ? ' (deixar buit per no canviar)' : ''}`}>
+        <input name="password" type="password" value={form.password} onChange={handleChange}
+          required={!isEdit} className={inputStyles.input} />
       </FormField>
+
       <FormField label="Rol">
-        <select name="rol" value={form.rol} onChange={handle} className={inputStyles.input}>
+        <select name="rol" value={form.rol} onChange={handleChange} className={inputStyles.input}>
           <option value="admin">Administrador</option>
           <option value="responsable_cuina">Responsable de Cuina</option>
           <option value="cuiner">Cuiner</option>

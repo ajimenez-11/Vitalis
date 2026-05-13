@@ -4,7 +4,7 @@ import { Badge, Button, PageHeader } from '../../components/ui';
 import inputStyles from '../../components/ui/shared/Input.module.css';
 import styles from './Tracabilitat.module.css';
 
-const Camp = ({ label, value }) => (
+const Field = ({ label, value }) => (
   <div>
     <p className={styles.fieldLabel}>{label}</p>
     <p className={styles.fieldValue}>{value ?? '—'}</p>
@@ -29,13 +29,21 @@ const TaulaMoviments = ({ moviments }) => {
             <tr key={m.id}>
               <td>{formatData(m.data)}</td>
               <td>
-                <Badge variant={m.tipus === 'entrada' ? 'success' : m.tipus === 'sortida' ? 'danger' : 'warning'}>
+                <Badge variant={
+                  m.tipus === 'entrada' ? 'success'
+                  : m.tipus === 'sortida' ? 'danger'
+                  : 'warning'
+                }>
                   {m.tipus}
                 </Badge>
               </td>
               <td>{m.quantitat}</td>
               <td>{m.usuari ?? '—'}</td>
-              <td>{m.recepta ? `${m.recepta.recepta ?? m.recepta.nom} (${m.recepta.porcions} p.)` : '—'}</td>
+              <td>
+                {m.recepta
+                  ? `${m.recepta.recepta ?? m.recepta.nom} (${m.recepta.porcions} p.)`
+                  : '—'}
+              </td>
               <td>{m.observacions ?? '—'}</td>
             </tr>
           ))}
@@ -62,7 +70,7 @@ const OrigenCard = ({ origen }) => {
   );
 };
 
-const DetallLot = ({ data }) => {
+const ResultatLot = ({ data }) => {
   if (!data?.lot) return null;
   return (
     <div className={styles.resultWrap}>
@@ -84,7 +92,7 @@ const DetallLot = ({ data }) => {
   );
 };
 
-const DetallProducte = ({ data }) => {
+const ResultatProducte = ({ data }) => {
   if (!data?.producte) return null;
   return (
     <div className={styles.resultWrap}>
@@ -135,16 +143,16 @@ const DetallProducte = ({ data }) => {
   );
 };
 
-const LlistaLots = ({ onSelect, lotActiu }) => {
+const PanelLots = ({ onSelect, lotActiu }) => {
   const [lots, setLots] = useState([]);
-  const [carregant, setCarregant] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [filtre, setFiltre] = useState('');
 
   useEffect(() => {
     tracabilitatList()
       .then((r) => setLots(r.data.data))
       .catch((err) => console.error('Error al llistat:', err))
-      .finally(() => setCarregant(false));
+      .finally(() => setLoading(false));
   }, []);
 
   const lotsFiltrats = lots.filter((l) =>
@@ -159,15 +167,29 @@ const LlistaLots = ({ onSelect, lotActiu }) => {
         <span className={styles.panelTitle}>Lots disponibles</span>
         <span className={styles.panelCount}>{lots.length}</span>
       </div>
-      <input className={styles.panelInput} type="text" placeholder="Filtrar..." value={filtre} onChange={(e) => setFiltre(e.target.value)} />
+      <input
+        className={styles.panelInput}
+        type="text"
+        placeholder="Filtrar..."
+        value={filtre}
+        onChange={(e) => setFiltre(e.target.value)}
+      />
       <div className={styles.panelList}>
-        {carregant && <p className={styles.panelEmpty}>Carregant...</p>}
-        {!carregant && lotsFiltrats.length === 0 && <p className={styles.panelEmpty}>Sense resultats.</p>}
+        {loading && <p className={styles.panelEmpty}>Carregant...</p>}
+        {!loading && lotsFiltrats.length === 0 && (
+          <p className={styles.panelEmpty}>Sense resultats.</p>
+        )}
         {lotsFiltrats.map((l) => (
-          <button key={l.id} className={`${styles.panelItem} ${lotActiu === l.numero_lot ? styles.panelItemActive : ''}`} onClick={() => onSelect(l.numero_lot)}>
+          <button
+            key={l.id}
+            className={`${styles.panelItem} ${lotActiu === l.numero_lot ? styles.panelItemActive : ''}`}
+            onClick={() => onSelect(l.numero_lot)}
+          >
             <span className={styles.panelLotNum}>{l.numero_lot}</span>
             <span className={styles.panelLotProd}>{l.producte ?? '—'}</span>
-            <span className={styles.panelLotMeta}>{l.proveidor ?? '—'} · {formatData(l.data_caducitat)}</span>
+            <span className={styles.panelLotMeta}>
+              {l.proveidor ?? '—'} · {formatData(l.data_caducitat)}
+            </span>
           </button>
         ))}
       </div>
@@ -179,28 +201,28 @@ export default function TracabilitatPage() {
   const [mode, setMode] = useState('lot');
   const [query, setQuery] = useState('');
   const [resultat, setResultat] = useState(null);
-  const [carregant, setCarregant] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const cercar = async (q) => {
     let val = (q ?? query).trim();
     if (!val) return;
     if (mode === 'lot') val = val.toUpperCase();
-    setCarregant(true);
+    setLoading(true);
     setError('');
     setResultat(null);
     try {
-      const fn = mode === 'lot' ? tracabilitatLot : tracabilitatProducte;
+      const fn  = mode === 'lot' ? tracabilitatLot : tracabilitatProducte;
       const res = await fn(val);
       setResultat(res.data.data);
     } catch (e) {
       setError(e.response?.data?.message ?? "No s'ha trobat cap resultat.");
     } finally {
-      setCarregant(false);
+      setLoading(false);
     }
   };
 
-  const seleccionarLot = (numeroLot) => {
+  const handleSelectLot = (numeroLot) => {
     setMode('lot');
     setQuery(numeroLot);
     cercar(numeroLot);
@@ -209,16 +231,23 @@ export default function TracabilitatPage() {
   return (
     <div className={styles.page}>
       <PageHeader title="Traçabilitat" />
+
       <div className={styles.layout}>
-        <LlistaLots onSelect={seleccionarLot} lotActiu={query} />
+        <PanelLots onSelect={handleSelectLot} lotActiu={query} />
+
         <div className={styles.main}>
           <div className={styles.modeRow}>
             {['lot', 'producte'].map((m) => (
-              <button key={m} className={`${styles.modeBtn} ${mode === m ? styles.modeBtnActive : ''}`} onClick={() => { setMode(m); setResultat(null); setQuery(''); setError(''); }}>
+              <button
+                key={m}
+                className={`${styles.modeBtn} ${mode === m ? styles.modeBtnActive : ''}`}
+                onClick={() => { setMode(m); setResultat(null); setQuery(''); setError(''); }}
+              >
                 {m === 'lot' ? 'Per número de lot' : 'Per ID de producte'}
               </button>
             ))}
           </div>
+
           <div className={styles.searchRow}>
             <input
               type="text"
@@ -228,13 +257,22 @@ export default function TracabilitatPage() {
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') cercar(); }}
             />
-            <Button onClick={() => cercar()} disabled={carregant}>
-              {carregant ? 'Cercant...' : 'Cercar'}
+            <Button onClick={() => cercar()} disabled={loading}>
+              {loading ? 'Cercant...' : 'Cercar'}
             </Button>
           </div>
-          {error && <div className={styles.errorMsg}>{error}</div>}
-          {resultat && (mode === 'lot' ? <DetallLot data={resultat} /> : <DetallProducte data={resultat} />)}
-          {!resultat && !error && !carregant && (
+
+          {error && (
+            <div className={styles.errorMsg}>{error}</div>
+          )}
+
+          {resultat && (
+            mode === 'lot'
+              ? <ResultatLot data={resultat} />
+              : <ResultatProducte data={resultat} />
+          )}
+
+          {!resultat && !error && !loading && (
             <div className={styles.emptyState}>
               <p>Selecciona un lot del panell o introdueix un número manualment.</p>
             </div>

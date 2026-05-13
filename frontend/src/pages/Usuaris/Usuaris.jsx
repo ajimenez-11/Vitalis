@@ -9,9 +9,9 @@ import styles from './Usuaris.module.css';
 
 export default function Usuaris() {
   const { data: usuaris, loading, error, refetch } = useApi(getUsuaris);
-  const { user: usuariActual } = useAuth();
-  const [modal, setModal] = useState(false);
-  const [editant, setEditant] = useState(null);
+  const { user: currentUser } = useAuth();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [usuariAEditar, setUsuariAEditar] = useState(null);
 
   const columns = [
     { key: 'nom', label: 'Nom', sortable: true },
@@ -28,20 +28,23 @@ export default function Usuaris() {
   if (loading) return <div className={styles.status}>Carregant usuaris...</div>;
   if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
 
-  const desar = async (dades) => {
-    if (editant) await updateUsuari(editant.id, dades);
-    else         await createUsuari(dades);
-    setModal(false);
+  const handleCreate = () => { setUsuariAEditar(null); setModalOpen(true); };
+  const handleEdit   = (u) => { setUsuariAEditar(u); setModalOpen(true); };
+
+  const handleSave = async (formData) => {
+    if (usuariAEditar) await updateUsuari(usuariAEditar.id, formData);
+    else               await createUsuari(formData);
+    setModalOpen(false);
     refetch();
   };
 
-  const eliminar = async (id) => {
+  const handleDelete = async (id) => {
     if (!confirm('Segur que vols eliminar aquest usuari?')) return;
     try { await deleteUsuari(id); refetch(); }
     catch (e) { alert(e.response?.data?.message || 'Error en eliminar'); }
   };
 
-  const canviarEstat = async (id) => {
+  const handleToggle = async (id) => {
     try { await toggleUsuari(id); refetch(); }
     catch (e) { alert(e.response?.data?.message || 'Error en canviar estat'); }
   };
@@ -51,8 +54,9 @@ export default function Usuaris() {
       <PageHeader
         title="Gestió d'Usuaris"
         subtitle="Administra els accessos del personal"
-        action={<Button onClick={() => { setEditant(null); setModal(true); }}>+ Nou Usuari</Button>}
+        action={<Button onClick={handleCreate}>+ Nou Usuari</Button>}
       />
+
       <Table
         columns={columns}
         data={sorted} 
@@ -65,23 +69,36 @@ export default function Usuaris() {
             <td className={styles.userName}>{u.nom}</td>
             <td>{u.email}</td>
             <td>
-              <Badge variant={u.rol}>{u.rol.replace('_', ' ')}</Badge>
+              <Badge variant={u.rol}>
+                {u.rol.replace('_', ' ')}
+              </Badge>
             </td>
             <td>
-              <button className={u.actiu ? styles.btnActive : styles.btnInactive} onClick={() => canviarEstat(u.id)} disabled={u.id === usuariActual?.id}>
+              <button
+                className={u.actiu ? styles.btnActive : styles.btnInactive}
+                onClick={() => handleToggle(u.id)}
+                disabled={u.id === currentUser?.id}
+              >
                 {u.actiu ? 'Actiu' : 'Inactiu'}
               </button>
             </td>
             <td className={styles.actions}>
-              <Button size="sm" variant="secondary" onClick={() => { setEditant(u); setModal(true); }}>✏️ Editar</Button>
-              {u.id !== usuariActual?.id && (
-                <Button size="sm" variant="danger" onClick={() => eliminar(u.id)}>🗑️</Button>
+              <Button size="sm" variant="secondary" onClick={() => handleEdit(u)}>✏️ Editar</Button>
+              {u.id !== currentUser?.id && (
+                <Button size="sm" variant="danger" onClick={() => handleDelete(u.id)}>🗑️</Button>
               )}
             </td>
           </tr>
         )}
       />
-      {modal && <UsuariForm usuari={editant} onSave={desar} onCancel={() => setModal(false)} />}
+
+      {modalOpen && (
+        <UsuariForm
+          usuari={usuariAEditar}
+          onSave={handleSave}
+          onCancel={() => setModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
