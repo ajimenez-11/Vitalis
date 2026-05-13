@@ -36,7 +36,6 @@ class LiniaReceptaSeeder extends Seeder
         $pasta_p = Producte::where('nom', 'Pasta')->first();
         $vinagre = Producte::where('nom', 'Vinagre')->first();
 
-        // Paella mixta
         LiniaRecepta::create([
             'recepta_id' => $paella->id,
             'producte_id' => $arros->id,
@@ -63,7 +62,6 @@ class LiniaReceptaSeeder extends Seeder
             'quantitat_per_porcio' => 0.020
         ]);
 
-        // Pasta boloñesa
         LiniaRecepta::create([
             'recepta_id' => $pasta->id,
             'producte_id' => $pasta_p->id,
@@ -89,7 +87,6 @@ class LiniaReceptaSeeder extends Seeder
             'quantitat_per_porcio' => 0.050
         ]);
 
-        // Amanida mediterrània
         LiniaRecepta::create([
             'recepta_id' => $amanida->id,
             'producte_id' => $enciam->id,
@@ -120,7 +117,6 @@ class LiniaReceptaSeeder extends Seeder
             'quantitat_per_porcio' => 0.050
         ]);
 
-        // Croquetes de vedella
         LiniaRecepta::create([
             'recepta_id' => $croquetes->id,
             'producte_id' => $vedella->id,
@@ -146,7 +142,6 @@ class LiniaReceptaSeeder extends Seeder
             'quantitat_per_porcio' => 0.500
         ]);
 
-        // Truita de patates
         LiniaRecepta::create([
             'recepta_id' => $truita->id,
             'producte_id' => $patata->id,
@@ -171,7 +166,6 @@ class LiniaReceptaSeeder extends Seeder
             'quantitat_per_porcio' => 0.030
         ]);
 
-        // Peix espasa a la planxa
         LiniaRecepta::create([
             'recepta_id' => $peix->id,
             'producte_id' => $peixEspasa->id,
@@ -191,7 +185,6 @@ class LiniaReceptaSeeder extends Seeder
             'quantitat_per_porcio' => 0.150
         ]);
 
-        // Arròs negre
         LiniaRecepta::create([
             'recepta_id' => $arrosNegre->id,
             'producte_id' => $arros->id,

@@ -106,7 +106,6 @@ class ProductesSeeder extends Seeder
             'estoc_actual' => 0,
             'estoc_minim' => 8,
         ]);
-        // ID 15
         Producte::create([
             'nom' => 'Peix espasa',
             'unitat_mesura' => 'kg',
