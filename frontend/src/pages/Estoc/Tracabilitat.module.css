@@ -91,11 +91,9 @@
 
 .empty { color: var(--color-muted); font-size: 0.875rem; text-align: center; padding: 1.5rem; }
 
-/* Layout */
 .layout { display: flex; gap: 1.5rem; align-items: flex-start; }
 .main   { flex: 1; min-width: 0; }
 
-/* Panel lateral */
 .panelLots {
   width: 280px;
   flex-shrink: 0;

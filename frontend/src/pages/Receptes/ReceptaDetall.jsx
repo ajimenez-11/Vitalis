@@ -85,7 +85,6 @@ export default function ReceptaDetall({ recepta: initial, onBack, canWrite }) {
 
       {pageError && <div className={styles.pageError}>{pageError}</div>}
 
-      {/* Llista d'ingredients */}
       <section className={styles.seccio}>
         <h2 className={styles.seccioTitol}>Ingredients</h2>
 
@@ -153,7 +152,6 @@ export default function ReceptaDetall({ recepta: initial, onBack, canWrite }) {
         )}
       </section>
 
-      {/* Formulari nova línia */}
       {canWrite && (
         <section className={styles.seccio}>
           <h2 className={styles.seccioTitol}>Afegir ingredient</h2>

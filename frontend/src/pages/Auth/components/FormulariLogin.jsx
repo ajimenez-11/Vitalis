@@ -107,7 +107,6 @@ const FormulariLogin = ({ onLogin }) => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.card}>
-        {/* Logo / branding */}
         <div className={styles.logoWrapper}>
           <div className={styles.logoBox}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
@@ -122,7 +121,6 @@ const FormulariLogin = ({ onLogin }) => {
         <h2 className={styles.title}>Benvingut</h2>
         <p className={styles.subtitle}>Inicia sessió per continuar</p>
 
-        {/* Error banner */}
         {errorApi && (
           <div className={`${styles.errorBanner} ${styles[`errorBanner_${errorType}`] ?? ''}`}>
             <span className={styles.errorBannerIcon}>
@@ -132,7 +130,6 @@ const FormulariLogin = ({ onLogin }) => {
           </div>
         )}
 
-        {/* EMAIL */}
         <div className={styles.field}>
           <label className={styles.label}>Email</label>
           <input
@@ -151,7 +148,6 @@ const FormulariLogin = ({ onLogin }) => {
           {errors.email && <p className={styles.errorMsg}>{errors.email}</p>}
         </div>
 
-        {/* PASSWORD */}
         <div className={styles.fieldLast}>
           <label className={styles.label}>Contrasenya</label>
           <input

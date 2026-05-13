@@ -54,7 +54,6 @@
 
 .status { padding: 2rem; color: var(--color-muted); }
 
-/* Toolbar */
 .toolbar {
   display: flex;
   align-items: center;

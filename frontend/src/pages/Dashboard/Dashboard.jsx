@@ -34,7 +34,6 @@ export default function DashboardPage() {
         subtitle="Resum de l'activitat del sistema"
       />
 
-      {/* KPIs */}
       <section className={styles.kpis}>
         <KpiCard label="Sota mínims" value={stock_baix.length} icon="⚠️" alert={stock_baix.length > 0} />
         <KpiCard label="Lots per caducar" value={lots_proxims_caducitat.length} icon="📅" alert={lots_proxims_caducitat.length > 0} />
@@ -44,7 +43,6 @@ export default function DashboardPage() {
 
       <div className={styles.grid}>
 
-        {/* Stock baix */}
         <section className={styles.card}>
           <h2 className={styles.cardTitle}>⚠️ Productes sota mínims</h2>
           {stock_baix.length === 0 ? (
@@ -63,7 +61,6 @@ export default function DashboardPage() {
           )}
         </section>
 
-        {/* Albarans recents */}
         <section className={styles.card}>
           <h2 className={styles.cardTitle}>📋 Albarans recents</h2>
           {albarans_recents.length === 0 ? (
@@ -89,7 +86,6 @@ export default function DashboardPage() {
           )}
         </section>
 
-        {/* Lots propers a caducar */}
         <section className={styles.card}>
           <h2 className={styles.cardTitle}>📅 Lots propers a caducar (7 dies)</h2>
           {lots_proxims_caducitat.length === 0 ? (
@@ -111,7 +107,6 @@ export default function DashboardPage() {
           )}
         </section>
 
-        {/* Receptes més consumides */}
         <section className={styles.card}>
           <h2 className={styles.cardTitle}>🍽️ Receptes més consumides</h2>
           {receptes_mes_consumides.length === 0 ? (
@@ -128,7 +123,6 @@ export default function DashboardPage() {
           )}
         </section>
 
-        {/* Moviments recents */}
         <section className={`${styles.card} ${styles.cardWide}`}>
           <h2 className={styles.cardTitle}>📦 Moviments recents d'estoc</h2>
           {moviments_recents.length === 0 ? (
