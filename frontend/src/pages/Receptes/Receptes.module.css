@@ -138,6 +138,7 @@
   border-top: 1px solid var(--color-border);
   background: var(--color-bg);
   flex-wrap: wrap;
+  justify-content: center; /* 👈 esto es todo */
 }
 .actionBtn {
   display: inline-flex;
@@ -384,4 +385,127 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+/* Botón eliminar en card */
+.actionBtnDelete {
+  color: #dc2626;
+  border-color: #fecaca;
+}
+.actionBtnDelete:hover {
+  background-color: #fee2e2;
+}
+
+.iconCircleDanger {
+  background-color: #fee2e2;
+}
+
+.deleteWarning {
+  font-size: 0.875rem;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.btnDanger {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.btnDanger:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+.btnDanger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.card {
+  cursor: pointer;
+  position: relative;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+}
+.cardSelected {
+  outline: 2px solid #0F6E56;
+  box-shadow: 0 0 0 4px rgba(15, 110, 86, 0.12);
+}
+
+.selectBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #d1d5db;
+  z-index: 1;
+  transition: color 0.15s;
+  pointer-events: none;
+}
+.selectBadgeActive {
+  color: #0F6E56;
+}
+
+.selectionBar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: white;
+  border-radius: 12px;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  z-index: 100;
+  white-space: nowrap;
+}
+.selectionCount {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.selectionActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btnDanger {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.btnDanger:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+.btnDanger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.iconCircleDanger {
+  background-color: #fee2e2;
+}
+.deleteWarning {
+  font-size: 0.875rem;
+  color: #374151;
+  margin-bottom: 1rem;
 }
