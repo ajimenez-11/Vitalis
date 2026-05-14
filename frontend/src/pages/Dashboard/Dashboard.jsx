@@ -17,7 +17,7 @@ export default function DashboardPage() {
   const { data, loading, error } = useApi(getDashboard);
 
   if (loading) return <div className={styles.status}>Carregant dashboard…</div>;
-  if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
+  if (error) return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
 
   const {
     stock_baix = [],

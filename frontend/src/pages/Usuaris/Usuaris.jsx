@@ -33,7 +33,7 @@ export default function Usuaris() {
 
   const handleSave = async (formData) => {
     if (usuariAEditar) await updateUsuari(usuariAEditar.id, formData);
-    else               await createUsuari(formData);
+    else await createUsuari(formData);
     setModalOpen(false);
     refetch();
   };

@@ -36,7 +36,7 @@ export default function ProductesPage() {
   const { sorted, sortKey, sortDir, handleSort } = useSortable(llista, columns);
 
   if (loading) return <div className={styles.status}>Carregant productes…</div>;
-  if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
+  if (error) return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
 
   const obrirCrear = () => { setApiError(null); setModal('crear'); };
   const obrirEditar = (p) => { setApiError(null); setModal(p); };
@@ -45,7 +45,7 @@ export default function ProductesPage() {
   const handleSave = async (formData) => {
     try {
       if (modal === 'crear') await createProducte(formData);
-      else                   await updateProducte(modal.id, formData);
+      else await updateProducte(modal.id, formData);
       tancar();
       refetch();
     } catch (e) {

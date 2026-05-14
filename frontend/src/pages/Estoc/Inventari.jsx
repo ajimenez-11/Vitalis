@@ -12,8 +12,8 @@ export default function InventariPage() {
   const { canWrite } = useAuth();
   const { data: productes, loading, error, refetch } = useApi(getStock);
   const [filtre, setFiltre] = useState('tots');
-  const [cerca, setCerca]   = useState('');
-  const [modal, setModal]   = useState(null);
+  const [cerca, setCerca] = useState('');
+  const [modal, setModal] = useState(null);
 
   const columns = [
     { key: 'nom', label: 'Producte', sortable: true },
@@ -39,7 +39,7 @@ export default function InventariPage() {
   const totalBaix = (productes ?? []).filter((p) => p.baix_minim).length;
 
   if (loading) return <p className={styles.info}>Carregant estoc...</p>;
-  if (error)   return <p className={styles.errorMsg}>{error}</p>;
+  if (error) return <p className={styles.errorMsg}>{error}</p>;
 
   return (
     <div className={styles.page}>

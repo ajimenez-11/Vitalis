@@ -16,19 +16,19 @@ export default function AlbaransPage() {
   const [pageError, setPageError] = useState(null);
 
   const columns = [
-    { key: 'id',        label: '#',             sortable: true },
-    { key: 'proveidor', label: 'Proveïdor',     sortable: true, sortValue: (a) => a.proveidor?.nom ?? '' },
-    { key: 'data',      label: 'Data',          sortable: true, sortValue: (a) => new Date(a.data).getTime() },
-    { key: 'usuari',    label: 'Registrat per', sortable: true, sortValue: (a) => a.usuari?.nom ?? '' },
-    { key: 'estat',     label: 'Estat',         sortable: true },
-    { key: 'accions',   label: 'Accions' },
+    { key: 'id', label: '#', sortable: true },
+    { key: 'proveidor', label: 'Proveïdor', sortable: true, sortValue: (a) => a.proveidor?.nom ?? '' },
+    { key: 'data', label: 'Data', sortable: true, sortValue: (a) => new Date(a.data).getTime() },
+    { key: 'usuari', label: 'Registrat per', sortable: true, sortValue: (a) => a.usuari?.nom ?? '' },
+    { key: 'estat', label: 'Estat', sortable: true },
+    { key: 'accions', label: 'Accions' },
   ];
 
   const llista = albarans ?? [];
   const { sorted, sortKey, sortDir, handleSort } = useSortable(llista, columns);
 
   if (loading) return <div className={styles.status}>Carregant albarans…</div>;
-  if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
+  if (error) return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
 
   const crear = async (dades) => {
     const res = await createAlbaran(dades);

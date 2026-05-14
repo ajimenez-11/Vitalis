@@ -62,7 +62,7 @@ const ReceptaForm = ({ id: idProp, onBack }) => {
     try {
       const payload = { ...form, porcions_base: porcions, ...(imatge ? { imatge } : {}) };
       if (isCreating) await createRecepta(payload);
-      else            await updateRecepta(id, payload);
+      else await updateRecepta(id, payload);
       if (onBack) onBack();
       else navigate('/receptes');
     } catch (e) {

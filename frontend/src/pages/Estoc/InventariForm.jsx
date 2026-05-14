@@ -5,9 +5,9 @@ import inputStyles from '../../components/ui/shared/Input.module.css';
 
 export default function InventariForm({ producte, mode, onClose, onSuccess }) {
   const [quantitat, setQuantitat] = useState('');
-  const [motiu, setMotiu]         = useState('');
-  const [error, setError]         = useState('');
-  const [loading, setLoading]     = useState(false);
+  const [motiu, setMotiu] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     const q = parseFloat(quantitat);

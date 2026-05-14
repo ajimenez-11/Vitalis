@@ -39,7 +39,7 @@ export default function ProveidorsPage() {
   const { sorted, sortKey, sortDir, handleSort } = useSortable(llista, columns);
 
   if (loading) return <div className={styles.status}>Carregant proveïdors…</div>;
-  if (error)   return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
+  if (error) return <div className={`${styles.status} ${styles.error}`}>{error}</div>;
 
   const obrirCrear  = ()  => { setPageError(null); setModal('crear'); };
   const obrirEditar = (p) => { setPageError(null); setModal(p); };
@@ -48,7 +48,7 @@ export default function ProveidorsPage() {
   const handleSave = async (formData) => {
     try {
       if (modal === 'crear') await createProveidor(formData);
-      else                   await updateProveidor(modal.id, formData);
+      else await updateProveidor(modal.id, formData);
       tancar();
       refetch();
     } catch (e) {

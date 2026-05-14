@@ -45,10 +45,10 @@ const interpretarError = (err) => {
 };
 
 const FormulariLogin = ({ onLogin }) => {
-  const [email,    setEmail]    = useState('');
+  const [email, setEmail]    = useState('');
   const [password, setPassword] = useState('');
-  const [errors,   setErrors]   = useState({});
-  const [loading,  setLoading]  = useState(false);
+  const [errors, setErrors]   = useState({});
+  const [loading, setLoading]  = useState(false);
   const [errorApi, setErrorApi] = useState('');
   const [errorType, setErrorType] = useState(''); // 'inactive' | 'credentials' | 'generic'
 
