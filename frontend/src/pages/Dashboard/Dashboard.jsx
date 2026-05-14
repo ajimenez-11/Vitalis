@@ -7,8 +7,10 @@ function KpiCard({ label, value, icon, alert }) {
   return (
     <div className={`${styles.kpi} ${alert ? styles.kpiAlert : ''}`}>
       <span className={styles.kpiIcon}>{icon}</span>
-      <span className={styles.kpiValue}>{value}</span>
-      <span className={styles.kpiLabel}>{label}</span>
+      <div className={styles.kpiBody}>
+        <span className={styles.kpiValue}>{value}</span>
+        <span className={styles.kpiLabel}>{label}</span>
+      </div>
     </div>
   );
 }
