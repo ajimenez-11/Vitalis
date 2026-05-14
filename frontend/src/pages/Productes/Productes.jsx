@@ -102,7 +102,9 @@ export default function ProductesPage() {
           return (
             <tr key={p.id} className={sota ? styles.rowAlert : ''}>
               <td className={styles.nom}>{p.nom}</td>
-              <td>{p.unitat_mesura}</td>
+              <td>{p.unitat_mesura} 
+                {p.unitat_mesura === 'unitats' ? '' : ` (${p.unitat_mesura === 'kg' ? 'quilograms' : 'litres'})`}
+              </td> 
               <td className={sota ? styles.alertText : ''}>{p.estoc_actual}</td>
               <td>{p.estoc_minim}</td>
               <td>
