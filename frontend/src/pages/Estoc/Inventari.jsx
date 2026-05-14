@@ -87,7 +87,9 @@ export default function InventariPage() {
         renderRow={(p) => (
           <tr key={p.id} className={p.baix_minim ? styles.rowBaix : ''}>
             <td className={styles.nomProducte}>{p.nom}</td>
-            <td>{p.unitat_mesura}</td>
+            <td>{p.unitat_mesura}
+              {p.unitat_mesura === 'unitats' ? '' : ` (${p.unitat_mesura === 'kg' ? 'quilograms' : 'litres'})`}
+            </td>
             <td className={p.baix_minim ? styles.stockBaix : styles.stockOk}>
               {p.estoc_actual}
             </td>
