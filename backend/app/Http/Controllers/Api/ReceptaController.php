@@ -10,6 +10,7 @@ class ReceptaController extends Controller
 {
     // LLISTAR RECEPTES
     // GET /receptes
+    
     public function list()
     {
         return response()->json([
@@ -17,28 +18,30 @@ class ReceptaController extends Controller
             'data' => Recepta::with('usuari')->orderBy('nom')->get()
         ]);
     }
-
+ 
     // MOSTRAR UNA RECEPTA
     // GET /receptes/{id}
+
     public function getRecepta($id)
     {
         $recepta = Recepta::with('linies.producte', 'usuari')->find($id);
-
+ 
         if (!$recepta) {
             return response()->json([
                 'success' => false,
                 'message' => 'Recepta no trobada'
             ], 404);
         }
-
+ 
         return response()->json([
             'success' => true,
             'data' => $recepta
         ]);
     }
-
+ 
     // CREAR RECEPTA
     // POST /receptes
+
     public function new(Request $request)
     {
         $validated = $request->validate([
@@ -47,91 +50,71 @@ class ReceptaController extends Controller
             'porcions_base' => 'nullable|integer|min:1',
             'imatge'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
-
-        if ($request->hasFile('imatge')) {
-            $ruta   = env('RUTA_RECEPTES', 'uploads/imatges/receptes');
-            $dir    = public_path($ruta);
-            if (!is_dir($dir)) mkdir($dir, 0755, true);
-
-            $fitxer = $request->file('imatge');
-            $nom    = uniqid('recepta_', true) . '.' . $fitxer->getClientOriginalExtension();
-            $fitxer->move($dir, $nom);
-
-            $validated['imatge'] = $ruta . '/' . $nom;
-        }
-
-        $validated['usuari_id'] = auth()->id();
+ 
+        $validated['imatge']     = $this->handleImageUpload($request);
+        $validated['usuari_id']  = auth()->id();
+ 
         $recepta = Recepta::create($validated);
-
+ 
         return response()->json([
             'success' => true,
             'data'    => $recepta->load('usuari'),
             'message' => 'Recepta creada correctament'
         ], 201);
     }
-
+ 
     // EDITAR RECEPTA
     // PUT /receptes/{id}
-    public function edit(Request $request, $id) {
-    $recepta = Recepta::find($id);
-    if (!$recepta) {
-        return response()->json(['success' => false, 'message' => 'Recepta no trobada'], 404);
-    }
 
-    $validated = $request->validate([
-        'nom'           => 'sometimes|required|string|max:255',
-        'descripcio'    => 'nullable|string',
-        'porcions_base' => 'nullable|integer|min:1',
-        'imatge'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
-    ]);
-
-    if ($request->hasFile('imatge')) {
-        // Borra la imagen anterior si existe
-        if ($recepta->imatge && file_exists(public_path($recepta->imatge))) {
-            unlink(public_path($recepta->imatge));
-        }
-
-        $ruta   = env('RUTA_RECEPTES', 'uploads/imatges/receptes');
-        $dir    = public_path($ruta);
-        if (!is_dir($dir)) mkdir($dir, 0755, true);
-
-        $fitxer = $request->file('imatge');
-        $nom    = uniqid('recepta_', true) . '.' . $fitxer->getClientOriginalExtension();
-        $fitxer->move($dir, $nom);
-
-        $validated['imatge'] = $ruta . '/' . $nom;
-    }
-
-    $recepta->update($validated);
-
-    return response()->json([
-        'success' => true,
-        'data'    => $recepta->load('linies.producte', 'usuari'),
-        'message' => 'Recepta actualitzada correctament'
-    ]);
-}
-
-    // ELIMINAR RECEPTA
-    // DELETE /receptes/{id}
-    public function delete($id)
+    public function edit(Request $request, $id)
     {
         $recepta = Recepta::find($id);
-
+ 
         if (!$recepta) {
             return response()->json([
                 'success' => false,
                 'message' => 'Recepta no trobada'
             ], 404);
         }
+ 
+        $validated = $request->validate([
+            'nom'           => 'sometimes|required|string|max:255',
+            'descripcio'    => 'nullable|string',
+            'porcions_base' => 'nullable|integer|min:1',
+            'imatge'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+        ]);
+ 
+        if ($request->hasFile('imatge')) {
+            $validated['imatge'] = $this->handleImageUpload($request, $recepta->imatge);
+        }
+ 
+        $recepta->update($validated);
+ 
+        return response()->json([
+            'success' => true,
+            'data'    => $recepta->load('linies.producte', 'usuari'),
+            'message' => 'Recepta actualitzada correctament'
+        ]);
+    }
+ 
+    // ELIMINAR RECEPTA
+    // DELETE /receptes/{id}
 
+    public function delete($id)
+    {
+        $recepta = Recepta::find($id);
+ 
+        if (!$recepta) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Recepta no trobada'
+            ], 404);
+        }
+ 
         try {
             $imatgeRuta = $recepta->imatge;
             $recepta->delete();
-
-            if ($imatgeRuta && file_exists(public_path($imatgeRuta))) { 
-                unlink(public_path($imatgeRuta)); 
-            }
-
+            $this->deleteImage($imatgeRuta);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -144,5 +127,4 @@ class ReceptaController extends Controller
             'message' => 'Recepta eliminada correctament'
         ]);
     }
-    
 }
