@@ -12,6 +12,7 @@ class StockController extends Controller
 {
     // LLISTAR STOCK GENERAL
     // GET /stock
+
     public function list()
     {
         $productes = Producte::select('id', 'nom', 'unitat_mesura', 'estoc_actual', 'estoc_minim')
@@ -30,6 +31,7 @@ class StockController extends Controller
 
     // STOCK D'UN PRODUCTE
     // GET /stock/producte/{id}
+
     public function getProducteStock($id)
     {
         $producte = Producte::find($id);
@@ -43,19 +45,13 @@ class StockController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => [
-                'id' => $producte->id,
-                'nom' => $producte->nom,
-                'unitat_mesura' => $producte->unitat_mesura,
-                'estoc_actual' => $producte->estoc_actual,
-                'estoc_minim' => $producte->estoc_minim,
-                'baix_minim' => $producte->estoc_actual < $producte->estoc_minim,
-            ]
+            'data'    => $this->formatProducteStock($producte)
         ]);
     }
 
     // LLISTAR MOVIMENTS
     // GET /stock/moviments
+
     public function listMoviments()
     {
         $moviments = MovimentStock::with('producte', 'lot', 'usuari')
@@ -70,6 +66,7 @@ class StockController extends Controller
 
     // MOVIMENTS D'UN PRODUCTE
     // GET /stock/producte/{id}/moviments
+
     public function listMovimentsProducte($id)
     {
         $producte = Producte::find($id);
@@ -94,6 +91,7 @@ class StockController extends Controller
 
     // AJUST D'ESTOC
     // POST /stock/ajust
+
     public function ajust(Request $request)
     {
         $validated = $request->validate([
@@ -114,34 +112,31 @@ class StockController extends Controller
         }
 
         DB::transaction(function () use ($validated, $producte) {
-            MovimentStock::create([
-                'producte_id' => $validated['producte_id'],
-                'lot_id' => null,
-                'usuari_id' => auth()->id(),
-                'tipus' => 'ajust',
-                'quantitat' => $validated['quantitat'],
-                'data' => now(),
-                'observacions' => $validated['motiu'] ?? 'Ajust manual'
-            ]);
-
+            $this->registrarMoviment(
+                producteId: $validated['producte_id'],
+                tipus: 'ajust',
+                quantitat: $validated['quantitat'],
+                observacions: $validated['motiu'] ?? 'Ajust manual'
+            );
             $producte->increment('estoc_actual', $validated['quantitat']);
         });
 
         return response()->json([
             'success' => true,
-            'message'=> 'Ajust realitzat correctament',
-            'data' => $producte->fresh()
+            'message' => 'Ajust realitzat correctament',
+            'data'    => $producte->fresh()
         ]);
     }
 
     // SORTIDA D'ESTOC
     // POST /stock/sortida
+    
     public function sortida(Request $request)
     {
         $validated = $request->validate([
             'producte_id' => 'required|exists:productes,id',
-            'quantitat' => 'required|numeric|min:0.001',
-            'motiu' => 'nullable|string'
+            'quantitat'   => 'required|numeric|min:0.001',
+            'motiu'       => 'nullable|string'
         ]);
 
         $producte = Producte::find($validated['producte_id']);
@@ -155,23 +150,19 @@ class StockController extends Controller
         }
 
         DB::transaction(function () use ($validated, $producte) {
-            MovimentStock::create([
-                'producte_id' => $validated['producte_id'],
-                'lot_id' => null,
-                'usuari_id' => auth()->id(),
-                'tipus' => 'sortida',
-                'quantitat' => $validated['quantitat'],
-                'data' => now(),
-                'observacions' => $validated['motiu'] ?? 'Sortida manual'
-            ]);
-
+            $this->registrarMoviment(
+                producteId: $validated['producte_id'],
+                tipus: 'sortida',
+                quantitat: $validated['quantitat'],
+                observacions: $validated['motiu'] ?? 'Sortida manual'
+            );
             $producte->decrement('estoc_actual', $validated['quantitat']);
         });
 
         return response()->json([
             'success' => true,
             'message' => 'Sortida registrada correctament',
-            'data' => $producte->fresh()
+            'data'    => $producte->fresh()
         ]);
     }
 }
