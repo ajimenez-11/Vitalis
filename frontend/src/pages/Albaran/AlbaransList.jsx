@@ -8,12 +8,36 @@ import AlbaranForm from './AlbaranForm';
 import AlbaranDetall from './AlbaranDetall';
 import styles from './Albarans.module.css';
 
+const EliminarModal = ({ onClose, onConfirm, deleting, error }) => (
+  <div className={styles.overlay}>
+    <div className={styles.modalConsum}>
+      <div className={styles.modalBody}>
+        {error && <div className={styles.formError}>{error}</div>}
+        <p className={styles.deleteWarning}>
+          Estàs a punt d'eliminar aquest albaran. Aquesta acció no es pot desfer.
+        </p>
+        <div className={styles.modalActions}>
+          <button className={styles.btnCancelSm} onClick={onClose} disabled={deleting}>
+            Cancel·lar
+          </button>
+          <button className={styles.btnDanger} onClick={onConfirm} disabled={deleting}>
+            {deleting ? 'Eliminant...' : 'Eliminar'}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 export default function AlbaransPage() {
   const { data: albarans, loading, error, refetch } = useApi(getAlbarans);
   const { canWrite } = useAuth();
   const [modal, setModal] = useState(false);
   const [obert, setObert] = useState(null);
   const [pageError, setPageError] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null); // id
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
 
   const columns = [
     { key: 'id', label: '#', sortable: true },
@@ -37,14 +61,22 @@ export default function AlbaransPage() {
     setObert(res.data.data);
   };
 
-  const eliminar = async (id) => {
-    if (!window.confirm('Segur que vols eliminar aquest albaran?')) return;
-    setPageError(null);
+  const handleDeleteClick = (id) => {
+    setDeleteError(null);
+    setConfirmDelete(id);
+  };
+
+  const handleDeleteConfirm = async () => {
+    setDeleting(true);
+    setDeleteError(null);
     try {
-      await deleteAlbaran(id);
+      await deleteAlbaran(confirmDelete);
+      setConfirmDelete(null);
       refetch();
     } catch (e) {
-      setPageError(e.response?.data?.message ?? "No s'ha pogut eliminar");
+      setDeleteError(e.response?.data?.message ?? "No s'ha pogut eliminar");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -112,7 +144,7 @@ export default function AlbaransPage() {
               {canWrite && a.estat === 'esborrany' && (
                 <>
                   <Button size="sm" onClick={() => confirmar(a.id)}>Confirmar</Button>
-                  <Button variant="danger" size="sm" onClick={() => eliminar(a.id)}>Eliminar</Button>
+                  <Button variant="danger" size="sm" onClick={() => handleDeleteClick(a.id)}>Eliminar</Button>
                 </>
               )}
               {canWrite && a.estat === 'confirmat' && (
@@ -124,6 +156,15 @@ export default function AlbaransPage() {
       />
 
       {modal && <AlbaranForm onSave={crear} onCancel={() => setModal(false)} />}
+
+      {confirmDelete !== null && (
+        <EliminarModal
+          onClose={() => { setConfirmDelete(null); setDeleteError(null); }}
+          onConfirm={handleDeleteConfirm}
+          deleting={deleting}
+          error={deleteError}
+        />
+      )}
     </div>
   );
 }

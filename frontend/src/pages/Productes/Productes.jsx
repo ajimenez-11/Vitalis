@@ -4,28 +4,47 @@ import { useApi } from '../../hooks/useApi';
 import {
   getProductes, createProducte, updateProducte, deleteProducte,
 } from '../../api/productes';
-import { useSortable } from '../../hooks/useSortable'; 
+import { useSortable } from '../../hooks/useSortable';
 import { Badge, Button, PageHeader, Table } from '../../components/ui';
 import ProducteForm from './ProducteForm';
 import styles from './Productes.module.css';
 
+const EliminarModal = ({ nom, onClose, onConfirm, deleting, error }) => (
+  <div className={styles.overlay}>
+    <div className={styles.modalConsum}>
+      <div className={styles.modalBody}>
+        {error && <div className={styles.formError}>{error}</div>}
+        <p className={styles.deleteWarning}>
+          Estàs a punt d'eliminar el producte <strong>{nom}</strong>. Aquesta acció no es pot desfer.
+        </p>
+        <div className={styles.modalActions}>
+          <button className={styles.btnCancelSm} onClick={onClose} disabled={deleting}>
+            Cancel·lar
+          </button>
+          <button className={styles.btnDanger} onClick={onConfirm} disabled={deleting}>
+            {deleting ? 'Eliminant...' : 'Eliminar'}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 export default function ProductesPage() {
   const { data: productes, loading, error, refetch } = useApi(getProductes);
   const [modal, setModal] = useState(null);
-  const [deleting, setDeleting] = useState(null);
   const [apiError, setApiError] = useState(null);
   const [query, setQuery] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(null); 
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
 
   const columns = [
     { key: 'nom', label: 'Nom', sortable: true },
-    { key: 'unitat', label: 'Unitat', sortable: true,
-      sortValue: (p) => p.unitat_mesura ?? '' },
-    { key: 'estoc_actual', label: 'Estoc actual', sortable: true,
-      sortValue: (p) => Number(p.estoc_actual) },
-    { key: 'estoc_minim', label: 'Estoc mínim',  sortable: true,
-      sortValue: (p) => Number(p.estoc_minim) },
-    { key: 'estat', label: 'Estat', sortable: true,
-      sortValue: (p) => Number(p.estoc_actual) <= Number(p.estoc_minim) ? 0 : 1 },
+    { key: 'unitat', label: 'Unitat', sortable: true, sortValue: (p) => p.unitat_mesura ?? '' },
+    { key: 'estoc_actual', label: 'Estoc actual', sortable: true, sortValue: (p) => Number(p.estoc_actual) },
+    { key: 'estoc_minim', label: 'Estoc mínim', sortable: true, sortValue: (p) => Number(p.estoc_minim) },
+    { key: 'estat', label: 'Estat', sortable: true, sortValue: (p) => Number(p.estoc_actual) <= Number(p.estoc_minim) ? 0 : 1 },
     { key: 'accions', label: 'Accions' },
   ];
 
@@ -53,17 +72,22 @@ export default function ProductesPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Segur que vols eliminar aquest producte?')) return;
-    setDeleting(id);
-    setApiError(null);
+  const handleDeleteClick = (p) => {
+    setDeleteError(null);
+    setConfirmDelete({ id: p.id, nom: p.nom });
+  };
+
+  const handleDeleteConfirm = async () => {
+    setDeleting(true);
+    setDeleteError(null);
     try {
-      await deleteProducte(id);
+      await deleteProducte(confirmDelete.id);
+      setConfirmDelete(null);
       refetch();
     } catch (e) {
-      setApiError(e.response?.data?.message ?? "No s'ha pogut eliminar el producte");
+      setDeleteError(e.response?.data?.message ?? "No s'ha pogut eliminar el producte");
     } finally {
-      setDeleting(null);
+      setDeleting(false);
     }
   };
 
@@ -92,7 +116,7 @@ export default function ProductesPage() {
 
       <Table
         columns={columns}
-        data={sorted} 
+        data={sorted}
         sortKey={sortKey}
         sortDir={sortDir}
         onSort={handleSort}
@@ -114,13 +138,8 @@ export default function ProductesPage() {
                 <Button variant="secondary" size="sm" onClick={() => obrirEditar(p)}>
                   Editar
                 </Button>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => handleDelete(p.id)}
-                  disabled={deleting === p.id}
-                >
-                  {deleting === p.id ? '…' : 'Eliminar'}
+                <Button variant="danger" size="sm" onClick={() => handleDeleteClick(p)}>
+                  Eliminar
                 </Button>
               </td>
             </tr>
@@ -133,6 +152,16 @@ export default function ProductesPage() {
           producte={modal === 'crear' ? null : modal}
           onSave={handleSave}
           onCancel={tancar}
+        />
+      )}
+
+      {confirmDelete !== null && (
+        <EliminarModal
+          nom={confirmDelete.nom}
+          onClose={() => { setConfirmDelete(null); setDeleteError(null); }}
+          onConfirm={handleDeleteConfirm}
+          deleting={deleting}
+          error={deleteError}
         />
       )}
     </div>
