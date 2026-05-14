@@ -11,4 +11,7 @@
   font-family: var(--font-sans);
   transition: border-color 0.15s;
 }
-.input:focus { border-color: var(--color-accent); }
+
+.input:focus {
+  border-color: var(--color-accent);
+}
