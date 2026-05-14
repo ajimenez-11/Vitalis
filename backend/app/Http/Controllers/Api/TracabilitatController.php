@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -11,7 +10,6 @@ class TracabilitatController extends Controller
 {
     // LLISTAR TOTS ELS LOTS (per navegar i fer clic)
     // GET /tracabilitat/lots
-    
     public function list()
     {
         $lots = Lot::with([
@@ -20,8 +18,24 @@ class TracabilitatController extends Controller
             ])
             ->orderBy('data_caducitat', 'asc')
             ->get()
-            ->map(fn ($lot) => $this->formatLotResum($lot));
-
+            ->map(function ($lot) {
+                $linia   = $lot->liniaAlbaran;
+                $albaran = $linia?->albaran;
+ 
+                return [
+                    'id'             => $lot->id,
+                    'numero_lot'     => $lot->numero_lot,
+                    'data_caducitat' => $lot->data_caducitat,
+                    'producte_id'    => $linia?->producte?->id,
+                    'producte'       => $linia?->producte?->nom,
+                    'unitat_mesura'  => $linia?->producte?->unitat_mesura,
+                    'quantitat'      => $linia?->quantitat,
+                    'proveidor'      => $albaran?->proveidor?->nom,
+                    'data_entrada'   => $albaran?->data,
+                    'albaran_id'     => $albaran?->id,
+                ];
+            });
+ 
         return response()->json([
             'success' => true,
             'data'    => $lots
@@ -31,7 +45,6 @@ class TracabilitatController extends Controller
     // TRAÇABILITAT PER LOT
     // GET /tracabilitat/lot/{numero}
     // Respon: d'on ve el lot i on ha anat (quines receptes/sortides)
-
     public function lot($numero)
     {
         $lot = Lot::where('numero_lot', $numero)
@@ -40,7 +53,7 @@ class TracabilitatController extends Controller
                 'liniaAlbaran.albaran.usuari',
                 'liniaAlbaran.producte',
                 'moviments.usuari',
-                'moviments.receptaConsum.recepta',
+                'moviments.receptaConsum.recepta', 
             ])
             ->first();
 
@@ -51,8 +64,8 @@ class TracabilitatController extends Controller
             ], 404);
         }
 
-        $linia   = $lot->liniaAlbaran;
-        $albaran = $linia->albaran;
+        $linia    = $lot->liniaAlbaran;
+        $albaran  = $linia->albaran;
 
         return response()->json([
             'success' => true,
@@ -78,7 +91,25 @@ class TracabilitatController extends Controller
 
                 // Destí: tots els moviments d'aquest lot
                 // (entrades, sortides manuals, consums de recepta)
-                'moviments' => $lot->moviments->map(fn ($m) => $this->formatMoviment($m)),
+                'moviments' => $lot->moviments->map(function ($m) {
+                    return [
+                        'id'         => $m->id,
+                        'tipus'      => $m->tipus,
+                        'quantitat'  => $m->quantitat,
+                        'data'       => $m->data,
+                        'usuari'     => $m->usuari?->nom,
+                        'observacions' => $m->observacions,
+                        // Si el moviment prové d'una recepta, mostra-la
+                        'recepta'    => $m->receptaConsum
+                            ? [
+                                'consum_id' => $m->receptaConsum->id,
+                                'recepta'   => $m->receptaConsum->recepta?->nom,
+                                'porcions'  => $m->receptaConsum->porcions,
+                                'data'      => $m->receptaConsum->data,
+                            ]
+                            : null,
+                    ];
+                }),
             ]
         ]);
     }
@@ -86,7 +117,6 @@ class TracabilitatController extends Controller
     // TRAÇABILITAT PER PRODUCTE
     // GET /tracabilitat/producte/{id}
     // Respon: tots els lots rebuts, tots els moviments i consums
-
     public function producte($id)
     {
         $producte = Producte::find($id);
@@ -103,7 +133,7 @@ class TracabilitatController extends Controller
             ->with([
                 'lot.liniaAlbaran.albaran.proveidor',
                 'usuari',
-                'receptaConsum.recepta',
+                'receptaConsum.recepta',  
             ])
             ->orderBy('data', 'desc')
             ->get();
@@ -115,19 +145,46 @@ class TracabilitatController extends Controller
             ->with('liniaAlbaran.albaran.proveidor')
             ->orderBy('data_caducitat', 'asc')
             ->get()
-            ->map(fn ($lot) => $this->formatLotProducte($lot));
+            ->map(function ($lot) {
+                return [
+                    'id'             => $lot->id,
+                    'numero_lot'     => $lot->numero_lot,
+                    'quantitat'      => $lot->quantitat,
+                    'data_caducitat' => $lot->data_caducitat,
+                    'proveidor'      => $lot->liniaAlbaran->albaran->proveidor->nom,
+                    'data_entrada'   => $lot->liniaAlbaran->albaran->data,
+                ];
+            });
 
         return response()->json([
             'success' => true,
             'data' => [
-                'producte'     => $producte,
+                'producte'  => $producte,
                 'estoc_actual' => $producte->estoc_actual,
 
                 // Tots els lots que han entrat per aquest producte
                 'lots_rebuts' => $lots,
 
                 // Historial complet de moviments
-                'moviments' => $moviments->map(fn ($m) => $this->formatMovimentProducte($m)),
+                'moviments' => $moviments->map(function ($m) {
+                    return [
+                        'id'           => $m->id,
+                        'tipus'        => $m->tipus,
+                        'quantitat'    => $m->quantitat,
+                        'data'         => $m->data,
+                        'observacions' => $m->observacions,
+                        'usuari'       => $m->usuari?->nom,
+                        'lot'          => $m->lot?->numero_lot,
+                        'proveidor'    => $m->lot?->liniaAlbaran?->albaran?->proveidor?->nom,
+                        // Si és un consum de recepta, mostra el detall
+                        'recepta'      => $m->receptaConsum
+                            ? [
+                                'nom'     => $m->receptaConsum->recepta?->nom,
+                                'porcions'=> $m->receptaConsum->porcions,
+                            ]
+                            : null,
+                    ];
+                }),
 
                 // Resum agregat per tipus
                 'resum' => [
