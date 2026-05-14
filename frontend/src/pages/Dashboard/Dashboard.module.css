@@ -1,6 +1,16 @@
-.page        { max-width: 1100px; margin: 0 auto; }
-.status      { padding: 2rem; color: var(--color-muted); }
-.error       { color: var(--color-error); }
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.status {
+  padding: 2rem;
+  color: var(--color-muted);
+}
+
+.error {
+  color: var(--color-error);
+}
 
 .kpis {
   display: grid;
@@ -8,6 +18,7 @@
   gap: 1rem;
   margin-bottom: 2rem;
 }
+
 .kpi {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -19,16 +30,35 @@
   gap: 4px;
   box-shadow: var(--shadow-card);
 }
-.kpiAlert  { border-color: var(--color-error); background: var(--color-error-bg); }
-.kpiIcon   { font-size: 1.5rem; }
-.kpiValue  { font-size: 2rem; font-weight: 700; color: var(--color-text); }
-.kpiLabel  { font-size: 0.8rem; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+.kpiAlert {
+  border-color: var(--color-error);
+  background: var(--color-error-bg);
+}
+
+.kpiIcon {
+  font-size: 1.5rem;
+}
+
+.kpiValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.kpiLabel {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
 }
+
 .card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -36,10 +66,27 @@
   padding: 1.5rem;
   box-shadow: var(--shadow-card);
 }
-.cardWide  { grid-column: span 2; }
-.cardTitle { font-size: 1rem; font-weight: 600; color: var(--color-text); margin: 0 0 1rem; }
 
-.list     { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.cardWide {
+  grid-column: span 2;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 1rem;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .listItem {
   display: flex;
   justify-content: space-between;
@@ -50,8 +97,33 @@
   font-size: 0.9rem;
   gap: 8px;
 }
-.itemName  { color: var(--color-text); font-weight: 500; flex: 1; }
-.itemRight { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.info      { color: var(--color-muted); font-size: 0.8rem; }
-.lotNum    { color: var(--color-muted); font-weight: 400; }
-.empty     { color: var(--color-muted); font-size: 0.9rem; text-align: center; padding: 1rem 0; }
+
+.itemName {
+  color: var(--color-text);
+  font-weight: 500;
+  flex: 1;
+}
+
+.itemRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.info {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+
+.lotNum {
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+.empty {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1rem 0;
+}
