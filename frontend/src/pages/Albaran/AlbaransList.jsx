@@ -3,31 +3,10 @@ import { useApi } from '../../hooks/useApi';
 import { getAlbarans, createAlbaran, deleteAlbaran, confirmarAlbaran, tornarEsborrany } from '../../api/albarans';
 import { useAuth } from '../../context/AuthContext';
 import { useSortable } from '../../hooks/useSortable';
-import { Badge, Button, PageHeader, Table } from '../../components/ui';
+import { Badge, Button, DeleteModal, PageHeader, Table } from '../../components/ui';
 import AlbaranForm from './AlbaranForm';
 import AlbaranDetall from './AlbaranDetall';
 import styles from './Albarans.module.css';
-
-const EliminarModal = ({ onClose, onConfirm, deleting, error }) => (
-  <div className={styles.overlay}>
-    <div className={styles.modalConsum}>
-      <div className={styles.modalBody}>
-        {error && <div className={styles.formError}>{error}</div>}
-        <p className={styles.deleteWarning}>
-          Estàs a punt d'eliminar aquest albaran. Aquesta acció no es pot desfer.
-        </p>
-        <div className={styles.modalActions}>
-          <button className={styles.btnCancelSm} onClick={onClose} disabled={deleting}>
-            Cancel·lar
-          </button>
-          <button className={styles.btnDanger} onClick={onConfirm} disabled={deleting}>
-            {deleting ? 'Eliminant...' : 'Eliminar'}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 export default function AlbaransPage() {
   const { data: albarans, loading, error, refetch } = useApi(getAlbarans);
@@ -158,7 +137,9 @@ export default function AlbaransPage() {
       {modal && <AlbaranForm onSave={crear} onCancel={() => setModal(false)} />}
 
       {confirmDelete !== null && (
-        <EliminarModal
+        <DeleteModal
+          title="Eliminar albaran"
+          itemName={`Albaran #${confirmDelete}`}
           onClose={() => { setConfirmDelete(null); setDeleteError(null); }}
           onConfirm={handleDeleteConfirm}
           deleting={deleting}

@@ -1,0 +1,44 @@
+.errorBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  border-left: 3px solid var(--color-error);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 10px 14px;
+  font-size: 0.84rem;
+  margin-bottom: 1rem;
+}
+
+.warningBox {
+  background: #FFF7ED;
+  border: 1px solid #FED7AA;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  color: #D97706;
+  margin-bottom: 0.875rem;
+}
+
+.warningText {
+  font-size: 0.84rem;
+  color: #92400E;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.itemName {
+  font-size: 0.875rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+
+.itemName span {
+  font-weight: 600;
+  color: var(--color-text);
+}

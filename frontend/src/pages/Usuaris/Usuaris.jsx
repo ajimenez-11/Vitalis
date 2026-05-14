@@ -3,30 +3,9 @@ import { useApi } from '../../hooks/useApi';
 import { getUsuaris, createUsuari, updateUsuari, deleteUsuari, toggleUsuari } from '../../api/usuaris';
 import { useAuth } from '../../context/AuthContext';
 import { useSortable } from '../../hooks/useSortable';
-import { Badge, Button, PageHeader, Table } from '../../components/ui';
+import { Badge, Button, DeleteModal, PageHeader, Table } from '../../components/ui';
 import UsuariForm from './UsuariForm';
 import styles from './Usuaris.module.css';
-
-const EliminarModal = ({ nom, onClose, onConfirm, deleting, error }) => (
-  <div className={styles.overlay}>
-    <div className={styles.modalConsum}>
-      <div className={styles.modalBody}>
-        {error && <div className={styles.formError}>{error}</div>}
-        <p className={styles.deleteWarning}>
-          Estàs a punt d'eliminar l'usuari <strong>{nom}</strong>. Aquesta acció no es pot desfer.
-        </p>
-        <div className={styles.modalActions}>
-          <button className={styles.btnCancelSm} onClick={onClose} disabled={deleting}>
-            Cancel·lar
-          </button>
-          <button className={styles.btnDanger} onClick={onConfirm} disabled={deleting}>
-            {deleting ? 'Eliminant...' : 'Eliminar'}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 export default function Usuaris() {
   const { data: usuaris, loading, error, refetch } = useApi(getUsuaris);
@@ -135,8 +114,9 @@ export default function Usuaris() {
       )}
 
       {confirmDelete && (
-        <EliminarModal
-          nom={confirmDelete.nom}
+        <DeleteModal
+          title="Eliminar usuari"
+          itemName={confirmDelete.nom}
           onClose={() => { setConfirmDelete(null); setDeleteError(null); }}
           onConfirm={handleDeleteConfirm}
           deleting={deleting}

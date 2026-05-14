@@ -7,30 +7,9 @@ import {
 } from '../../api/proveidors';
 import { useAuth } from '../../context/AuthContext';
 import { useSortable } from '../../hooks/useSortable';
-import { Badge, Button, PageHeader, Table, Modal } from '../../components/ui';
+import { Badge, Button, DeleteModal, PageHeader, Table } from '../../components/ui';
 import ProveidorForm from './ProveidorForm';
 import styles from './Proveidors.module.css';
-
-const EliminarModal = ({ nom, onClose, onConfirm, deleting, error }) => (
-  <div className={styles.overlay}>
-    <div className={styles.modalConsum}>
-      <div className={styles.modalBody}>
-        {error && <div className={styles.formError}>{error}</div>}
-        <p className={styles.deleteWarning}>
-          Estàs a punt d'eliminar el proveïdor <strong>{nom}</strong>. Aquesta acció no es pot desfer.
-        </p>
-        <div className={styles.modalActions}>
-          <button className={styles.btnCancelSm} onClick={onClose} disabled={deleting}>
-            Cancel·lar
-          </button>
-          <button className={styles.btnDanger} onClick={onConfirm} disabled={deleting}>
-            {deleting ? 'Eliminant...' : 'Eliminar'}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 export default function ProveidorsPage() {
   const { data: proveidors, loading, error, refetch } = useApi(getProveidors);
@@ -158,8 +137,9 @@ export default function ProveidorsPage() {
       )}
 
       {confirmDelete !== null && (
-        <EliminarModal
-          nom={confirmDelete.nom}
+        <DeleteModal
+          title="Eliminar proveïdor"
+          itemName={confirmDelete.nom}
           onClose={() => { setConfirmDelete(null); setDeleteError(null); }}
           onConfirm={handleDeleteConfirm}
           deleting={deleting}

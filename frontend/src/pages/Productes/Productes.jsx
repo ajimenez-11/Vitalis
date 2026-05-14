@@ -5,30 +5,10 @@ import {
   getProductes, createProducte, updateProducte, deleteProducte,
 } from '../../api/productes';
 import { useSortable } from '../../hooks/useSortable';
-import { Badge, Button, PageHeader, Table } from '../../components/ui';
+import { Badge, Button, DeleteModal, PageHeader, Table } from '../../components/ui';
 import ProducteForm from './ProducteForm';
 import styles from './Productes.module.css';
 
-const EliminarModal = ({ nom, onClose, onConfirm, deleting, error }) => (
-  <div className={styles.overlay}>
-    <div className={styles.modalConsum}>
-      <div className={styles.modalBody}>
-        {error && <div className={styles.formError}>{error}</div>}
-        <p className={styles.deleteWarning}>
-          Estàs a punt d'eliminar el producte <strong>{nom}</strong>. Aquesta acció no es pot desfer.
-        </p>
-        <div className={styles.modalActions}>
-          <button className={styles.btnCancelSm} onClick={onClose} disabled={deleting}>
-            Cancel·lar
-          </button>
-          <button className={styles.btnDanger} onClick={onConfirm} disabled={deleting}>
-            {deleting ? 'Eliminant...' : 'Eliminar'}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 export default function ProductesPage() {
   const { data: productes, loading, error, refetch } = useApi(getProductes);
@@ -158,8 +138,9 @@ export default function ProductesPage() {
       )}
 
       {confirmDelete !== null && (
-        <EliminarModal
-          nom={confirmDelete.nom}
+        <DeleteModal
+          title="Eliminar producte"
+          itemName={confirmDelete.nom}
           onClose={() => { setConfirmDelete(null); setDeleteError(null); }}
           onConfirm={handleDeleteConfirm}
           deleting={deleting}
