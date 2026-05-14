@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
     // POST /api/login
+    
     public function login(Request $request)
     {
         $data = $request->validate([
@@ -21,49 +22,58 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
             return response()->json([
-                'message' => 'Credencials incorrectes'
+                'success' => false,
+                'message' => 'Credencials incorrectes',
             ], 401);
         }
 
         if (!$user->actiu) {
             return response()->json([
-                'message' => 'Usuari desactivat'
+                'success' => false,
+                'message' => 'Usuari desactivat',
             ], 403);
         }
 
         $token = $user->createToken('vitalis-' . $user->rol)->plainTextToken;
 
         return response()->json([
-            'token' => $token,
-            'user'  => [
+            'success' => true,
+            'token'   => $token,
+            'user'    => [
                 'id'    => $user->id,
                 'nom'   => $user->nom,
                 'email' => $user->email,
                 'rol'   => $user->rol,
-            ]
+            ],
         ]);
     }
 
     // POST /api/logout
+
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Sessió tancada correctament'
+            'success' => true,
+            'message' => 'Sessió tancada correctament',
         ]);
     }
 
     // GET /api/me
+
     public function me(Request $request)
     {
         $user = $request->user();
-        
+
         return response()->json([
-            'id'    => $user->id,
-            'nom'   => $user->nom,
-            'email' => $user->email,
-            'rol'   => $user->rol,
+            'success' => true,
+            'data'    => [
+                'id'    => $user->id,
+                'nom'   => $user->nom,
+                'email' => $user->email,
+                'rol'   => $user->rol,
+            ],
         ]);
     }
 }
