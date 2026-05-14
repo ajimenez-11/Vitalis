@@ -3,46 +3,34 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Albaran;
+use App\Models\Producte;
 use App\Models\Lot;
 use App\Models\MovimentStock;
-use App\Models\Producte;
 use App\Models\ReceptaConsum;
+use App\Models\Albaran;
 
 class DashboardController extends Controller
 {
     // DASHBOARD GENERAL
     // GET /dashboard
-    
     public function list()
     {
         // PRODUCTES AMB STOCK BAIX
-
-        $stock_baix = Producte::select('id', 'nom', 'unitat_mesura', 'estoc_actual', 'estoc_minim')
-            ->whereColumn('estoc_actual', '<', 'estoc_minim')
-            ->orderBy('nom')
-            ->get()
-            ->map(function ($p) {
-                $p->baix_minim = true;
-                return $p;
-            });
+        $stock_baix = Producte::whereColumn('estoc_actual', '<', 'estoc_minim')->get();
 
         // LOTS QUE CADUCARAN AVIAT (7 dies)
-
         $lots_proxims = Lot::whereBetween('data_caducitat', [now(), now()->addDays(7)])
             ->orderBy('data_caducitat', 'asc')
             ->with('liniaAlbaran.producte')
             ->get();
 
         // MOVIMENTS RECENTS
-
         $moviments_recents = MovimentStock::with('producte', 'lot', 'usuari')
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
 
         // RECEPTES MÉS CONSUMIDES
-
         $receptes_mes_consumides = ReceptaConsum::selectRaw('recepta_consums.recepta_id, receptes.nom, SUM(recepta_consums.porcions) as total_porcions')
             ->join('receptes', 'recepta_consums.recepta_id', '=', 'receptes.id')
             ->groupBy('recepta_consums.recepta_id', 'receptes.nom')
@@ -51,7 +39,6 @@ class DashboardController extends Controller
             ->get();
 
         // ALBARANS RECENTS
-
         $albarans_recents = Albaran::with('proveidor')
             ->orderBy('data', 'desc')
             ->limit(5)
@@ -59,13 +46,13 @@ class DashboardController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => [
-                'stock_baix'              => $stock_baix,
-                'lots_proxims_caducitat'  => $lots_proxims,
-                'moviments_recents'       => $moviments_recents,
+            'data' => [
+                'stock_baix' => $stock_baix,
+                'lots_proxims_caducitat' => $lots_proxims,
+                'moviments_recents' => $moviments_recents,
                 'receptes_mes_consumides' => $receptes_mes_consumides,
-                'albarans_recents'        => $albarans_recents,
-            ],
+                'albarans_recents' => $albarans_recents
+            ]
         ]);
     }
 }
