@@ -10,7 +10,6 @@ class ReceptaController extends Controller
 {
     // LLISTAR RECEPTES
     // GET /receptes
-    
     public function list()
     {
         return response()->json([
@@ -21,7 +20,7 @@ class ReceptaController extends Controller
  
     // MOSTRAR UNA RECEPTA
     // GET /receptes/{id}
-
+    
     public function getRecepta($id)
     {
         $recepta = Recepta::with('linies.producte', 'usuari')->find($id);
