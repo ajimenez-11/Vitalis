@@ -9,7 +9,10 @@ import ReceptaForm from './ReceptaForm';
 
 const getImatgeUrl = (recepta) => {
   if (recepta.imatge_url) return recepta.imatge_url;
-  if (recepta.imatge) return `http://localhost:8000/${recepta.imatge}`;
+  if (recepta.imatge) {
+    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '');
+    return `${baseUrl}/${recepta.imatge}`;
+  }
   return null;
 };
 
