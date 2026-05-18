@@ -13,7 +13,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $data = $request->validate([
-            'email'    => 'required|email',
+            'email' => 'required|email',
             'password' => 'required|string',
         ]);
 
@@ -36,10 +36,10 @@ class AuthController extends Controller
         return response()->json([
             'token' => $token,
             'user'  => [
-                'id'    => $user->id,
-                'nom'   => $user->nom,
+                'id' => $user->id,
+                'nom' => $user->nom,
                 'email' => $user->email,
-                'rol'   => $user->rol,
+                'rol' => $user->rol,
             ]
         ]);
     }
@@ -60,10 +60,10 @@ class AuthController extends Controller
         $user = $request->user();
         
         return response()->json([
-            'id'    => $user->id,
-            'nom'   => $user->nom,
+            'id' => $user->id,
+            'nom' => $user->nom,
             'email' => $user->email,
-            'rol'   => $user->rol,
+            'rol' => $user->rol,
         ]);
     }
 }
