@@ -15,7 +15,7 @@ class ProveidorController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data'    => Proveidor::orderBy('nom')->get(),
+            'data' => Proveidor::orderBy('nom')->get(),
         ]);
     }
 
@@ -35,7 +35,7 @@ class ProveidorController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $proveidor,
+            'data' => $proveidor,
         ]);
     }
 
@@ -45,18 +45,18 @@ class ProveidorController extends Controller
     public function new(Request $request)
     {
         $validated = $request->validate([
-            'nom'     => 'required|string|max:255',
-            'nif'     => 'nullable|string|max:20|unique:proveidors',
+            'nom' => 'required|string|max:255',
+            'nif' => 'nullable|string|max:20|unique:proveidors',
             'telefon' => 'nullable|string|max:20',
-            'email'   => 'nullable|email|max:255',
-            'adreca'  => 'nullable|string|max:500',
+            'email' => 'nullable|email|max:255',
+            'adreca' => 'nullable|string|max:500',
         ]);
 
         $proveidor = Proveidor::create($validated);
 
         return response()->json([
             'success' => true,
-            'data'    => $proveidor,
+            'data' => $proveidor,
             'message' => 'Proveïdor creat correctament',
         ], 201);
     }
@@ -76,18 +76,18 @@ class ProveidorController extends Controller
         }
 
         $validated = $request->validate([
-            'nom'     => 'sometimes|required|string|max:255',
-            'nif'     => 'nullable|string|max:20|unique:proveidors,nif,' . $proveidor->id,
+            'nom' => 'sometimes|required|string|max:255',
+            'nif' => 'nullable|string|max:20|unique:proveidors,nif,' . $proveidor->id,
             'telefon' => 'nullable|string|max:20',
-            'email'   => 'nullable|email|max:255',
-            'adreca'  => 'nullable|string|max:500',
+            'email' => 'nullable|email|max:255',
+            'adreca' => 'nullable|string|max:500',
         ]);
 
         $proveidor->update($validated);
 
         return response()->json([
             'success' => true,
-            'data'    => $proveidor,
+            'data' => $proveidor,
             'message' => 'Proveïdor actualitzat correctament',
         ]);
     }
