@@ -57,7 +57,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $usuari->only(['id', 'nom', 'email', 'rol', 'actiu']),
+            'data' => $usuari->only(['id', 'nom', 'email', 'rol', 'actiu']),
             'message' => 'Usuari creat correctament'
         ], 201);
     }
@@ -76,11 +76,11 @@ class UserController extends Controller
         }
 
         $validated = $request->validate([
-            'nom'      => 'sometimes|required|string|max:255',
-            'email'    => 'sometimes|required|email|unique:users,email,' . $id,
+            'nom' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|unique:users,email,' . $id,
             'password' => 'sometimes|min:6',
-            'rol'      => 'sometimes|required|in:admin,responsable_cuina,cuiner',
-            'actiu'    => 'sometimes|boolean',
+            'rol' => 'sometimes|required|in:admin,responsable_cuina,cuiner',
+            'actiu' => 'sometimes|boolean',
         ]);
 
         if (isset($validated['password'])) {
@@ -91,7 +91,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $usuari->only(['id', 'nom', 'email', 'rol', 'actiu']),
+            'data' => $usuari->only(['id', 'nom', 'email', 'rol', 'actiu']),
             'message' => 'Usuari actualitzat correctament'
         ]);
     }
@@ -157,7 +157,7 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Estat d\'usuari actualitzat',
-            'data'    => $usuari->only(['id', 'nom', 'email', 'rol', 'actiu'])
+            'data' => $usuari->only(['id', 'nom', 'email', 'rol', 'actiu'])
         ]);
     }
 }
