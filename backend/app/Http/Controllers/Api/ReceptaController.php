@@ -42,19 +42,19 @@ class ReceptaController extends Controller
     public function new(Request $request)
     {
         $validated = $request->validate([
-            'nom'           => 'required|string|max:255',
-            'descripcio'    => 'nullable|string',
+            'nom' => 'required|string|max:255',
+            'descripcio' => 'nullable|string',
             'porcions_base' => 'nullable|integer|min:1',
-            'imatge'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'imatge' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
 
         if ($request->hasFile('imatge')) {
-            $ruta   = env('RUTA_RECEPTES', 'uploads/imatges/receptes');
-            $dir    = public_path($ruta);
+            $ruta = env('RUTA_RECEPTES', 'uploads/imatges/receptes');
+            $dir = public_path($ruta);
             if (!is_dir($dir)) mkdir($dir, 0755, true);
 
             $fitxer = $request->file('imatge');
-            $nom    = uniqid('recepta_', true) . '.' . $fitxer->getClientOriginalExtension();
+            $nom = uniqid('recepta_', true) . '.' . $fitxer->getClientOriginalExtension();
             $fitxer->move($dir, $nom);
 
             $validated['imatge'] = $ruta . '/' . $nom;
@@ -65,7 +65,7 @@ class ReceptaController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $recepta->load('usuari'),
+            'data' => $recepta->load('usuari'),
             'message' => 'Recepta creada correctament'
         ], 201);
     }
@@ -79,10 +79,10 @@ class ReceptaController extends Controller
     }
 
     $validated = $request->validate([
-        'nom'           => 'sometimes|required|string|max:255',
-        'descripcio'    => 'nullable|string',
+        'nom' => 'sometimes|required|string|max:255',
+        'descripcio' => 'nullable|string',
         'porcions_base' => 'nullable|integer|min:1',
-        'imatge'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+        'imatge' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
     ]);
 
     if ($request->hasFile('imatge')) {
@@ -91,12 +91,12 @@ class ReceptaController extends Controller
             unlink(public_path($recepta->imatge));
         }
 
-        $ruta   = env('RUTA_RECEPTES', 'uploads/imatges/receptes');
-        $dir    = public_path($ruta);
+        $ruta = env('RUTA_RECEPTES', 'uploads/imatges/receptes');
+        $dir = public_path($ruta);
         if (!is_dir($dir)) mkdir($dir, 0755, true);
 
         $fitxer = $request->file('imatge');
-        $nom    = uniqid('recepta_', true) . '.' . $fitxer->getClientOriginalExtension();
+        $nom = uniqid('recepta_', true) . '.' . $fitxer->getClientOriginalExtension();
         $fitxer->move($dir, $nom);
 
         $validated['imatge'] = $ruta . '/' . $nom;
@@ -106,7 +106,7 @@ class ReceptaController extends Controller
 
     return response()->json([
         'success' => true,
-        'data'    => $recepta->load('linies.producte', 'usuari'),
+        'data' => $recepta->load('linies.producte', 'usuari'),
         'message' => 'Recepta actualitzada correctament'
     ]);
 }
