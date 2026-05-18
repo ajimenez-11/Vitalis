@@ -26,7 +26,7 @@ class LiniaAlbaranController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => LiniaAlbaran::where('albaran_id', $albaran_id)
+            'data' => LiniaAlbaran::where('albaran_id', $albaran_id)
                 ->with('producte', 'lots')
                 ->get(),
         ]);
@@ -48,7 +48,7 @@ class LiniaAlbaranController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $linia,
+            'data' => $linia,
         ]);
     }
 
@@ -77,7 +77,7 @@ class LiniaAlbaranController extends Controller
 
         $validated = $request->validate([
             'producte_id'  => 'required|exists:productes,id',
-            'quantitat'    => 'required|numeric|min:0.001',
+            'quantitat' => 'required|numeric|min:0.001',
             'preu_unitari' => 'nullable|numeric|min:0',
         ]);
 
@@ -87,7 +87,7 @@ class LiniaAlbaranController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $linia->load('producte'),
+            'data' => $linia->load('producte'),
             'message' => 'Línia creada correctament',
         ], 201);
     }
@@ -115,7 +115,7 @@ class LiniaAlbaranController extends Controller
 
         $validated = $request->validate([
             'producte_id'  => 'sometimes|exists:productes,id',
-            'quantitat'    => 'sometimes|numeric|min:0.001',
+            'quantitat' => 'sometimes|numeric|min:0.001',
             'preu_unitari' => 'nullable|numeric|min:0',
         ]);
 
@@ -123,7 +123,7 @@ class LiniaAlbaranController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $linia->load('producte'),
+            'data' => $linia->load('producte'),
             'message' => 'Línia actualitzada correctament',
         ]);
     }
@@ -180,7 +180,7 @@ class LiniaAlbaranController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $linia->lots()->orderBy('data_caducitat', 'asc')->get(),
+            'data' => $linia->lots()->orderBy('data_caducitat', 'asc')->get(),
         ]);
     }
 
@@ -206,8 +206,8 @@ class LiniaAlbaranController extends Controller
         }
 
         $validated = $request->validate([
-            'numero_lot'     => 'required|string|max:100',
-            'quantitat'      => 'required|numeric|min:0.001',
+            'numero_lot' => 'required|string|max:100',
+            'quantitat' => 'required|numeric|min:0.001',
             'data_caducitat' => 'required|date|after:today',
         ]);
 
@@ -217,7 +217,7 @@ class LiniaAlbaranController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $lot,
+            'data' => $lot,
             'message' => 'Lot creat correctament',
         ], 201);
     }
