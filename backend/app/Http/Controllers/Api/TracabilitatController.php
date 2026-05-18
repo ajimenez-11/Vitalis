@@ -23,16 +23,16 @@ class TracabilitatController extends Controller
                 $albaran = $linia?->albaran;
  
                 return [
-                    'id'             => $lot->id,
-                    'numero_lot'     => $lot->numero_lot,
+                    'id' => $lot->id,
+                    'numero_lot' => $lot->numero_lot,
                     'data_caducitat' => $lot->data_caducitat,
-                    'producte_id'    => $linia?->producte?->id,
-                    'producte'       => $linia?->producte?->nom,
+                    'producte_id' => $linia?->producte?->id,
+                    'producte' => $linia?->producte?->nom,
                     'unitat_mesura'  => $linia?->producte?->unitat_mesura,
-                    'quantitat'      => $linia?->quantitat,
-                    'proveidor'      => $albaran?->proveidor?->nom,
-                    'data_entrada'   => $albaran?->data,
-                    'albaran_id'     => $albaran?->id,
+                    'quantitat' => $linia?->quantitat,
+                    'proveidor' => $albaran?->proveidor?->nom,
+                    'data_entrada' => $albaran?->data,
+                    'albaran_id' => $albaran?->id,
                 ];
             });
  
@@ -72,9 +72,9 @@ class TracabilitatController extends Controller
             'data' => [
                 // Identitat del lot
                 'lot' => [
-                    'id'             => $lot->id,
-                    'numero_lot'     => $lot->numero_lot,
-                    'quantitat'      => $lot->quantitat,
+                    'id' => $lot->id,
+                    'numero_lot' => $lot->numero_lot,
+                    'quantitat' => $lot->quantitat,
                     'data_caducitat' => $lot->data_caducitat,
                 ],
                 // Producte al qual pertany
@@ -82,30 +82,30 @@ class TracabilitatController extends Controller
 
                 // Origen: albaran i proveïdor
                 'origen' => [
-                    'albaran_id'   => $albaran->id,
+                    'albaran_id' => $albaran->id,
                     'data_entrada' => $albaran->data,
-                    'estat'        => $albaran->estat,
-                    'proveidor'    => $albaran->proveidor,
-                    'usuari'       => $albaran->usuari,
+                    'estat' => $albaran->estat,
+                    'proveidor' => $albaran->proveidor,
+                    'usuari' => $albaran->usuari,
                 ],
 
                 // Destí: tots els moviments d'aquest lot
                 // (entrades, sortides manuals, consums de recepta)
                 'moviments' => $lot->moviments->map(function ($m) {
                     return [
-                        'id'         => $m->id,
-                        'tipus'      => $m->tipus,
+                        'id' => $m->id,
+                        'tipus' => $m->tipus,
                         'quantitat'  => $m->quantitat,
-                        'data'       => $m->data,
-                        'usuari'     => $m->usuari?->nom,
+                        'data' => $m->data,
+                        'usuari' => $m->usuari?->nom,
                         'observacions' => $m->observacions,
                         // Si el moviment prové d'una recepta, mostra-la
                         'recepta'    => $m->receptaConsum
                             ? [
                                 'consum_id' => $m->receptaConsum->id,
-                                'recepta'   => $m->receptaConsum->recepta?->nom,
-                                'porcions'  => $m->receptaConsum->porcions,
-                                'data'      => $m->receptaConsum->data,
+                                'recepta' => $m->receptaConsum->recepta?->nom,
+                                'porcions' => $m->receptaConsum->porcions,
+                                'data' => $m->receptaConsum->data,
                             ]
                             : null,
                     ];
@@ -147,19 +147,19 @@ class TracabilitatController extends Controller
             ->get()
             ->map(function ($lot) {
                 return [
-                    'id'             => $lot->id,
-                    'numero_lot'     => $lot->numero_lot,
-                    'quantitat'      => $lot->quantitat,
+                    'id' => $lot->id,
+                    'numero_lot' => $lot->numero_lot,
+                    'quantitat' => $lot->quantitat,
                     'data_caducitat' => $lot->data_caducitat,
-                    'proveidor'      => $lot->liniaAlbaran->albaran->proveidor->nom,
-                    'data_entrada'   => $lot->liniaAlbaran->albaran->data,
+                    'proveidor' => $lot->liniaAlbaran->albaran->proveidor->nom,
+                    'data_entrada' => $lot->liniaAlbaran->albaran->data,
                 ];
             });
 
         return response()->json([
             'success' => true,
             'data' => [
-                'producte'  => $producte,
+                'producte' => $producte,
                 'estoc_actual' => $producte->estoc_actual,
 
                 // Tots els lots que han entrat per aquest producte
@@ -168,18 +168,18 @@ class TracabilitatController extends Controller
                 // Historial complet de moviments
                 'moviments' => $moviments->map(function ($m) {
                     return [
-                        'id'           => $m->id,
-                        'tipus'        => $m->tipus,
-                        'quantitat'    => $m->quantitat,
-                        'data'         => $m->data,
+                        'id' => $m->id,
+                        'tipus' => $m->tipus,
+                        'quantitat' => $m->quantitat,
+                        'data' => $m->data,
                         'observacions' => $m->observacions,
-                        'usuari'       => $m->usuari?->nom,
-                        'lot'          => $m->lot?->numero_lot,
-                        'proveidor'    => $m->lot?->liniaAlbaran?->albaran?->proveidor?->nom,
+                        'usuari' => $m->usuari?->nom,
+                        'lot' => $m->lot?->numero_lot,
+                        'proveidor' => $m->lot?->liniaAlbaran?->albaran?->proveidor?->nom,
                         // Si és un consum de recepta, mostra el detall
                         'recepta'      => $m->receptaConsum
                             ? [
-                                'nom'     => $m->receptaConsum->recepta?->nom,
+                                'nom' => $m->receptaConsum->recepta?->nom,
                                 'porcions'=> $m->receptaConsum->porcions,
                             ]
                             : null,
