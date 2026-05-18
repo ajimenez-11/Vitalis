@@ -24,7 +24,7 @@ class StockController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $productes
+            'data' => $productes
         ]);
     }
 
@@ -43,7 +43,7 @@ class StockController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => [
+            'data' => [
                 'id' => $producte->id,
                 'nom' => $producte->nom,
                 'unitat_mesura' => $producte->unitat_mesura,
@@ -64,7 +64,7 @@ class StockController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $moviments
+            'data' => $moviments
         ]);
     }
 
@@ -88,7 +88,7 @@ class StockController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $moviments
+            'data' => $moviments
         ]);
     }
 
@@ -98,8 +98,8 @@ class StockController extends Controller
     {
         $validated = $request->validate([
             'producte_id' => 'required|exists:productes,id',
-            'quantitat'   => 'required|numeric|not_in:0',
-            'motiu'       => 'nullable|string'
+            'quantitat' => 'required|numeric|not_in:0',
+            'motiu' => 'nullable|string'
         ]);
 
         $producte = Producte::find($validated['producte_id']);
