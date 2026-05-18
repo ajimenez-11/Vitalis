@@ -14,7 +14,7 @@ class LotController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data'    => Lot::with('liniaAlbaran.producte')
+            'data' => Lot::with('liniaAlbaran.producte')
                 ->orderBy('data_caducitat', 'asc')
                 ->get(),
         ]);
@@ -36,7 +36,7 @@ class LotController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $lot,
+            'data' => $lot,
         ]);
     }
 
@@ -58,7 +58,7 @@ class LotController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $lot,
+            'data' => $lot,
         ]);
     }
 
@@ -76,7 +76,7 @@ class LotController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $lots,
+            'data' => $lots,
         ]);
     }
 
