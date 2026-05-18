@@ -51,7 +51,7 @@ class AlbaranController extends Controller
     function new(Request $request) {
         $validated = $request->validate([
             'proveidor_id' => 'required|exists:proveidors,id',
-            'data'         => 'required|date',
+            'data' => 'required|date',
             'observacions' => 'nullable|string'
         ]);
 
@@ -79,7 +79,7 @@ class AlbaranController extends Controller
             ], 404);
         }
 
-        // no es posible editar albaran confirmado
+        // no és possible editar un albarà confirmat
         if ($albaran->estat === 'confirmat') {
             return response()->json([
                 'success' => false,
@@ -89,7 +89,7 @@ class AlbaranController extends Controller
 
         $validated = $request->validate([
             'proveidor_id' => 'sometimes|exists:proveidors,id',
-            'data'         => 'sometimes|date',
+            'data' => 'sometimes|date',
             'observacions' => 'nullable|string'
         ]);
 
@@ -114,7 +114,7 @@ class AlbaranController extends Controller
             ], 404);
         }
 
-        // no se puede eliminar un albaran confirmado
+        // // no és possible eliminar un albarà confirmat 
         if ($albaran->estat === 'confirmat') {
             return response()->json([
                 'success' => false,
@@ -195,11 +195,11 @@ class AlbaranController extends Controller
 
                     MovimentStock::create([
                         'producte_id'  => $linia->producte_id,
-                        'lot_id'       => $lot->id,
-                        'usuari_id'    => auth()->id(),
-                        'tipus'        => 'entrada',
-                        'quantitat'    => $lot->quantitat,
-                        'data'         => now(),
+                        'lot_id' => $lot->id,
+                        'usuari_id' => auth()->id(),
+                        'tipus' => 'entrada',
+                        'quantitat' => $lot->quantitat,
+                        'data' => now(),
                         'observacions' => 'Entrada per albaran #' . $albaran->id
                     ]);
                 }
@@ -256,11 +256,11 @@ class AlbaranController extends Controller
                 // Crear moviment d'ajust negatiu per revertir l'entrada
                 MovimentStock::create([
                     'producte_id'  => $linia->producte_id,
-                    'lot_id'       => null,
-                    'usuari_id'    => auth()->id(),
-                    'tipus'        => 'ajust',
-                    'quantitat'    => -$linia->quantitat,
-                    'data'         => now(),
+                    'lot_id' => null,
+                    'usuari_id' => auth()->id(),
+                    'tipus' => 'ajust',
+                    'quantitat' => -$linia->quantitat,
+                    'data' => now(),
                     'observacions' => 'Reversió albaran #' . $albaran->id . ' a esborrany'
                 ]);
 
@@ -275,7 +275,7 @@ class AlbaranController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Albaran revertit a esborrany correctament',
-            'data'    => $albaran->load('linies.producte', 'linies.lots', 'proveidor')
+            'data' => $albaran->load('linies.producte', 'linies.lots', 'proveidor')
         ]);
     }
 }
