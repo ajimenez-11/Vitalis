@@ -15,7 +15,7 @@ class ProducteController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data'    => Producte::orderBy('nom')->get(),
+            'data' => Producte::orderBy('nom')->get(),
         ]);
     }
 
@@ -35,7 +35,7 @@ class ProducteController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $producte,
+            'data' => $producte,
         ]);
     }
 
@@ -45,17 +45,17 @@ class ProducteController extends Controller
     public function new(Request $request)
     {
         $validated = $request->validate([
-            'nom'           => 'required|string|max:255',
+            'nom' => 'required|string|max:255',
             'unitat_mesura' => 'required|string|max:50',
-            'estoc_actual'  => 'nullable|numeric|min:0',
-            'estoc_minim'   => 'nullable|numeric|min:0',
+            'estoc_actual' => 'nullable|numeric|min:0',
+            'estoc_minim' => 'nullable|numeric|min:0',
         ]);
 
         $producte = Producte::create($validated);
 
         return response()->json([
             'success' => true,
-            'data'    => $producte,
+            'data' => $producte,
             'message' => 'Producte creat',
         ], 201);
     }
@@ -75,17 +75,17 @@ class ProducteController extends Controller
         }
 
         $validated = $request->validate([
-            'nom'           => 'sometimes|required|string|max:255',
+            'nom' => 'sometimes|required|string|max:255',
             'unitat_mesura' => 'sometimes|required|string|max:50',
-            'estoc_actual'  => 'nullable|numeric|min:0',
-            'estoc_minim'   => 'nullable|numeric|min:0',
+            'estoc_actual' => 'nullable|numeric|min:0',
+            'estoc_minim' => 'nullable|numeric|min:0',
         ]);
 
         $producte->update($validated);
 
         return response()->json([
             'success' => true,
-            'data'    => $producte,
+            'data' => $producte,
             'message' => 'Producte actualitzat correctament',
         ]);
     }
