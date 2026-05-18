@@ -14,7 +14,7 @@ export default function AlbaransPage() {
   const [modal, setModal] = useState(false);
   const [obert, setObert] = useState(null);
   const [pageError, setPageError] = useState(null);
-  const [confirmDelete, setConfirmDelete] = useState(null); // id
+  const [confirmDelete, setConfirmDelete] = useState(null); 
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
 
