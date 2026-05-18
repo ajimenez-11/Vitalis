@@ -1,6 +1,6 @@
 # 📋 Documentació del Projecte — Vitalis
 
-**Projecte de Fi de Cicle — 2n DAW**
+**Projecte — 2n DAW**
 **Curs:** 2025–2026
 **Autors:** Antonio Jiménez i David Moya
 
