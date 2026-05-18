@@ -23,14 +23,14 @@ const Navbar = () => {
   };
 
   const navItems = [
-    { label: 'Dashboard',    path: '/',            icon: <MdDashboard /> },
-    { label: 'Productes',    path: '/productes',   icon: <MdInventory /> },
+    { label: 'Dashboard', path: '/', icon: <MdDashboard /> },
+    { label: 'Productes', path: '/productes', icon: <MdInventory /> },
     ...(!isCuiner ? [
-      { label: 'Proveïdors', path: '/proveidors',  icon: <MdBusiness /> },
-      { label: 'Albarans',   path: '/albarans',    icon: <MdReceipt /> },
+      { label: 'Proveïdors', path: '/proveidors', icon: <MdBusiness /> },
+      { label: 'Albarans', path: '/albarans', icon: <MdReceipt /> },
     ] : []),
-    { label: 'Estoc',        path: '/stock',       icon: <MdShowChart /> },
-    { label: 'Receptes',     path: '/receptes',    icon: <MdMenuBook /> },
+    { label: 'Estoc', path: '/stock', icon: <MdShowChart /> },
+    { label: 'Receptes', path: '/receptes', icon: <MdMenuBook /> },
     { label: 'Traçabilitat', path: '/tracabilitat',icon: <MdSearch /> },
   ];
 
