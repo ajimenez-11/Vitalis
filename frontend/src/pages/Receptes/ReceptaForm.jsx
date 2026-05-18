@@ -32,7 +32,7 @@ const ReceptaForm = ({ id: idProp, onBack }) => {
           porcions_base: data.porcions_base ?? '',
         });
         // Si té imatge existent, mostrem preview
-        const url = data.imatge_url || (data.imatge ? `http://localhost:8000/${data.imatge}` : null);
+        const url = data.imatge_url || (data.imatge ? `${import.meta.env.VITE_API_URL.replace('/api', '')}/${data.imatge}` : null);
         if (url) setPreview(url);
       } catch {
         setError("No s'ha pogut carregar la recepta.");
