@@ -134,15 +134,78 @@ Vitalis/
 
 El sistema treballa amb les entitats següents:
 
+### Entitats principals
+
 | Entitat | Descripció |
-|---------|-----------|
-| `User` | Usuaris del sistema amb rols: `admin`, `responsable_cuina`, `cuiner` |
-| `Proveidor` | Proveïdors de mercaderia (nom, NIF, telèfon, email) |
+|---------|------------|
+| `User` | Usuaris del sistema |
+| `Proveidor` | Proveïdors de mercaderia |
 | `Producte` | Catàleg de productes amb estoc actual i estoc mínim |
-| `Albaran` | Albarà d'entrada de mercaderia. Estats: `esborrany` o `confirmat` |
+| `Albaran` | Albarà d'entrada de mercaderia |
 | `LiniaAlbaran` | Cada línia d'un albarà: producte, quantitat i preu |
-| `Lot` | Lots associats a una línia d'albarà (número de lot, data caducitat) |
-| `MovimentStock` | Registre de tots els moviments d'estoc: `entrada`, `sortida`, `ajust` |
+| `Lot` | Lots associats a una línia d'albarà |
 | `Recepta` | Recepta amb nom, descripció i porcions base |
 | `LiniaRecepta` | Ingredients d'una recepta amb quantitat per porció |
 | `ReceptaConsum` | Registre de cada vegada que s'ha produït una recepta |
+| `MovimentStock` | Registre de tots els moviments d'estoc |
+
+### Detall de camps i relacions
+
+#### `User`
+- **Camps:** `id`, `nom`, `email`, `password`, `rol` (`admin` \| `responsable_cuina` \| `cuiner`), `actiu`
+- **Relacions:** hasMany `Albaran`, `Recepta`, `ReceptaConsum`, `MovimentStock`
+
+#### `Proveidor`
+- **Camps:** `id`, `nom`, `nif`, `telefon`, `email`, `adreca`
+- **Relacions:** hasMany `Albaran`
+
+#### `Producte`
+- **Camps:** `id`, `nom`, `unitat_mesura`, `estoc_actual` decimal(10,3), `estoc_minim` decimal(10,3)
+- **Relacions:** hasMany `LiniaAlbaran`, `LiniaRecepta`, `MovimentStock`
+
+#### `Albaran`
+- **Camps:** `id`, `proveidor_id`, `usuari_id`, `data`, `estat` (`esborrany` \| `confirmat`), `observacions`
+- **Relacions:** belongsTo `Proveidor`, `User` — hasMany `LiniaAlbaran`
+
+#### `LiniaAlbaran`
+- **Camps:** `id`, `albaran_id`, `producte_id`, `quantitat` decimal(10,3), `preu_unitari` decimal(10,4)
+- **Relacions:** belongsTo `Albaran`, `Producte` — hasMany `Lot`
+
+#### `Lot`
+- **Camps:** `id`, `linia_albaran_id`, `numero_lot`, `quantitat` decimal(10,3), `data_caducitat`
+- **Relacions:** belongsTo `LiniaAlbaran` — hasMany `MovimentStock`
+
+#### `Recepta`
+- **Camps:** `id`, `usuari_id`, `nom`, `descripcio`, `porcions_base`, `imatge`
+- **Relacions:** belongsTo `User` — hasMany `LiniaRecepta`, `ReceptaConsum`
+
+#### `LiniaRecepta`
+- **Camps:** `id`, `recepta_id`, `producte_id`, `quantitat_per_porcio` decimal(10,4), `temperatura_coccio` decimal(5,2)
+- **Relacions:** belongsTo `Recepta`, `Producte`
+
+#### `ReceptaConsum`
+- **Camps:** `id`, `recepta_id`, `usuari_id`, `porcions`, `data`, `observacions`
+- **Relacions:** belongsTo `Recepta`, `User` — hasMany `MovimentStock`
+- **Automàtica:** Genera automàticament un `MovimentStock` de sortida per a cada ingredient en crear-se
+
+#### `MovimentStock`
+- **Camps:** `id`, `producte_id`, `lot_id` (nullable), `usuari_id`, `recepta_consum_id` (nullable), `tipus` (`entrada` \| `sortida` \| `ajust`), `quantitat` decimal(10,3), `data`, `observacions`
+- **Relacions:** belongsTo `Producte`, `Lot`, `User`, `ReceptaConsum`
+
+### Relacions clau
+
+```
+Proveidor (1) ──── (N) Albaran (1) ──── (N) LiniaAlbaran
+                                                 │
+                                        (1) Producte ◄──── (N) LiniaRecepta
+                                                 │                   │
+                                        (N) Lot  │           (1) Recepta
+                                                 │                   │
+                                    (N) MovimentStock ◄── (1) ReceptaConsum
+```
+
+La traçabilitat funciona amb la cadena: `Lot → LiniaAlbaran → Albaran → Proveïdor`.
+
+Quan es confirma un albarà, el sistema genera automàticament moviments d'entrada (`MovimentStock`) i actualitza l'`estoc_actual` de cada producte.
+
+Quan es registra el consum d'una recepta, el sistema genera moviments de sortida per cada ingredient proporcionalment a les porcions indicades.
