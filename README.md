@@ -51,7 +51,8 @@ Aplicació web per a la gestió d'albarans i estoc en cuines professionals i emp
    DB_USERNAME=vitalis_user
    DB_PASSWORD=vitalis_pass
    DB_ROOT_PASSWORD=root_pass
-   VITE_API_URL=http://localhost:8000/api
+   VITE_API_URL=http://localhost:8000/api        # En local
+   # VITE_API_URL=http://IP-DEL-SERVIDOR:8000/api  # En servidor
 ```
 
 3. **Construir i aixecar els contenidors:**
