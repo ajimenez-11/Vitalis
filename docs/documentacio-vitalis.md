@@ -40,7 +40,7 @@ El projecte va nàixer d'un problema real: moltes cuines professionals segueixen
 - **React** perquè és el framework de frontend més utilitzat al sector, i ens permet construir una SPA (Single Page Application) sense recarregar la pàgina.
 - **Tailwind CSS** perquè permet estilitzar ràpidament sense sortir del JSX. Molt útil per anar ràpid en el desenvolupament.
 - **Laravel** perquè és un framework PHP madur, amb Eloquent ORM, sistema de migracions, seeders i un generador d'API REST molt net.
-- **Laravel Sanctum** per gestionar l'autenticació via tokens (JWT-like) entre el frontend i el backend.
+- **Laravel Sanctum** per gestionar l'autenticació via tokens entre el frontend i el backend.
 - **MySQL** com a base de dades relacional, perquè el model de dades del projecte és bastant relacionat (albarans → línies → lots → estoc).
 - **Docker** per tenir un entorn de desenvolupament i producció idèntic sense "a mi em funciona".
 
