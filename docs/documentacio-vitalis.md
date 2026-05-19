@@ -267,3 +267,32 @@ Authorization: Bearer {token}
 | POST | `/api/receptes/{id}/consum` | Registrar consum (descompta estoc) |
 | GET | `/api/receptes/{id}/consums` | Historial de produccions |
 
+---
+
+## 8. Rols i permisos
+
+El sistema té tres rols diferenciats, controlats pel middleware `CheckRole`:
+
+| Rol | Accés |
+|-----|-------|
+| `admin` | Accés complet + gestió d'usuaris |
+| `responsable_cuina` | Albarans, productes, proveïdors, receptes, estoc (lectura i escriptura) |
+| `cuiner` | Consulta d'estoc, receptes, registrar consums i sortides manuals |
+
+El middleware s'aplica per ruta a `api.php` amb la sintaxi:
+```php
+Route::middleware('role:admin,responsable_cuina')->group(function () { ... });
+```
+
+---
+
+## 9. Autenticació al frontend
+
+Hem creat un `AuthContext` (React Context API) que emmagatzema el token i les dades de l'usuari. Tots els components de l'app hi poden accedir amb el hook `useAuth()`.
+
+- El token es guarda al `localStorage` del navegador.
+- Cada petició a l'API l'envia automàticament l'Axios client configurat a `src/api/client.js`.
+- Les rutes privades utilitzen un component `PrivateRoute` que redirigeix a `/login` si no hi ha token.
+- Les rutes d'admin utilitzen un component `AdminRoute` que comprova el rol.
+
+---
