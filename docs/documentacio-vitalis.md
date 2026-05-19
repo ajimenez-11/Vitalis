@@ -209,3 +209,61 @@ La traçabilitat funciona amb la cadena: `Lot → LiniaAlbaran → Albaran → P
 Quan es confirma un albarà, el sistema genera automàticament moviments d'entrada (`MovimentStock`) i actualitza l'`estoc_actual` de cada producte.
 
 Quan es registra el consum d'una recepta, el sistema genera moviments de sortida per cada ingredient proporcionalment a les porcions indicades.
+
+---
+
+## 7. API REST — Endpoints principals
+
+L'API utilitza autenticació via token Sanctum. Totes les rutes (excepte `/login`) requereixen el header:
+```
+Authorization: Bearer {token}
+```
+
+### Autenticació
+
+| Mètode | Ruta | Descripció |
+|--------|------|-----------|
+| POST | `/api/login` | Iniciar sessió. Retorna token |
+| POST | `/api/logout` | Tancar sessió |
+| GET | `/api/me` | Obtenir usuari autenticat |
+
+### Productes
+
+| Mètode | Ruta | Rols |
+|--------|------|------|
+| GET | `/api/productes` | admin, responsable_cuina, cuiner |
+| GET | `/api/productes/{id}` | admin, responsable_cuina, cuiner |
+| POST | `/api/productes` | admin, responsable_cuina |
+| PUT | `/api/productes/{id}` | admin, responsable_cuina |
+| DELETE | `/api/productes/{id}` | admin, responsable_cuina |
+
+### Albarans
+
+| Mètode | Ruta | Descripció |
+|--------|------|-----------|
+| GET | `/api/albarans` | Llistat d'albarans |
+| POST | `/api/albarans` | Crear albarà (estat: esborrany) |
+| POST | `/api/albarans/{id}/confirmar` | Confirmar albarà i actualitzar estoc |
+| POST | `/api/albarans/{id}/esborrany` | Tornar a esborrany |
+| POST | `/api/albarans/{id}/linies` | Afegir línia a un albarà |
+| POST | `/api/linies-albaran/{id}/lots` | Afegir lot a una línia |
+
+### Estoc i traçabilitat
+
+| Mètode | Ruta | Descripció |
+|--------|------|-----------|
+| GET | `/api/stock` | Estoc actual de tots els productes |
+| POST | `/api/stock/sortida` | Registrar sortida manual |
+| POST | `/api/stock/ajust` | Ajustar estoc (admin/responsable) |
+| GET | `/api/tracabilitat/lot/{numero}` | Traçabilitat d'un lot concret |
+| GET | `/api/lots/proxims-caducitat` | Lots a punt de caducar |
+
+### Receptes i consums
+
+| Mètode | Ruta | Descripció |
+|--------|------|-----------|
+| GET | `/api/receptes` | Llistat de receptes |
+| POST | `/api/receptes` | Crear recepta |
+| POST | `/api/receptes/{id}/consum` | Registrar consum (descompta estoc) |
+| GET | `/api/receptes/{id}/consums` | Historial de produccions |
+
