@@ -296,3 +296,17 @@ Hem creat un `AuthContext` (React Context API) que emmagatzema el token i les da
 - Les rutes d'admin utilitzen un component `AdminRoute` que comprova el rol.
 
 ---
+
+## 10. Pàgines del frontend
+
+| Ruta | Pàgina | Descripció |
+|------|--------|-----------|
+| `/login` | Login | Formulari d'accés |
+| `/` | Dashboard | Resum: productes sota mínims, últims albarans, produccions recents |
+| `/productes` | Productes | CRUD del catàleg de productes |
+| `/proveidors` | Proveïdors | CRUD de proveïdors |
+| `/albarans` | Albarans | Llistat i gestió d'albarans |
+| `/stock` | Inventari | Estoc actual amb alertes visuals |
+| `/receptes` | Receptes | Llistat, creació i registre de consums |
+| `/tracabilitat` | Traçabilitat | Cercador de lots |
+| `/usuaris` | Usuaris | Gestió d'usuaris (només admin) |
