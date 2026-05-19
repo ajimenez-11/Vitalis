@@ -310,3 +310,47 @@ Hem creat un `AuthContext` (React Context API) que emmagatzema el token i les da
 | `/receptes` | Receptes | Llistat, creació i registre de consums |
 | `/tracabilitat` | Traçabilitat | Cercador de lots |
 | `/usuaris` | Usuaris | Gestió d'usuaris (només admin) |
+
+---
+
+## 11. Desplegament
+
+### CI/CD amb GitHub Actions
+
+Hem configurat un workflow a `.github/workflows/deploy.yml` que s'activa automàticament quan es fa push a la branca `develop`.
+
+El procés és el següent:
+
+1. GitHub Actions es connecta al servidor via SSH.
+2. Fa `git fetch` i actualitza el codi amb `git reset --hard`.
+3. Reconstrueix els contenidors Docker (`docker compose down` + `docker compose up --build`).
+4. Executa les migracions pendents.
+5. Neteja la caché de Laravel.
+
+Les credencials del servidor (host, usuari, clau SSH) es guarden com a **secrets** a la configuració del repositori de GitHub, no al codi.
+
+### Variables d'entorn necessàries al servidor
+
+A part dels secrets de GitHub, el servidor necessita el fitxer `.env` arrel amb les variables de connexió a la base de dades i la URL de l'API per al frontend (`VITE_API_URL`).
+
+---
+
+## 12. Base de dades — Seeders
+
+Per als tests i el desenvolupament, hem creat seeders que poblen la base de dades amb dades de prova. S'executen automàticament la primera vegada que arrenca el Docker si la base de dades és buida.
+
+| Seeder | Contingut |
+|--------|-----------|
+| `UsersSeeder` | Usuaris de prova amb els tres rols |
+| `ProveidorsSeeder` | Proveïdors d'exemple |
+| `ProductesSeeder` | Catàleg de productes |
+| `AlbaransSeeder` | Albarans de prova |
+| `LiniaAlbaranSeeder` | Línies dels albarans |
+| `LotsSeeder` | Lots associats a les línies |
+| `ReceptesSeeder` | Receptes amb ingredients |
+| `LiniaReceptaSeeder` | Ingredients de les receptes |
+
+Per executar-los manualment (si cal):
+```bash
+docker compose exec backend php artisan db:seed --force
+```
