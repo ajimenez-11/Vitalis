@@ -1,46 +1,24 @@
 import { useState } from 'react';
 import styles from '../Login.module.css';
 
-const interpretarError = (err) => {
-  const status  = err?.response?.status;
-  const message = err?.response?.data?.message ?? '';
+const missatgeError = (err) => {
+  const status = err?.response?.status;
+  const msg = err?.response?.data?.message ?? '';
 
-  // Usuari desactivat 
-  if (
-    status === 403 ||
-    message.toLowerCase().includes('desactivat') ||
-    message.toLowerCase().includes('inactivo') ||
-    message.toLowerCase().includes('inactive') ||
-    message.toLowerCase().includes('disabled')
-  ) {
-    return 'El teu compte ha estat desactivat. Contacta amb l\'administrador.';
-  }
+  if (status === 403 || msg.toLowerCase().includes('desactivat') || msg.toLowerCase().includes('inactivo') || msg.toLowerCase().includes('inactive') || msg.toLowerCase().includes('disabled'))
+    return "El teu compte ha estat desactivat. Contacta amb l'administrador.";
 
-  // Credencials incorrectes 
-  if (
-    status === 401 ||
-    message.toLowerCase().includes('credencial') ||
-    message.toLowerCase().includes('incorrect') ||
-    message.toLowerCase().includes('invalid') ||
-    message.toLowerCase().includes('unauthorized')
-  ) {
+  if (status === 401 || msg.toLowerCase().includes('credencial') || msg.toLowerCase().includes('incorrect') || msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('unauthorized'))
     return 'Email o contrasenya incorrectes. Torna-ho a intentar.';
-  }
 
-  // Massa intents 
-  if (status === 429) {
+  if (status === 429)
     return 'Massa intents fallits. Espera uns minuts i torna-ho a provar.';
-  }
 
-  // Error de servidor
-  if (status >= 500) {
+  if (status >= 500)
     return 'Error del servidor. Torna-ho a intentar més tard.';
-  }
 
-  // Missatge directe de l'API si n'hi ha
-  if (message) return message;
+  if (msg) return msg;
 
-  // Fallback genèric
   return "Error d'autenticació. Comprova les dades i torna-ho a intentar.";
 };
 
@@ -65,52 +43,37 @@ const FormulariLogin = ({ onLogin }) => {
     return newErrors;
   };
 
-  const handleSubmit = async () => {
-    const newErrors = validate();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-    setLoading(true);
-    setErrorApi('');
-    setErrorType('');
+  const enviar = async () => {
+    const errs = validar();
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    setCarregant(true);
+    setError('');
+    setTipusError('');
     try {
       await onLogin({ email, password });
     } catch (err) {
-      const status  = err?.response?.status;
-      const message = err?.response?.data?.message ?? '';
-
-      if (
-        status === 403 ||
-        message.toLowerCase().includes('desactivat') ||
-        message.toLowerCase().includes('inactivo') ||
-        message.toLowerCase().includes('inactive') ||
-        message.toLowerCase().includes('disabled')
-      ) {
-        setErrorType('inactive');
-      } else if (status === 401 || status === 422) {
-        setErrorType('credentials');
-      } else {
-        setErrorType('generic');
-      }
-
-      setErrorApi(interpretarError(err));
+      const status = err?.response?.status;
+      const msg = err?.response?.data?.message ?? '';
+      if (status === 403 || msg.toLowerCase().includes('desactivat') || msg.toLowerCase().includes('inactivo') || msg.toLowerCase().includes('inactive') || msg.toLowerCase().includes('disabled'))
+        setTipusError('inactive');
+      else if (status === 401 || status === 422)
+        setTipusError('credentials');
+      else
+        setTipusError('generic');
+      setError(missatgeError(err));
     } finally {
-      setLoading(false);
+      setCarregant(false);
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') handleSubmit();
-  };
+  const onEnter = (e) => { if (e.key === 'Enter') enviar(); };
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.card}>
         <div className={styles.logoWrapper}>
           <div className={styles.logoBox}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-              stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2L2 7l10 5 10-5-10-5z"/>
               <path d="M2 17l10 5 10-5"/>
               <path d="M2 12l10 5 10-5"/>
@@ -124,9 +87,9 @@ const FormulariLogin = ({ onLogin }) => {
         {errorApi && (
           <div className={`${styles.errorBanner} ${styles[`errorBanner_${errorType}`] ?? ''}`}>
             <span className={styles.errorBannerIcon}>
-              {errorType === 'inactive' ? '🔒' : errorType === 'credentials' ? '⚠️' : '❌'}
+              {tipusError === 'inactive' ? '🔒' : tipusError === 'credentials' ? '⚠️' : '❌'}
             </span>
-            <span>{errorApi}</span>
+            <span>{error}</span>
           </div>
         )}
 
@@ -135,12 +98,8 @@ const FormulariLogin = ({ onLogin }) => {
           <input
             type="email"
             value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setErrors((p) => ({ ...p, email: undefined }));
-              setErrorApi('');
-            }}
-            onKeyDown={handleKeyDown}
+            onChange={(e) => { setEmail(e.target.value); setErrors(p => ({ ...p, email: undefined })); setError(''); }}
+            onKeyDown={onEnter}
             className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
             placeholder="nom@empresa.cat"
             autoComplete="email"
@@ -153,12 +112,8 @@ const FormulariLogin = ({ onLogin }) => {
           <input
             type="password"
             value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setErrors((p) => ({ ...p, password: undefined }));
-              setErrorApi('');
-            }}
-            onKeyDown={handleKeyDown}
+            onChange={(e) => { setPassword(e.target.value); setErrors(p => ({ ...p, password: undefined })); setError(''); }}
+            onKeyDown={onEnter}
             className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
             placeholder="••••••••"
             autoComplete="current-password"
@@ -166,13 +121,8 @@ const FormulariLogin = ({ onLogin }) => {
           {errors.password && <p className={styles.errorMsg}>{errors.password}</p>}
         </div>
 
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={loading}
-          className={styles.btnPrimary}
-        >
-          {loading ? 'Entrant...' : 'Entrar'}
+        <button type="button" onClick={enviar} disabled={carregant} className={styles.btnPrimary}>
+          {carregant ? 'Entrant...' : 'Entrar'}
         </button>
       </div>
     </div>

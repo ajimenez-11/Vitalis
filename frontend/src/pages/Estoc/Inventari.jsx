@@ -3,7 +3,7 @@ import { MdSearch } from 'react-icons/md';
 import { useApi } from '../../hooks/useApi';
 import { getStock } from '../../api/stock';
 import { useAuth } from '../../context/AuthContext';
-import { useSortable } from '../../hooks/useSortable'; 
+import { useSortable } from '../../hooks/useSortable';
 import { Badge, Button, PageHeader, Table } from '../../components/ui';
 import InventariForm from './InventariForm';
 import styles from './Inventari.module.css';
@@ -16,26 +16,25 @@ export default function InventariPage() {
   const [modal, setModal] = useState(null);
 
   const columns = [
-    { key: 'nom', label: 'Producte', sortable: true },
-    { key: 'unitat', label: 'Unitat', sortable: true,
+    { key: 'nom',          label: 'Producte',    sortable: true },
+    { key: 'unitat',       label: 'Unitat',       sortable: true,
       sortValue: (p) => p.unitat_mesura ?? '' },
     { key: 'estoc_actual', label: 'Estoc actual', sortable: true,
       sortValue: (p) => Number(p.estoc_actual) },
-    { key: 'estoc_minim', label: 'Estoc mínim', sortable: true,
+    { key: 'estoc_minim',  label: 'Estoc mínim',  sortable: true,
       sortValue: (p) => Number(p.estoc_minim) },
-    { key: 'estat', label: 'Estat', sortable: true,
+    { key: 'estat',        label: 'Estat',        sortable: true,
       sortValue: (p) => p.baix_minim ? 0 : 1 },
     ...(canWrite ? [{ key: 'accions', label: 'Accions' }] : []),
   ];
 
   const llista = (productes ?? []).filter((p) => {
-    const matchFiltre = filtre === 'tots' || (filtre === 'baix' && p.baix_minim);
-    const matchCerca  = p.nom.toLowerCase().includes(cerca.toLowerCase());
-    return matchFiltre && matchCerca;
+    const okFiltre = filtre === 'tots' || (filtre === 'baix' && p.baix_minim);
+    const okCerca  = p.nom.toLowerCase().includes(cerca.toLowerCase());
+    return okFiltre && okCerca;
   });
 
   const { sorted, sortKey, sortDir, handleSort } = useSortable(llista, columns);
-
   const totalBaix = (productes ?? []).filter((p) => p.baix_minim).length;
 
   if (loading) return <p className={styles.info}>Carregant estoc...</p>;
@@ -55,31 +54,20 @@ export default function InventariPage() {
       <div className={styles.toolbar}>
         <div className={styles.filtreRow}>
           {['tots', 'baix'].map((f) => (
-            <button
-              key={f}
-              className={`${styles.filtreBtn} ${filtre === f ? styles.filtreBtnActive : ''}`}
-              onClick={() => setFiltre(f)}
-            >
+            <button key={f} className={`${styles.filtreBtn} ${filtre === f ? styles.filtreBtnActive : ''}`} onClick={() => setFiltre(f)}>
               {f === 'tots' ? 'Tots' : `Baix mínim (${totalBaix})`}
             </button>
           ))}
         </div>
-
         <div className={styles.searchWrapper}>
           <MdSearch className={styles.searchIcon} />
-          <input
-            type="text"
-            className={styles.searchInput}
-            placeholder="Cercar producte..."
-            value={cerca}
-            onChange={(e) => setCerca(e.target.value)}
-          />
+          <input type="text" className={styles.searchInput} placeholder="Cercar producte..." value={cerca} onChange={(e) => setCerca(e.target.value)} />
         </div>
       </div>
 
       <Table
         columns={columns}
-        data={sorted} 
+        data={sorted} // 6. Usamos la lista ya ordenada
         sortKey={sortKey}
         sortDir={sortDir}
         onSort={handleSort}
@@ -102,12 +90,8 @@ export default function InventariPage() {
             {canWrite && (
               <td>
                 <div className={styles.accions}>
-                  <Button size="sm" variant="secondary" onClick={() => setModal({ producte: p, mode: 'ajust' })}>
-                    Ajust
-                  </Button>
-                  <Button size="sm" variant="danger" onClick={() => setModal({ producte: p, mode: 'sortida' })}>
-                    Sortida
-                  </Button>
+                  <Button size="sm" variant="secondary" onClick={() => setModal({ producte: p, mode: 'ajust' })}>Ajust</Button>
+                  <Button size="sm" variant="danger"    onClick={() => setModal({ producte: p, mode: 'sortida' })}>Sortida</Button>
                 </div>
               </td>
             )}
@@ -115,14 +99,7 @@ export default function InventariPage() {
         )}
       />
 
-      {modal && (
-        <InventariForm
-          producte={modal.producte}
-          mode={modal.mode}
-          onClose={() => setModal(null)}
-          onSuccess={refetch}
-        />
-      )}
+      {modal && <InventariForm producte={modal.producte} mode={modal.mode} onClose={() => setModal(null)} onSuccess={refetch} />}
     </div>
   );
 }
