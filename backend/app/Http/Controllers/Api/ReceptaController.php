@@ -86,7 +86,7 @@ class ReceptaController extends Controller
     ]);
 
     if ($request->hasFile('imatge')) {
-        // Borra la imagen anterior si existe
+        // Esborra la imatge anterior si existeix
         if ($recepta->imatge && file_exists(public_path($recepta->imatge))) {
             unlink(public_path($recepta->imatge));
         }
