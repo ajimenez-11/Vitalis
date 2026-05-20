@@ -15,6 +15,17 @@ export default function InventariPage() {
   const [cerca, setCerca] = useState('');
   const [modal, setModal] = useState(null);
 
+  const unitats_mesura = [
+    { value: 'unitats', label: 'Unitats' },
+    { value: 'kg', label: 'Quilograms' },
+    { value: 'l', label: 'Litres' },
+    { value: 'g', label: 'Grams' },
+    { value: 'ml', label: 'Mil·lilitres' },
+    { value: 'pot', label: 'Pots' },
+    { value: 'bossa', label: 'Bossa' },
+    { value: 'caixa', label: 'Caixa' },
+  ]
+
   const columns = [
     { key: 'nom', label: 'Producte', sortable: true },
     { key: 'unitat', label: 'Unitat', sortable: true,
@@ -87,9 +98,7 @@ export default function InventariPage() {
         renderRow={(p) => (
           <tr key={p.id} className={p.baix_minim ? styles.rowBaix : ''}>
             <td className={styles.nomProducte}>{p.nom}</td>
-            <td>{p.unitat_mesura}
-              {p.unitat_mesura === 'unitats' ? '' : ` (${p.unitat_mesura === 'kg' ? 'quilograms' : 'litres'})`}
-            </td>
+            <td>{p.unitat_mesura} ({unitats_mesura.find(u => u.value === p.unitat_mesura)?.label || ''})</td>
             <td className={p.baix_minim ? styles.stockBaix : styles.stockOk}>
               {p.estoc_actual}
             </td>
