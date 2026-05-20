@@ -22,6 +22,11 @@ function AdminRoute({ children }) {
   return isAdmin ? children : <Navigate to="/" replace />;
 }
 
+function ResponsableRoute({ children }) {
+  const { isAdmin, isResponsable } = useAuth();
+  return (isAdmin || isResponsable) ? children : <Navigate to="/" replace />;
+}
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
@@ -30,11 +35,11 @@ export default function AppRouter() {
         <Route path="/" element={<PrivateRoute />}>
           <Route index element={<DashboardPage />} />
           <Route path="productes" element={<ProductesPage />} />
-          <Route path="proveidors" element={<ProveidorsPage />} />
-          <Route path="albarans" element={<AlbaransPage />} />
+          <Route path="proveidors" element={<ResponsableRoute><ProveidorsPage /></ResponsableRoute>} />
+          <Route path="albarans" element={<ResponsableRoute><AlbaransPage /></ResponsableRoute>} />
           <Route path="stock" element={<InventariPage />} />
           <Route path="receptes" element={<ReceptesPage />} />
-          <Route path="receptes/:id" element={<ReceptaForm />} />
+          <Route path="receptes/:id" element={<ResponsableRoute><ReceptaForm /></ResponsableRoute>} />
           <Route path="tracabilitat" element={<TracabilitatPage />} />
           <Route path="usuaris" element={<AdminRoute><UsuarisPage /></AdminRoute>} />
         </Route>
