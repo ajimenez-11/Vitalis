@@ -1,5 +1,4 @@
 services:
-  # BASE DE DADES
   db:
     image: mysql:8.0
     container_name: vitalis_db
@@ -21,7 +20,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # BACKEND — Laravel
   backend:
     build:
       context: ./backend
@@ -59,7 +57,6 @@ services:
         php artisan serve --host=0.0.0.0 --port=8000
       "
 
-  # FRONTEND — React + Tailwind
   frontend:
     build:
       context: ./frontend
@@ -79,7 +76,6 @@ services:
     networks:
       - vitalis_net
 
-# VOLUMS I XARXA
 volumes:
   db_data:
 
