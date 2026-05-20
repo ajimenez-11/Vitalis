@@ -25,9 +25,6 @@ export default function ProductesPage() {
     { value: 'l', label: 'Litres' },
     { value: 'g', label: 'Grams' },
     { value: 'ml', label: 'Mil·lilitres' },
-    { value: 'pot', label: 'Pots' },
-    { value: 'bossa', label: 'Bossa' },
-    { value: 'caixa', label: 'Caixa' },
   ]
 
   const columns = [
@@ -118,7 +115,8 @@ export default function ProductesPage() {
             <tr key={p.id} className={sota ? styles.rowAlert : ''}>
               <td className={styles.nom}>{p.nom}</td>
               <td>
-                  {p.unitat_mesura} ({unitats_mesura.find(u => u.value === p.unitat_mesura)?.label || ''})
+                {p.unitat_mesura.charAt(0).toUpperCase() + p.unitat_mesura.slice(1)}
+                {unitats_mesura.find(u => u.value === p.unitat_mesura)?.label ? ` (${unitats_mesura.find(u => u.value === p.unitat_mesura).label})` : ''}
               </td>
               <td className={sota ? styles.alertText : ''}>{p.estoc_actual}</td>
               <td>{p.estoc_minim}</td>

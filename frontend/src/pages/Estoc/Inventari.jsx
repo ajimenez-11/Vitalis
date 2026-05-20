@@ -21,9 +21,6 @@ export default function InventariPage() {
     { value: 'l', label: 'Litres' },
     { value: 'g', label: 'Grams' },
     { value: 'ml', label: 'Mil·lilitres' },
-    { value: 'pot', label: 'Pots' },
-    { value: 'bossa', label: 'Bossa' },
-    { value: 'caixa', label: 'Caixa' },
   ]
 
   const columns = [
@@ -98,7 +95,10 @@ export default function InventariPage() {
         renderRow={(p) => (
           <tr key={p.id} className={p.baix_minim ? styles.rowBaix : ''}>
             <td className={styles.nomProducte}>{p.nom}</td>
-            <td>{p.unitat_mesura} ({unitats_mesura.find(u => u.value === p.unitat_mesura)?.label || ''})</td>
+            <td>
+                {p.unitat_mesura.charAt(0).toUpperCase() + p.unitat_mesura.slice(1)}
+                {unitats_mesura.find(u => u.value === p.unitat_mesura)?.label ? ` (${unitats_mesura.find(u => u.value === p.unitat_mesura).label})` : ''}
+            </td>
             <td className={p.baix_minim ? styles.stockBaix : styles.stockOk}>
               {p.estoc_actual}
             </td>
