@@ -19,12 +19,9 @@ export default function ProductesPage() {
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
 
-  const unitats_mesura = [
+  const unitats_mesura_especific = [
     { value: 'unitats', label: 'Unitats' },
-    { value: 'kg', label: 'Quilograms' },
     { value: 'l', label: 'Litres' },
-    { value: 'g', label: 'Grams' },
-    { value: 'ml', label: 'Mil·lilitres' },
   ]
 
   const columns = [
@@ -116,7 +113,7 @@ export default function ProductesPage() {
               <td className={styles.nom}>{p.nom}</td>
               <td>
                 {p.unitat_mesura.charAt(0).toUpperCase() + p.unitat_mesura.slice(1)}
-                {unitats_mesura.find(u => u.value === p.unitat_mesura)?.label ? ` (${unitats_mesura.find(u => u.value === p.unitat_mesura).label})` : ''}
+                {unitats_mesura_especific.find(u => u.value === p.unitat_mesura)?.label ? ` (${unitats_mesura_especific.find(u => u.value === p.unitat_mesura).label})` : ''}
               </td>
               <td className={sota ? styles.alertText : ''}>{p.estoc_actual}</td>
               <td>{p.estoc_minim}</td>

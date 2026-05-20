@@ -15,12 +15,9 @@ export default function InventariPage() {
   const [cerca, setCerca] = useState('');
   const [modal, setModal] = useState(null);
 
-  const unitats_mesura = [
+  const unitats_mesura_especific = [
     { value: 'unitats', label: 'Unitats' },
-    { value: 'kg', label: 'Quilograms' },
     { value: 'l', label: 'Litres' },
-    { value: 'g', label: 'Grams' },
-    { value: 'ml', label: 'Mil·lilitres' },
   ]
 
   const columns = [
@@ -97,7 +94,7 @@ export default function InventariPage() {
             <td className={styles.nomProducte}>{p.nom}</td>
             <td>
                 {p.unitat_mesura.charAt(0).toUpperCase() + p.unitat_mesura.slice(1)}
-                {unitats_mesura.find(u => u.value === p.unitat_mesura)?.label ? ` (${unitats_mesura.find(u => u.value === p.unitat_mesura).label})` : ''}
+                {unitats_mesura_especific.find(u => u.value === p.unitat_mesura)?.label ? ` (${unitats_mesura_especific.find(u => u.value === p.unitat_mesura).label})` : ''}
             </td>
             <td className={p.baix_minim ? styles.stockBaix : styles.stockOk}>
               {p.estoc_actual}
