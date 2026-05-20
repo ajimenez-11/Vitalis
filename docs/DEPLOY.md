@@ -1,6 +1,6 @@
 # Guia de Desplegament — Vitalis
 
-Aquesta guia cobreix el desplegament manual en un servidor i el desplegament automàtic via CI/CD amb GitHub Actions.
+Aquesta guia cobreix el desplegament en local, el desplegament manual en un servidor i el desplegament automàtic via CI/CD amb GitHub Actions.
 
 ---
 
@@ -13,6 +13,62 @@ El projecte s'executa íntegrament amb Docker Compose. Tres serveis:
 | frontend | Node (build Vite) | 5173 |
 | backend | PHP 8.3 + Laravel | 8000 |
 | db | MySQL 8 | 3307 |
+
+---
+
+## 💻 Desplegament en Local (Desenvolupament)
+
+### 1. Clonar el repositori
+
+```bash
+git clone https://github.com/ajimenez-11/vitalis.git
+cd vitalis
+```
+
+### 2. Crear els fitxers d'entorn
+
+```bash
+cp .env.example .env
+cp backend/.env.example backend/.env
+```
+
+Edita `.env` amb les següents variables:
+
+```env
+APP_ENV=local
+APP_DEBUG=true
+APP_KEY=
+DB_DATABASE=vitalis
+DB_USERNAME=vitalis_user
+DB_PASSWORD=vitalis_pass
+DB_ROOT_PASSWORD=root_pass
+VITE_API_URL=http://localhost:8000/api
+```
+
+Edita `backend/.env` i assegura't que les credencials de base de dades coincideixen:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=vitalis
+DB_USERNAME=vitalis_user
+DB_PASSWORD=vitalis_pass
+```
+
+### 3. Construir i aixecar els contenidors
+
+```bash
+docker compose up --build -d
+```
+
+> El contenidor de backend ja executa automàticament `key:generate`, `migrate` i `db:seed` en arrencar. No cal cap pas manual addicional.
+
+### 4. Accedir a l'aplicació
+
+```
+http://localhost:5173
+```
 
 ---
 
@@ -44,6 +100,17 @@ DB_ROOT_PASSWORD=root_pass
 VITE_API_URL=http://IP-DEL-SERVIDOR:8000/api
 ```
 
+Edita `backend/.env` i assegura't que les credencials de base de dades coincideixen:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=vitalis
+DB_USERNAME=vitalis_user
+DB_PASSWORD=vitalis_pass
+```
+
 ### 3. Configurar CORS ⚠️
 
 Cal afegir la IP del servidor a `backend/config/cors.php` **abans** d'aixecar els contenidors. Sense aquest pas, el navegador bloquejarà totes les crides a l'API.
@@ -60,6 +127,8 @@ Cal afegir la IP del servidor a `backend/config/cors.php` **abans** d'aixecar el
 ```bash
 docker compose up --build -d
 ```
+
+> El contenidor de backend ja executa automàticament `key:generate`, `migrate` i `db:seed` en arrencar. No cal cap pas manual addicional.
 
 ### 5. Accedir a l'aplicació
 

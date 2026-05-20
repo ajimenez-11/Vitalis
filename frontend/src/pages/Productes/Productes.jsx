@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MdSearch } from 'react-icons/md';
 import { useApi } from '../../hooks/useApi';
+import { useAuth } from '../../context/AuthContext';
 import {
   getProductes, createProducte, updateProducte, deleteProducte,
 } from '../../api/productes';
@@ -11,6 +12,7 @@ import styles from './Productes.module.css';
 
 
 export default function ProductesPage() {
+  const { canWrite } = useAuth();
   const { data: productes, loading, error, refetch } = useApi(getProductes);
   const [modal, setModal] = useState(null);
   const [apiError, setApiError] = useState(null);
@@ -30,7 +32,7 @@ export default function ProductesPage() {
     { key: 'estoc_actual', label: 'Estoc actual', sortable: true, sortValue: (p) => Number(p.estoc_actual) },
     { key: 'estoc_minim', label: 'Estoc mínim', sortable: true, sortValue: (p) => Number(p.estoc_minim) },
     { key: 'estat', label: 'Estat', sortable: true, sortValue: (p) => Number(p.estoc_actual) <= Number(p.estoc_minim) ? 0 : 1 },
-    { key: 'accions', label: 'Accions' },
+    ...(canWrite ? [{ key: 'accions', label: 'Accions' }] : []),
   ];
 
   const llista = (productes ?? []).filter(p =>
@@ -81,7 +83,7 @@ export default function ProductesPage() {
       <PageHeader
         title="Productes"
         subtitle={`${llista.length} producte${llista.length !== 1 ? 's' : ''} al catàleg`}
-        action={<Button onClick={obrirCrear}>+ Nou producte</Button>}
+        action={canWrite && <Button onClick={obrirCrear}>+ Nou producte</Button>}
       />
 
       {apiError && <div className={styles.pageError}>{apiError}</div>}
@@ -122,14 +124,16 @@ export default function ProductesPage() {
                   {sota ? 'Sota mínims' : 'Correcte'}
                 </Badge>
               </td>
-              <td className={styles.actions}>
-                <Button variant="secondary" size="sm" onClick={() => obrirEditar(p)}>
-                  Editar
-                </Button>
-                <Button variant="danger" size="sm" onClick={() => handleDeleteClick(p)}>
-                  Eliminar
-                </Button>
-              </td>
+              {canWrite && (
+                <td className={styles.actions}>
+                  <Button variant="secondary" size="sm" onClick={() => obrirEditar(p)}>
+                    Editar
+                  </Button>
+                  <Button variant="danger" size="sm" onClick={() => handleDeleteClick(p)}>
+                    Eliminar
+                  </Button>
+                </td>
+              )}
             </tr>
           );
         }}

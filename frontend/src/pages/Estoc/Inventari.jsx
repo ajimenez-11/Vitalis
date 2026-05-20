@@ -30,7 +30,7 @@ export default function InventariPage() {
       sortValue: (p) => Number(p.estoc_minim) },
     { key: 'estat', label: 'Estat', sortable: true,
       sortValue: (p) => p.baix_minim ? 0 : 1 },
-    ...(canWrite ? [{ key: 'accions', label: 'Accions' }] : []),
+    { key: 'accions', label: 'Accions' },
   ];
 
   const llista = (productes ?? []).filter((p) => {
@@ -105,18 +105,18 @@ export default function InventariPage() {
                 {p.baix_minim ? '⚠ Baix mínim' : '✓ OK'}
               </Badge>
             </td>
-            {canWrite && (
-              <td>
-                <div className={styles.accions}>
+            <td>
+              <div className={styles.accions}>
+                {canWrite && (
                   <Button size="sm" variant="secondary" onClick={() => setModal({ producte: p, mode: 'ajust' })}>
                     Ajust
                   </Button>
-                  <Button size="sm" variant="danger" onClick={() => setModal({ producte: p, mode: 'sortida' })}>
-                    Sortida
-                  </Button>
-                </div>
-              </td>
-            )}
+                )}
+                <Button size="sm" variant="danger" onClick={() => setModal({ producte: p, mode: 'sortida' })}>
+                  Sortida
+                </Button>
+              </div>
+            </td>
           </tr>
         )}
       />

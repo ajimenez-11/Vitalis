@@ -98,7 +98,6 @@ const EliminarSeleccioModal = ({ count, onClose, onConfirm, deleting, error }) =
     </div>
   </div>
 );
-
 const ReceptaCard = ({ recepta, onVeure, onEditar, onConsum, canWrite, seleccionada, onToggleSelect }) => {
   const nom = recepta.nom || recepta.nombre_receta || 'Sense nom';
   const imatgeUrl = getImatgeUrl(recepta);
@@ -138,11 +137,9 @@ const ReceptaCard = ({ recepta, onVeure, onEditar, onConsum, canWrite, seleccion
             Editar
           </button>
         )}
-        {canWrite && (
-          <button onClick={e => { e.stopPropagation(); onConsum(recepta); }} className={`${styles.actionBtn} ${styles.actionBtnConsum}`}>
-            <MdRestaurant size={14} /> Consum
-          </button>
-        )}
+        <button onClick={e => { e.stopPropagation(); onConsum(recepta); }} className={`${styles.actionBtn} ${styles.actionBtnConsum}`}>
+          <MdRestaurant size={14} /> Consum
+        </button>
       </div>
     </div>
   );
