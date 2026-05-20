@@ -37,6 +37,7 @@ Edita `.env` amb les següents variables:
 ```env
 APP_ENV=local
 APP_DEBUG=true
+APP_KEY=
 DB_DATABASE=vitalis
 DB_USERNAME=vitalis_user
 DB_PASSWORD=vitalis_pass
