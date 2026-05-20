@@ -16,6 +16,17 @@ export default function ProductesPage() {
   const [apiError, setApiError] = useState(null);
   const [query, setQuery] = useState('');
 
+  const unitats_mesura = [
+    { value: 'unitats', label: 'Unitats' },
+    { value: 'kg', label: 'Quilograms' },
+    { value: 'l', label: 'Litres' },
+    { value: 'g', label: 'Grams' },
+    { value: 'ml', label: 'Mil·lilitres' },
+    { value: 'pot', label: 'Pots' },
+    { value: 'bossa', label: 'Bossa' },
+    { value: 'caixa', label: 'Caixa' },
+  ]
+
   const columns = [
     { key: 'nom', label: 'Nom', sortable: true },
     { key: 'unitat', label: 'Unitat', sortable: true,
@@ -102,9 +113,9 @@ export default function ProductesPage() {
           return (
             <tr key={p.id} className={sota ? styles.rowAlert : ''}>
               <td className={styles.nom}>{p.nom}</td>
-              <td>{p.unitat_mesura} 
-                {p.unitat_mesura === 'unitats' ? '' : ` (${p.unitat_mesura === 'kg' ? 'quilograms' : 'litres'})`}
-              </td> 
+              <td>
+                  {p.unitat_mesura} ({unitats_mesura.find(u => u.value === p.unitat_mesura)?.label || ''})
+              </td>
               <td className={sota ? styles.alertText : ''}>{p.estoc_actual}</td>
               <td>{p.estoc_minim}</td>
               <td>
