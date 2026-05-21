@@ -109,7 +109,7 @@ const FormulariLogin = ({ onLogin }) => {
       <div className={styles.card}>
         <div className={styles.logoWrapper}>
           <img
-            src="/logo.jpeg"
+            src="/logo.png"
             alt="Vitalis"
             className={styles.logoImg}
           />
