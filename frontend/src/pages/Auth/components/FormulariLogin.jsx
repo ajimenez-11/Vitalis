@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styles from '../Login.module.css';
 
 const interpretarError = (err) => {
-  const status  = err?.response?.status;
+  const status = err?.response?.status;
   const message = err?.response?.data?.message ?? '';
 
   // Usuari desactivat 
@@ -45,10 +45,10 @@ const interpretarError = (err) => {
 };
 
 const FormulariLogin = ({ onLogin }) => {
-  const [email, setEmail]    = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors]   = useState({});
-  const [loading, setLoading]  = useState(false);
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const [errorApi, setErrorApi] = useState('');
   const [errorType, setErrorType] = useState(''); // 'inactive' | 'credentials' | 'generic'
 
@@ -77,7 +77,7 @@ const FormulariLogin = ({ onLogin }) => {
     try {
       await onLogin({ email, password });
     } catch (err) {
-      const status  = err?.response?.status;
+      const status = err?.response?.status;
       const message = err?.response?.data?.message ?? '';
 
       if (
@@ -108,14 +108,11 @@ const FormulariLogin = ({ onLogin }) => {
     <div className={styles.wrapper}>
       <div className={styles.card}>
         <div className={styles.logoWrapper}>
-          <div className={styles.logoBox}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-              stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-              <path d="M2 17l10 5 10-5"/>
-              <path d="M2 12l10 5 10-5"/>
-            </svg>
-          </div>
+          <img
+            src="/logo.jpeg"
+            alt="Vitalis"
+            className={styles.logoImg}
+          />
         </div>
 
         <h2 className={styles.title}>Benvingut</h2>
