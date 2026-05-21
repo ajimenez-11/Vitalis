@@ -22,7 +22,7 @@ export default function ProductesPage() {
   const [deleteError, setDeleteError] = useState(null);
 
   const unitats_mesura_especific = [
-    { value: 'unitats', label: 'Unitats' },
+    { value: 'u', label: 'Unitats' },
     { value: 'l', label: 'Litres' },
   ]
 

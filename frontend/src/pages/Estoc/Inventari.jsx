@@ -16,7 +16,7 @@ export default function InventariPage() {
   const [modal, setModal] = useState(null);
 
   const unitats_mesura_especific = [
-    { value: 'unitats', label: 'Unitats' },
+    { value: 'u', label: 'Unitats' },
     { value: 'l', label: 'Litres' },
   ]
 
