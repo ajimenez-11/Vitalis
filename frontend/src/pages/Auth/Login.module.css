@@ -25,14 +25,10 @@
   margin-bottom: 28px;
 }
 
-.logoBox {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-sm);
-  background: var(--color-accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.logoImg {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
 }
 
 .title {
@@ -82,8 +78,13 @@
   margin-top: 1px;
 }
 
-.field     { margin-bottom: 20px; }
-.fieldLast { margin-bottom: 28px; }
+.field {
+  margin-bottom: 20px;
+}
+
+.fieldLast {
+  margin-bottom: 28px;
+}
 
 .label {
   display: block;
